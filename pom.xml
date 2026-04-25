@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Maven 项目对象模型（POM）文件：定义项目的坐标、依赖管理、构建配置以及子模块信息。
+    该文件是项目聚合根配置，用于统一管理所有子模块的版本和通用依赖。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!--
+        modelVersion：POM 模型的版本号。
+        Maven 2/3 中固定为 4.0.0，表示使用当前最新的 POM 模型定义。
+    -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        parent：声明当前 POM 继承自一个父 POM。
+        继承后可以复用父 POM 中的依赖管理、插件配置、属性等。
+        这里继承 Spring Boot 的 Starter Parent，从而获得 Spring Boot 的依赖版本管理和默认插件配置。
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.14</version>                 <!-- Spring Boot 版本（根据实际可用版本调整） -->
+        <relativePath/>                           <!-- 从 Maven 远程仓库查找父 POM，不使用相对路径 -->
+    </parent>
+
+    <!--
+        groupId：项目所属的组织/公司标识，通常使用反向域名格式。
+        artifactId：当前模块（项目）的唯一标识。
+        version：项目当前的版本号，SNAPSHOT 表示快照版本，代表开发中的版本。
+        packaging：打包方式，pom 表示这是一个聚合模块（父工程），不生成 jar/war，仅用于管理子模块。
+    -->
+    <groupId>com.xiyao</groupId>
+    <artifactId>dayplan</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <!-- 项目元数据：名称、URL、描述，主要供生成站点或文档使用 -->
+    <name>DayPlan</name>
+    <url>http://www.xxx.com</url>
+    <description>每日计划</description>
+
+    <!--
+        modules：定义当前聚合模块所包含的子模块。
+        每个 <module> 标签对应一个子模块的目录名（与 artifactId 相同或自定义）。
+        Maven 会按顺序构建这些模块，保证依赖关系。
+    -->
+    <modules>
+        <module>admin</module>    <!-- 启动模块（应用入口） -->
+        <module>system</module>   <!-- 系统核心业务模块 -->
+        <module>common</module>   <!-- 通用工具/公共组件模块 -->
+        <module>service</module>  <!-- 服务/业务逻辑模块 -->
+    </modules>
+
+    <!--
+        properties：定义项目级别的自定义属性，可在 POM 中以 ${属性名} 形式引用。
+        常用于统一管理版本号、编码格式、JDK版本等。
+    -->
+    <properties>
+        <java.version>17</java.version>                           <!-- 指定 Java 编译器版本为 17 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>   <!-- 源码文件编码 -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding> <!-- 报告输出编码 -->
+
+        <!-- 第三方依赖版本（集中管理，便于升级） -->
+        <hutool.version>5.8.16</hutool.version>                  <!-- Hutool 工具库版本 -->
+        <mybatis-plus.version>3.5.15</mybatis-plus.version>      <!-- MyBatis-Plus 版本 -->
+        <druid.version>1.2.28</druid.version>                    <!-- 阿里 Druid 连接池版本 -->
+        <fastjson.version>2.0.61</fastjson.version>              <!-- Fastjson2 版本 -->
+        <jwt.version>0.9.1</jwt.version>                         <!-- JJWT（JWT 库）版本 -->
+        <oshi.version>6.4.11</oshi.version>                      <!-- 系统信息库 OSHI 版本 -->
+    </properties>
+
+    <!--
+        dependencyManagement：依赖管理声明。
+        这里只声明依赖的版本等信息，子模块中若需要该依赖只需声明 groupId 和 artifactId 即可继承版本。
+        作用：集中管理版本，避免子模块版本冲突，但子模块必须显式引入才会真正添加依赖。
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- 本项目的子模块，用于让其他模块引用时无需重复指定版本 -->
+            <dependency>
+                <groupId>com.xiyao</groupId>
+                <artifactId>admin</artifactId>
+                <version>${project.version}</version>   <!-- version 引用父工程版本号 -->
+            </dependency>
+            <dependency>
+                <groupId>com.xiyao</groupId>
+                <artifactId>system</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiyao</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiyao</groupId>
+                <artifactId>service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Hutool：Java 工具类库，提供文件、日期、字符串等常用封装 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+            <!-- MyBatis-Plus 启动器，提供增强的 MyBatis 集成与自动配置 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!-- 阿里 Druid 连接池的 Spring Boot 4 启动器（适配 Spring Boot 3+） -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-4-starter</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- 阿里 Fastjson2：高性能 JSON 解析与生成 -->
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!-- JJWT：用于生成和解析 JSON Web Token -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+
+            <!-- OSHI：获取操作系统和硬件信息（CPU、内存等） -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!--
+        dependencies：所有模块都会继承的通用依赖。
+        此处定义的依赖会自动传递给所有子模块（无需子模块再声明）。
+        注意：不需要指定版本，版本由父项目中的 dependencyManagement 或 Spring Boot Parent 统一管理。
+    -->
+    <dependencies>
+        <!-- Spring Boot Web Starter：包含 Spring MVC、嵌入式 Tomcat、RESTful 支持等 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Security：提供认证、授权等安全功能 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Lombok：通过注解自动生成 getter/setter、构造器、日志变量等，简化代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>   <!-- 该依赖不会传递，且编译后不需要打包 -->
+        </dependency>
+
+        <!-- 参数校验：基于 Jakarta Bean Validation 的校验框架（如 @NotNull、@Valid） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>   <!-- 运行时需要，但编译时不需要 -->
+        </dependency>
+
+        <!-- Spring Data Redis：提供 Redis 客户端（Lettuce 或 Jedis）和统一操作模板 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- Quartz 定时任务框架：支持基于 Cron 表达式的任务调度 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Test：提供单元测试、集成测试支持（JUnit、Mockito 等） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>   <!-- 仅在测试阶段有效，不会打包到最终产物 -->
+        </dependency>
+    </dependencies>
+
+    <!--
+        repositories：配置 Maven 项目的远程仓库列表（用于下载依赖）。
+        这里配置阿里云公共镜像仓库，加速依赖下载。
+    -->
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>   <!-- 允许下载正式发布版本 -->
+            </releases>
+            <!-- snapshots 默认为 false，不下载快照版本 -->
+        </repository>
+    </repositories>
+
+    <!--
+        pluginRepositories：配置 Maven 插件的远程仓库。
+        类似于 repositories，但专门用于下载 Maven 插件（如 spring-boot-maven-plugin）。
+    -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>   <!-- 插件不使用快照版本，提高稳定性 -->
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
