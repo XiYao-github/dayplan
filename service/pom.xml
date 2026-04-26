@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.xiyao</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>system</artifactId>
         </dependency>
     </dependencies>
 

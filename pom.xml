@@ -47,10 +47,9 @@
         Maven 会按顺序构建这些模块，保证依赖关系。
     -->
     <modules>
-        <module>admin</module>    <!-- 启动模块（应用入口） -->
-        <module>system</module>   <!-- 系统核心业务模块 -->
-        <module>common</module>   <!-- 通用工具/公共组件模块 -->
-        <module>service</module>  <!-- 服务/业务逻辑模块 -->
+        <module>app</module>    <!-- 启动接口模块 -->
+        <module>service</module>  <!-- 业务逻辑模块 -->
+        <module>system</module>   <!-- 系统框架模块 -->
     </modules>
 
     <!--
@@ -81,17 +80,12 @@
             <!-- 本项目的子模块，用于让其他模块引用时无需重复指定版本 -->
             <dependency>
                 <groupId>com.xiyao</groupId>
-                <artifactId>admin</artifactId>
+                <artifactId>app</artifactId>
                 <version>${project.version}</version>   <!-- version 引用父工程版本号 -->
             </dependency>
             <dependency>
                 <groupId>com.xiyao</groupId>
                 <artifactId>system</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.xiyao</groupId>
-                <artifactId>common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

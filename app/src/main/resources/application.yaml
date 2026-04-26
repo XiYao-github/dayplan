@@ -1,0 +1,13 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /dayplan
+    encoding:
+      charset: UTF-8
+
+spring:
+  application:
+    name: app
+  banner:
+    charset: utf-8
+    location: classpath:banner.txt
