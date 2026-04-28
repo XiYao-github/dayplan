@@ -6,14 +6,14 @@ import com.xiyao.common.base.BaseController;
 
 /**
  * <p>
- * 访问记录 前端控制器
+ * 操作记录 前端控制器
  * </p>
  *
  * @author xiyao
  * @since 2026-04-28
  */
 @RestController
-@RequestMapping("/sys-login")
-public class SysLoginController extends BaseController {
+@RequestMapping("/sys-operation-log")
+public class SysOperationLogController extends BaseController {
 
 }

@@ -19,16 +19,10 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         log.info("开始插入填充...");
 
-        Long userId = 0L;
-        String userName = "更新";
         LocalDateTime now = LocalDateTime.now();
 
-        this.strictInsertFill(metaObject, BaseEntity.Fields.createId, Long.class, userId);
-        this.strictInsertFill(metaObject, BaseEntity.Fields.createName, String.class, userName);
         this.strictInsertFill(metaObject, BaseEntity.Fields.createTime, LocalDateTime.class, now);
 
-        this.strictInsertFill(metaObject, BaseEntity.Fields.updateId, Long.class, userId);
-        this.strictInsertFill(metaObject, BaseEntity.Fields.updateName, String.class, userName);
         this.strictInsertFill(metaObject, BaseEntity.Fields.updateTime, LocalDateTime.class, now);
     }
 
@@ -39,12 +33,8 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
         log.info("开始更新填充...");
 
-        Long userId = 0L;
-        String userName = "更新";
         LocalDateTime now = LocalDateTime.now();
 
-        this.strictUpdateFill(metaObject, BaseEntity.Fields.updateId, Long.class, userId);
-        this.strictUpdateFill(metaObject, BaseEntity.Fields.updateName, String.class, userName);
         this.strictUpdateFill(metaObject, BaseEntity.Fields.updateTime, LocalDateTime.class, now);
     }
 }

@@ -31,36 +31,12 @@ public class BaseEntity implements Serializable {
     private String remark;
 
     /**
-     * 创建人id
-     */
-    @TableField(value = "create_id", fill = FieldFill.INSERT)
-    private Long createId;
-
-    /**
-     * 创建人名称
-     */
-    @TableField(value = "create_name", fill = FieldFill.INSERT)
-    private String createName;
-
-    /**
      * 创建时间
      */
     @DateTimeFormat(pattern = Constant.DATE_TIME)
     @JsonFormat(timezone = Constant.TIME_ZONE, pattern = Constant.DATE_TIME)
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    /**
-     * 更新人id
-     */
-    @TableField(value = "update_id", fill = FieldFill.INSERT_UPDATE)
-    private Long updateId;
-
-    /**
-     * 更新人名称
-     */
-    @TableField(value = "update_name", fill = FieldFill.INSERT_UPDATE)
-    private String updateName;
 
     /**
      * 更新时间
@@ -88,7 +64,7 @@ public class BaseEntity implements Serializable {
     /**
      * 乐观锁
      */
-    //@Version
-    //@TableField("version")
-    // private Integer version;
+    @Version
+    @TableField("version")
+    private Integer version;
 }
