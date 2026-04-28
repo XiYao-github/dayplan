@@ -1,3 +1,75 @@
+create table app_user
+(
+    id          bigint auto_increment primary key,
+    openid      varchar(100)            not null comment '微信openid',
+    name        varchar(100) default '' null comment '昵称',
+    phone       varchar(100) default '' null comment '电话',
+    sex         int          default 0  null comment '性别(0.未知 1.男 2.女)',
+    avatar      varchar(100) default '' null comment '头像',
+    regions     varchar(50)  default '' null comment '地区',
+    login_ip    varchar(128)            null comment '最后登录ip',
+    login_date  datetime                null comment '最后登录时间',
+    status      int          default 1  null comment '状态(0.停用 1.正常)',
+    remark      varchar(500)            null comment '备注',
+    create_time datetime                null comment '创建时间',
+    update_time datetime                null comment '更新时间',
+    delete_time datetime                null comment '删除时间',
+    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
+    version     int          default 0  null comment '乐观锁'
+
+) comment '用户';
+
+create table sys_regions
+(
+    code          bigint                 not null comment '区划代码',
+    parent_code   bigint      default 0  not null comment '父级区划代码',
+    name          varchar(50) default '' not null comment '名称',
+    province_code bigint                 null comment '省/直辖市代码',
+    province_name varchar(50)            null comment '省/直辖市名称',
+    city_code     bigint                 null comment '市代码',
+    city_name     varchar(50)            null comment '市名称',
+    area_code     bigint                 null comment '区/县代码',
+    area_name     varchar(50)            null comment '区/县名称',
+    sort          int                    null comment '排序',
+    level         int                    null comment '级别(1.省/直辖市, 2.市, 3.区/县/地级市)'
+) comment '行政区划';
+
+create table sys_login
+(
+    id         bigint auto_increment primary key,
+    user_id    bigint                  not null comment '用户id',
+    username   varchar(100) default '' not null comment '用户账号',
+    ipaddr     varchar(128) default '' null comment '登录ip',
+    location   varchar(200) default '' null comment '登录地点',
+    browser    varchar(50)  default '' null comment '浏览器类型',
+    os         varchar(50)  default '' null comment '操作系统',
+    status     int          default 1  null comment '状态(0.失败 1.成功)',
+    error_msg  text                    null comment '错误消息',
+    login_time datetime                null comment '访问时间'
+)
+    comment '访问记录';
+
+create table sys_operation
+(
+    id             bigint auto_increment primary key,
+    user_id        bigint                  not null comment '用户id',
+    username       varchar(100) default '' not null comment '用户账号',
+    operation      varchar(100) default '' null comment '操作描述',
+    url            varchar(256) default '' null comment '请求url',
+    ipaddr         varchar(128) default '' null comment '操作ip',
+    location       varchar(200) default '' null comment '操作地点',
+    method_name    varchar(200) default '' null comment '方法名称',
+    req_method     varchar(10)  default '' null comment '请求方式',
+    operation_type int          default 0  null comment '操作类型(0.其它 1.查询 2.新增 3.修改 4.删除)',
+    param          longtext                null comment '请求参数',
+    result         longtext                null comment '返回结果',
+    status         int          default 1  null comment '状态(0.失败 1.成功)',
+    error_msg      text                    null comment '错误消息',
+    operation_time datetime                null comment '操作时间',
+    cost_time      bigint                  null comment '消耗时间(毫秒)'
+)
+    comment '操作记录';
+
 create table sys_config
 (
     id          bigint auto_increment primary key,
@@ -16,7 +88,6 @@ create table sys_dict_data
 (
     id          bigint auto_increment primary key,
     dict_type   varchar(100) default '' null comment '字典类型',
-    dict_code   varchar(100) default '' null comment '字典编码',
     dict_label  varchar(100) default '' null comment '字典标签',
     dict_value  varchar(100) default '' null comment '字典键值',
     status      int          default 1  null comment '状态(0.停用 1.正常)',
@@ -44,42 +115,6 @@ create table sys_dict_type
     version     int          default 0  null comment '乐观锁'
 )
     comment '字典类型';
-
-create table sys_operation_log
-(
-    id             bigint auto_increment primary key,
-    user_id        bigint                  not null comment '用户id',
-    username       varchar(100) default '' not null comment '用户账号',
-    operation      varchar(100) default '' null comment '操作描述',
-    url            varchar(256) default '' null comment '请求url',
-    ipaddr         varchar(128) default '' null comment '操作ip',
-    location       varchar(200) default '' null comment '操作地点',
-    method_name    varchar(200) default '' null comment '方法名称',
-    req_method     varchar(10)  default '' null comment '请求方式',
-    operation_type int          default 0  null comment '操作类型(0.其它 1.查询 2.新增 3.修改 4.删除)',
-    param          longtext                null comment '请求参数',
-    result         longtext                null comment '返回结果',
-    status         int          default 1  null comment '状态(0.失败 1.成功)',
-    error_msg      text                    null comment '错误消息',
-    operation_time datetime                null comment '操作时间',
-    cost_time      bigint                  null comment '消耗时间(毫秒)'
-)
-    comment '操作记录';
-
-create table sys_login
-(
-    id         bigint auto_increment primary key,
-    user_id    bigint                  not null comment '用户id',
-    username   varchar(100) default '' not null comment '用户账号',
-    ipaddr     varchar(128) default '' null comment '登录ip',
-    location   varchar(200) default '' null comment '登录地点',
-    browser    varchar(50)  default '' null comment '浏览器类型',
-    os         varchar(50)  default '' null comment '操作系统',
-    status     int          default 1  null comment '状态(0.失败 1.成功)',
-    error_msg  text                    null comment '错误消息',
-    login_time datetime                null comment '访问时间'
-)
-    comment '访问记录';
 
 create table sys_menu
 (
@@ -118,13 +153,6 @@ create table sys_role
 )
     comment '系统角色';
 
-create table sys_role_menu
-(
-    role_id bigint not null comment '角色id',
-    menu_id bigint not null comment '菜单id'
-)
-    comment '角色关联菜单';
-
 create table sys_user
 (
     id          bigint auto_increment primary key,
@@ -148,6 +176,13 @@ create table sys_user
 )
     comment '系统用户';
 
+create table sys_role_menu
+(
+    role_id bigint not null comment '角色id',
+    menu_id bigint not null comment '菜单id'
+)
+    comment '角色关联菜单';
+
 create table sys_user_role
 (
     user_id bigint not null comment '用户id',
@@ -155,38 +190,3 @@ create table sys_user_role
 )
     comment '用户关联角色';
 
-create table sys_regions
-(
-    code          bigint                 not null primary key comment '区划代码',
-    parent_code   bigint      default 0  not null comment '父级区划代码',
-    name          varchar(50) default '' not null comment '名称',
-    province_code bigint                 null comment '省/直辖市代码',
-    province_name varchar(50)            null comment '省/直辖市名称',
-    city_code     bigint                 null comment '市代码',
-    city_name     varchar(50)            null comment '市名称',
-    area_code     bigint                 null comment '区/县代码',
-    area_name     varchar(50)            null comment '区/县名称',
-    sort          int                    null comment '排序',
-    level         int                    null comment '级别(1.省/直辖市, 2.市, 3.区/县/地级市)'
-) comment '行政区划';
-
-create table app_user
-(
-    id          bigint auto_increment primary key,
-    openid      varchar(100)            not null comment '微信openid',
-    name        varchar(100) default '' null comment '昵称',
-    phone       varchar(100) default '' null comment '电话',
-    sex         int          default 0  null comment '性别(0.未知 1.男 2.女)',
-    avatar      varchar(100) default '' null comment '头像',
-    regions     varchar(50)  default '' null comment '地区',
-    login_ip    varchar(128)            null comment '最后登录ip',
-    login_date  datetime                null comment '最后登录时间',
-    status      int          default 1  null comment '状态(0.停用 1.正常)',
-    remark      varchar(500)            null comment '备注',
-    create_time datetime                null comment '创建时间',
-    update_time datetime                null comment '更新时间',
-    delete_time datetime                null comment '删除时间',
-    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
-    version     int          default 0  null comment '乐观锁'
-
-) comment '用户';

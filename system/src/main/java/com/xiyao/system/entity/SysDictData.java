@@ -35,12 +35,6 @@ public class SysDictData {
     private String dictType;
 
     /**
-     * 字典编码
-     */
-    @TableField("dict_code")
-    private String dictCode;
-
-    /**
      * 字典标签
      */
     @TableField("dict_label")

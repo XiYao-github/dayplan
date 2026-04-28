@@ -60,14 +60,6 @@
         <java.version>17</java.version>                           <!-- 指定 Java 编译器版本为 17 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>   <!-- 源码文件编码 -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding> <!-- 报告输出编码 -->
-
-        <!-- 第三方依赖版本（集中管理，便于升级） -->
-        <hutool.version>5.8.16</hutool.version>                  <!-- Hutool 工具库版本 -->
-        <mybatis-plus.version>3.5.15</mybatis-plus.version>      <!-- MyBatis-Plus 版本 -->
-        <generator.version>3.5.15</generator.version>      <!-- MyBatis-Plus 版本 -->
-        <druid.version>1.2.24</druid.version>                    <!-- 阿里 Druid 连接池版本 -->
-        <fastjson.version>2.0.61</fastjson.version>              <!-- Fastjson2 版本 -->
-        <jwt.version>0.9.1</jwt.version>                         <!-- JJWT（JWT 库）版本 -->
     </properties>
 
     <!--
@@ -77,64 +69,23 @@
     -->
     <dependencyManagement>
         <dependencies>
-            <!-- 本项目的子模块，用于让其他模块引用时无需重复指定版本 -->
             <dependency>
                 <groupId>com.xiyao</groupId>
                 <artifactId>app</artifactId>
-                <version>${project.version}</version>   <!-- version 引用父工程版本号 -->
+                <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.xiyao</groupId>
                 <artifactId>system</artifactId>
                 <version>${project.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.xiyao</groupId>
                 <artifactId>service</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
-            <!-- Hutool：Java 工具类库，提供文件、日期、字符串等常用封装 -->
-            <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
-            </dependency>
-
-            <!-- MyBatis-Plus 启动器，提供增强的 MyBatis 集成与自动配置 -->
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-                <version>${mybatis-plus.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-generator</artifactId>
-                <version>${generator.version}</version>
-            </dependency>
-
-            <!-- 阿里 Druid 连接池 -->
-            <!--<dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>druid-spring-boot-3-starter</artifactId>
-                <version>${druid.version}</version>
-            </dependency>-->
-
-            <!-- 阿里 Fastjson2：高性能 JSON 解析与生成 -->
-            <dependency>
-                <groupId>com.alibaba.fastjson2</groupId>
-                <artifactId>fastjson2</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
-
-            <!-- JJWT：用于生成和解析 JSON Web Token -->
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt</artifactId>
-                <version>${jwt.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -150,42 +101,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Security：提供认证、授权等安全功能 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
         <!-- Lombok：通过注解自动生成 getter/setter、构造器、日志变量等，简化代码 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>   <!-- 该依赖不会传递，且编译后不需要打包 -->
-        </dependency>
-
-        <!-- 参数校验：基于 Jakarta Bean Validation 的校验框架（如 @NotNull、@Valid） -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
-        <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <scope>runtime</scope>   <!-- 运行时需要，但编译时不需要 -->
-        </dependency>
-
-        <!-- Spring Data Redis：提供 Redis 客户端（Lettuce 或 Jedis）和统一操作模板 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <!-- Quartz 定时任务框架：支持基于 Cron 表达式的任务调度 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
 
         <!-- Spring Boot Test：提供单元测试、集成测试支持（JUnit、Mockito 等） -->

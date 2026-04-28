@@ -19,21 +19,60 @@
 
     <dependencies>
 
+        <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>   <!-- 运行时需要，但编译时不需要 -->
+        </dependency>
+
+        <!-- Spring Security：提供认证、授权等安全功能 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Spring Data Redis：提供 Redis 客户端（Lettuce 或 Jedis）和统一操作模板 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- 参数校验：基于 Jakarta Bean Validation 的校验框架（如 @NotNull、@Valid） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- MyBatis-Plus 启动器，提供增强的 MyBatis 集成与自动配置 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.15</version>
         </dependency>
 
+        <!-- MyBatis-Plus 代码生成器：提供代码生成功能 -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.5.15</version>
         </dependency>
 
-        <!--<dependency>
+        <!-- Velocity 模板引擎：用于生成代码中的模板 -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity-engine-core</artifactId>
+            <version>2.3</version>
+        </dependency>
+
+        <!-- Hutool：Java 工具类库，提供文件、日期、字符串等常用封装 -->
+        <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-        </dependency>-->
+            <version>5.8.16</version>
+        </dependency>
 
+        <!-- BCrypt：用于密码加密的 BCrypt 算法实现 -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
@@ -41,17 +80,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity-engine-core</artifactId>
-            <version>2.3</version>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.18.0</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
 </project>

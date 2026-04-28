@@ -13,7 +13,7 @@ import com.xiyao.common.base.BaseController;
  * @since 2026-04-28
  */
 @RestController
-@RequestMapping("/sys-operation-log")
-public class SysOperationLogController extends BaseController {
+@RequestMapping("/sys-operation")
+public class SysOperationController extends BaseController {
 
 }
