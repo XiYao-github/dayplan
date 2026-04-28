@@ -21,9 +21,6 @@ spring:
   # 项目名称
   application:
     name: app
-  banner:
-    charset: utf-8
-    location: classpath:banner.txt
 
   # mysql配置
   datasource:
@@ -50,7 +47,3 @@ mybatis-plus:
     # 关闭mybatis-plus启动图标(banner)
     banner: false
 
-# 打印SQL日志到控制台
-logging:
-  level:
-    travel.mapper: DEBUG

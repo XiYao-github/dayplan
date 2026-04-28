@@ -1,0 +1,16 @@
+package com.xiyao.system.service;
+
+import com.xiyao.system.entity.SysRegions;
+import com.xiyao.common.base.BaseService;
+
+/**
+ * <p>
+ * 行政区划 服务类
+ * </p>
+ *
+ * @author xiyao
+ * @since 2026-04-26
+ */
+public interface SysRegionsService extends BaseService<SysRegions> {
+
+}

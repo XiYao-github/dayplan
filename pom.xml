@@ -49,7 +49,7 @@
     <modules>
         <module>app</module>    <!-- 启动接口模块 -->
         <module>service</module>  <!-- 业务逻辑模块 -->
-        <module>system</module>   <!-- 系统框架模块 -->
+        <module>system</module>  <!-- 系统框架模块 -->
     </modules>
 
     <!--
@@ -68,7 +68,6 @@
         <druid.version>1.2.24</druid.version>                    <!-- 阿里 Druid 连接池版本 -->
         <fastjson.version>2.0.61</fastjson.version>              <!-- Fastjson2 版本 -->
         <jwt.version>0.9.1</jwt.version>                         <!-- JJWT（JWT 库）版本 -->
-        <oshi.version>6.4.11</oshi.version>                      <!-- 系统信息库 OSHI 版本 -->
     </properties>
 
     <!--
@@ -105,7 +104,7 @@
             <!-- MyBatis-Plus 启动器，提供增强的 MyBatis 集成与自动配置 -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
 
@@ -116,11 +115,11 @@
             </dependency>
 
             <!-- 阿里 Druid 连接池 -->
-            <dependency>
+            <!--<dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-3-starter</artifactId>
                 <version>${druid.version}</version>
-            </dependency>
+            </dependency>-->
 
             <!-- 阿里 Fastjson2：高性能 JSON 解析与生成 -->
             <dependency>
@@ -136,12 +135,6 @@
                 <version>${jwt.version}</version>
             </dependency>
 
-            <!-- OSHI：获取操作系统和硬件信息（CPU、内存等） -->
-            <dependency>
-                <groupId>com.github.oshi</groupId>
-                <artifactId>oshi-core</artifactId>
-                <version>${oshi.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -1,9 +1,11 @@
 package com.xiyao.app;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+@MapperScan("com.xiyao.system.mapper")
 public class Application {
 
     public static void main(String[] args) {
