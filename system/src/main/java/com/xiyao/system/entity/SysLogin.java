@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Data
 @TableName("sys_login")
@@ -65,7 +65,7 @@ public class SysLogin {
      * 状态(0.失败 1.成功)
      */
     @TableField("status")
-    private Byte status;
+    private Integer status;
 
     /**
      * 错误消息

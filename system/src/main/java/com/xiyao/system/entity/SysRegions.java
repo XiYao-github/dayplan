@@ -3,7 +3,6 @@ package com.xiyao.system.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Data
 @Accessors(chain = true)
@@ -87,11 +86,4 @@ public class SysRegions {
      */
     @TableField("level")
     private Integer level;
-
-    /**
-     * 删除标志(0.未删除 1.已删除)
-     */
-    @TableLogic
-    @TableField("del_flag")
-    private Byte delFlag;
 }

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Mapper
 public interface SysLoginMapper extends BaseMapper<SysLogin> {

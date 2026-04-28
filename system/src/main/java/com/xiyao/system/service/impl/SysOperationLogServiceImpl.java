@@ -1,8 +1,8 @@
-package com.xiyao.service.service.impl;
+package com.xiyao.system.service.impl;
 
-import com.xiyao.service.entity.SysOperationLog;
-import com.xiyao.service.mapper.SysOperationLogMapper;
-import com.xiyao.service.service.SysOperationLogService;
+import com.xiyao.system.entity.SysOperationLog;
+import com.xiyao.system.mapper.SysOperationLogMapper;
+import com.xiyao.system.service.SysOperationLogService;
 import com.xiyao.common.base.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 

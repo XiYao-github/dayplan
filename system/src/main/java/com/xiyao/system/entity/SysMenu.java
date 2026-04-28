@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Data
 @TableName("sys_menu")
@@ -49,7 +50,7 @@ public class SysMenu {
      * 菜单类型(0.目录 1.菜单 2.按钮)
      */
     @TableField("type")
-    private Byte type;
+    private Integer type;
 
     /**
      * 菜单路径
@@ -85,7 +86,7 @@ public class SysMenu {
      * 状态(0.停用 1.正常)
      */
     @TableField("status")
-    private Byte status;
+    private Integer status;
 
     /**
      * 备注
@@ -112,9 +113,16 @@ public class SysMenu {
     private LocalDateTime deleteTime;
 
     /**
-     * 删除标志(0.未删除 1.已删除)
+     * 逻辑删除(0.未删除 1.已删除)
      */
     @TableLogic
-    @TableField("del_flag")
-    private Byte delFlag;
+    @TableField("deleted")
+    private Integer deleted;
+
+    /**
+     * 乐观锁
+     */
+    @Version
+    @TableField("version")
+    private Integer version;
 }

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Data
 @Accessors(chain = true)
@@ -25,7 +26,7 @@ import java.time.LocalDateTime;
 public class SysConfig {
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 参数名
@@ -43,7 +44,7 @@ public class SysConfig {
      * 状态(0.停用 1.正常)
      */
     @TableField("status")
-    private Byte status;
+    private Integer status;
 
     /**
      * 备注
@@ -70,9 +71,16 @@ public class SysConfig {
     private LocalDateTime deleteTime;
 
     /**
-     * 删除标志(0.未删除 1.已删除)
+     * 逻辑删除(0.未删除 1.已删除)
      */
     @TableLogic
-    @TableField("del_flag")
-    private Byte delFlag;
+    @TableField("deleted")
+    private Integer deleted;
+
+    /**
+     * 乐观锁
+     */
+    @Version
+    @TableField("version")
+    private Integer version;
 }

@@ -1,6 +1,6 @@
 package com.xiyao.system.service;
 
-import com.xiyao.system.entity.SysOperLog;
+import com.xiyao.system.entity.SysOperationLog;
 import com.xiyao.common.base.BaseService;
 
 /**
@@ -9,8 +9,8 @@ import com.xiyao.common.base.BaseService;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
-public interface SysOperLogService extends BaseService<SysOperLog> {
+public interface SysOperationLogService extends BaseService<SysOperationLog> {
 
 }

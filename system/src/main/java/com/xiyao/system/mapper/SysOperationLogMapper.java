@@ -1,7 +1,7 @@
 package com.xiyao.system.mapper;
 
 import com.xiyao.common.base.BaseMapper;
-import com.xiyao.system.entity.SysOperLog;
+import com.xiyao.system.entity.SysOperationLog;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 @Mapper
-public interface SysOperLogMapper extends BaseMapper<SysOperLog> {
+public interface SysOperationLogMapper extends BaseMapper<SysOperationLog> {
 
 }

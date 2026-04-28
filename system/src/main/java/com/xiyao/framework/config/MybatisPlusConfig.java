@@ -1,9 +1,7 @@
 package com.xiyao.framework.config;
 
-import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
-import com.xiyao.framework.interceptor.DecryptInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,11 +10,17 @@ public class MybatisPlusConfig {
 
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
-        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-
-        // 把你的自定义拦截器包装成 InnerInterceptor 添加进去
-        // interceptor.addInnerInterceptor(new DecryptInterceptor());
-
-        return interceptor;
+        // 创建MybatisPlusInterceptor拦截器对象
+        MybatisPlusInterceptor mybatisPlusInterceptor = new MybatisPlusInterceptor();
+        // 添加分页拦截器
+        // mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        // 添加乐观锁拦截器
+        mybatisPlusInterceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        // SQL性能规范,验证索引
+        // mybatisPlusInterceptor.addInnerInterceptor(new IllegalSQLInnerInterceptor());
+        // 防止全表更新与删除
+        // mybatisPlusInterceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        // 返回拦截器对象
+        return mybatisPlusInterceptor;
     }
 }

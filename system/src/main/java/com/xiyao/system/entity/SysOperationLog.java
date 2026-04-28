@@ -1,4 +1,4 @@
-package com.xiyao.service.entity;
+package com.xiyao.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -11,16 +11,16 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 访问记录
+ * 操作记录
  * </p>
  *
  * @author xiyao
  * @since 2026-04-28
  */
 @Data
-@TableName("sys_login")
 @Accessors(chain = true)
-public class SysLogin {
+@TableName("sys_operation_log")
+public class SysOperationLog {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -38,28 +38,58 @@ public class SysLogin {
     private String username;
 
     /**
-     * 登录ip
+     * 操作描述
+     */
+    @TableField("operation")
+    private String operation;
+
+    /**
+     * 请求url
+     */
+    @TableField("url")
+    private String url;
+
+    /**
+     * 操作ip
      */
     @TableField("ipaddr")
     private String ipaddr;
 
     /**
-     * 登录地点
+     * 操作地点
      */
     @TableField("location")
     private String location;
 
     /**
-     * 浏览器类型
+     * 方法名称
      */
-    @TableField("browser")
-    private String browser;
+    @TableField("method_name")
+    private String methodName;
 
     /**
-     * 操作系统
+     * 请求方式
      */
-    @TableField("os")
-    private String os;
+    @TableField("req_method")
+    private String reqMethod;
+
+    /**
+     * 操作类型(0.其它 1.查询 2.新增 3.修改 4.删除)
+     */
+    @TableField("operation_type")
+    private Integer operationType;
+
+    /**
+     * 请求参数
+     */
+    @TableField("param")
+    private String param;
+
+    /**
+     * 返回结果
+     */
+    @TableField("result")
+    private String result;
 
     /**
      * 状态(0.失败 1.成功)
@@ -74,8 +104,14 @@ public class SysLogin {
     private String errorMsg;
 
     /**
-     * 访问时间
+     * 操作时间
      */
-    @TableField("login_time")
-    private LocalDateTime loginTime;
+    @TableField("operation_time")
+    private LocalDateTime operationTime;
+
+    /**
+     * 消耗时间(毫秒)
+     */
+    @TableField("cost_time")
+    private Long costTime;
 }

@@ -9,7 +9,7 @@ import com.xiyao.common.base.BaseService;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-26
+ * @since 2026-04-28
  */
 public interface SysDictDataService extends BaseService<SysDictData> {
 

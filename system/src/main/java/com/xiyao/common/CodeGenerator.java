@@ -27,7 +27,7 @@ public class CodeGenerator {
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
     private final static String PROJECT_PATH = System.getProperty("user.dir");
     public static final String FILE_PATH = "/system/src/main/java";
-    public static final String PACKAGE = "com.xiyao.service";
+    public static final String PACKAGE = "com.xiyao.system";
 
     public static void main(String[] args) {
         generator();

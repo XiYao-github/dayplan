@@ -1,7 +1,6 @@
 package com.xiyao.app;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.entity.AppUser;
 import com.xiyao.system.mapper.AppUserMapper;
 import org.junit.jupiter.api.Test;
@@ -23,12 +22,12 @@ class AdminApplicationTests {
         user.setOpenid("wx_openid_123456");
         user.setName("张三");
         user.setPhone("13812345678");
-        user.setSex((byte) 1);  // 1-男
+        user.setSex(1);  // 1-男
         user.setAvatar("https://example.com/avatar.jpg");
         user.setRegions("广东省深圳市");
         user.setLoginIp("192.168.1.100");
         user.setLoginDate(LocalDateTime.now());
-        user.setStatus((byte) 1);  // 1-正常
+        user.setStatus(1);  // 1-正常
         user.setRemark("测试用户");
 
         int rows = appUserMapper.insert(user);
