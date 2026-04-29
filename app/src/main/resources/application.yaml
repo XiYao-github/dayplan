@@ -22,11 +22,6 @@ spring:
   application:
     name: app
 
-  security:
-    user:
-      name: user
-      password: password
-
   # mysql配置
   datasource:
     url: jdbc:mysql://115.159.42.54:3306/dayplan?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&cachePrepStmts=true&rewriteBatchedStatements=true

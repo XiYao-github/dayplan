@@ -1,4 +1,4 @@
-package com.xiyao.app.admin.controller;
+package com.xiyao.admin.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

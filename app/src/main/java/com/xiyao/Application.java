@@ -1,11 +1,11 @@
-package com.xiyao.app;
+package com.xiyao;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.xiyao.system.mapper")
+@MapperScan("com.xiyao.**.mapper")
 public class Application {
 
     public static void main(String[] args) {

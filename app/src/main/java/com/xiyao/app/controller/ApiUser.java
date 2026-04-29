@@ -1,8 +1,7 @@
-package com.xiyao.app.admin.controller;
+package com.xiyao.app.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.xiyao.common.base.BaseController;
 
 /**
  * <p>
@@ -10,10 +9,10 @@ import com.xiyao.common.base.BaseController;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-28
+ * @since 2026-04-26
  */
 @RestController
-@RequestMapping("/app-user")
-public class AppUserController extends BaseController {
+@RequestMapping("/app")
+public class ApiUser {
 
 }
