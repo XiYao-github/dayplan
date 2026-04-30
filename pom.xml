@@ -90,33 +90,6 @@
     </dependencyManagement>
 
     <!--
-        dependencies：所有模块都会继承的通用依赖。
-        此处定义的依赖会自动传递给所有子模块（无需子模块再声明）。
-        注意：不需要指定版本，版本由父项目中的 dependencyManagement 或 Spring Boot Parent 统一管理。
-    -->
-    <dependencies>
-        <!-- Spring Boot Web Starter：包含 Spring MVC、嵌入式 Tomcat、RESTful 支持等 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Lombok：通过注解自动生成 getter/setter、构造器、日志变量等，简化代码 -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>   <!-- 该依赖不会传递，且编译后不需要打包 -->
-        </dependency>
-
-        <!-- Spring Boot Test：提供单元测试、集成测试支持（JUnit、Mockito 等） -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>   <!-- 仅在测试阶段有效，不会打包到最终产物 -->
-        </dependency>
-    </dependencies>
-
-    <!--
         repositories：配置 Maven 项目的远程仓库列表（用于下载依赖）。
         这里配置阿里云公共镜像仓库，加速依赖下载。
     -->

@@ -47,3 +47,11 @@ mybatis-plus:
     # 关闭mybatis-plus启动图标(banner)
     banner: false
 
+# 数据加解密配置
+mybatis-encryptor:
+  enable: true              # 是否开启功能
+  algorithm: SM4            # 默认算法: BASE64, AES, SM4
+  encode: BASE64            # 编码方式: BASE64, HEX
+  password: your-secret-key-here-16     # 对称加密(AES/SM4)的秘钥，16/24/32位
+  # publicKey: 你的公钥      # 非对称加密(SM2)时使用
+  # privateKey: 你的私钥     # 非对称加密(SM2)时使用

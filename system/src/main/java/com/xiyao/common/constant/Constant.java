@@ -16,4 +16,50 @@ public interface Constant {
     String DATE = "yyyy-MM-dd";
     String TIME_ZONE = "GMT+8";
 
+
+
+    /**
+     * UTF-8 字符集
+     */
+    String UTF8 = "UTF-8";
+
+    /**
+     * GBK 字符集
+     */
+    String GBK = "GBK";
+
+    /**
+     * www主域
+     */
+    String WWW = "www.";
+
+    /**
+     * http请求
+     */
+    String HTTP = "http://";
+
+    /**
+     * https请求
+     */
+    String HTTPS = "https://";
+
+    /**
+     * 登录成功
+     */
+    String LOGIN = "login";
+
+    /**
+     * 注销
+     */
+    String LOGOUT = "logout";
+
+    /**
+     * 注册
+     */
+    String REGISTER = "register";
+
+    /**
+     * 加密头
+     */
+    String ENCRYPT_HEADER = "ENC_";
 }
