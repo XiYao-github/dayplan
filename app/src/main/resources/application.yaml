@@ -35,23 +35,40 @@ spring:
       password: pR2mK9sV4tX6bQ8z
 
 mybatis-plus:
-  # 配置xml文件位置：classpath -> target/classes
+  # 配置文件的位置
+  # config-location: classpath:/mybatis-config.xml
+  # Mapper 对应的 XML 文件位置
   mapper-locations: classpath:/mapper/**/*.xml
   configuration:
-    # 开启驼峰命名转换
+    # 开启自动驼峰命名
     map-underscore-to-camel-case: true
     # 打印SQL日志到控制台
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    call-setters-on-nulls: true
   global-config:
-    # 关闭mybatis-plus启动图标(banner)
+    # 关闭启动图标
     banner: false
 
 # 数据加解密配置
-mybatis-encryptor:
+encryptor-data:
   enable: true              # 是否开启功能
-  algorithm: SM4            # 默认算法: BASE64, AES, SM4
-  encode: BASE64            # 编码方式: BASE64, HEX
-  password: your-secret-key-here-16     # 对称加密(AES/SM4)的秘钥，16/24/32位
+  algorithm: SM4            # 默认算法: BASE64, SM4
+  encode: BASE64            # 编码方式: BASE64
+  password: your-secret-key-here-16     # 对称加密(SM4)的秘钥，16/24/32位
   # publicKey: 你的公钥      # 非对称加密(SM2)时使用
   # privateKey: 你的私钥     # 非对称加密(SM2)时使用
+
+# 接口加解密配置
+encryptor-api:
+  enabled: true              # 是否开启功能
+  headerFlag: encrypt-key # 加密头标识
+  # 响应加密公钥 非对称算法的公私钥 如：SM2 使用者请自行更换
+  # 对应前端解密私钥 MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAmc3CuPiGL/LcIIm7zryCEIbl1SPzBkr75E2VMtxegyZ1lYRD+7TZGAPkvIsBcaMs6Nsy0L78n2qh+lIZMpLH8wIDAQABAkEAk82Mhz0tlv6IVCyIcw/s3f0E+WLmtPFyR9/WtV3Y5aaejUkU60JpX4m5xNR2VaqOLTZAYjW8Wy0aXr3zYIhhQQIhAMfqR9oFdYw1J9SsNc+CrhugAvKTi0+BF6VoL6psWhvbAiEAxPPNTmrkmrXwdm/pQQu3UOQmc2vCZ5tiKpW10CgJi8kCIFGkL6utxw93Ncj4exE/gPLvKcT+1Emnoox+O9kRXss5AiAMtYLJDaLEzPrAWcZeeSgSIzbL+ecokmFKSDDcRske6QIgSMkHedwND1olF8vlKsJUGK3BcdtM8w4Xq7BpSBwsloE=
+  publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJnNwrj4hi/y3CCJu868ghCG5dUj8wZK++RNlTLcXoMmdZWEQ/u02RgD5LyLAXGjLOjbMtC+/J9qofpSGTKSx/MCAwEAAQ==
+  # 请求解密私钥 非对称算法的公私钥 如：SM2 使用者请自行更换
+  # 对应前端加密公钥 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoR8mX0rGKLqzcWmOzbfj64K8ZIgOdHnzkXSOVOZbFu/TJhZ7rFAN+eaGkl3C4buccQd/EjEsj9ir7ijT7h96MCAwEAAQ==
+  privateKey: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqhHyZfSsYourNxaY7Nt+PrgrxkiA50efORdI5U5lsW79MmFnusUA355oaSXcLhu5xxB38SMSyP2KvuKNPuH3owIDAQABAkAfoiLyL+Z4lf4Myxk6xUDgLaWGximj20CUf+5BKKnlrK+Ed8gAkM0HqoTt2UZwA5E2MzS4EI2gjfQhz5X28uqxAiEA3wNFxfrCZlSZHb0gn2zDpWowcSxQAgiCstxGUoOqlW8CIQDDOerGKH5OmCJ4Z21v+F25WaHYPxCFMvwxpcw99EcvDQIgIdhDTIqD2jfYjPTY8Jj3EDGPbH2HHuffvflECt3Ek60CIQCFRlCkHpi7hthhYhovyloRYsM+IS9h/0BzlEAuO0ktMQIgSPT3aFAgJYwKpqRYKlLDVcflZFCKY7u3UP8iWi1Qw0Y=
+  include-paths:                    # 可选：Filter 拦截的 URL 模式（默认 "/*"）
+    - /api/**
+  exclude-paths:                    # 可选：排除路径（支持 Ant 风格）
+    - /api/public/**
+    - /health

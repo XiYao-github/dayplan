@@ -1,6 +1,5 @@
 package com.xiyao.encrypt.core.encryptor;
 
-
 import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.enums.AlgorithmType;
 import com.xiyao.encrypt.utils.EncryptUtils;
@@ -10,6 +9,11 @@ import com.xiyao.encrypt.utils.EncryptUtils;
  */
 public class Base64Encryptor extends AbstractEncryptor {
 
+    /**
+     * 构造方法
+     *
+     * @param context 加解密配置参数
+     */
     public Base64Encryptor(EncryptContext context) {
         super(context);
     }

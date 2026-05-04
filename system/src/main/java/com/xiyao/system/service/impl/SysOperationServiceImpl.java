@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysOperation;
 import com.xiyao.system.mapper.SysOperationMapper;
 import com.xiyao.system.service.SysOperationService;
-import com.xiyao.common.base.BaseServiceImpl;
+import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-04-28
  */
 @Service
-public class SysOperationServiceImpl extends BaseServiceImpl<SysOperationMapper, SysOperation> implements SysOperationService {
+public class SysOperationServiceImpl extends MyBaseServiceImpl<SysOperationMapper, SysOperation> implements SysOperationService {
 
 }

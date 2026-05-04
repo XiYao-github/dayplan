@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.common.base.BaseMapper;
+import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,7 +15,7 @@ import org.apache.ibatis.annotations.Select;
  * @since 2026-04-28
  */
 @Mapper
-public interface SysUserMapper extends BaseMapper<SysUser> {
+public interface SysUserMapper extends MyBaseMapper<SysUser> {
 
     /**
      * 根据用户名查询用户信息

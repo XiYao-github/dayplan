@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.common.base.BaseMapper;
+import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysOperation;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2026-04-28
  */
 @Mapper
-public interface SysOperationMapper extends BaseMapper<SysOperation> {
+public interface SysOperationMapper extends MyBaseMapper<SysOperation> {
 
 }

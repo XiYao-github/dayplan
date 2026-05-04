@@ -5,7 +5,7 @@ import com.xiyao.encrypt.enums.EncodeType;
 import lombok.Data;
 
 /**
- * 加密上下文
+ * 加解密配置参数
  */
 @Data
 public class EncryptContext {

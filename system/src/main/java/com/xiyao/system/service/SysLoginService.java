@@ -1,7 +1,7 @@
 package com.xiyao.system.service;
 
 import com.xiyao.system.entity.SysLogin;
-import com.xiyao.common.base.BaseService;
+import com.xiyao.mybatisplus.base.service.MyBaseService;
 
 /**
  * <p>
@@ -11,6 +11,6 @@ import com.xiyao.common.base.BaseService;
  * @author xiyao
  * @since 2026-04-28
  */
-public interface SysLoginService extends BaseService<SysLogin> {
+public interface SysLoginService extends MyBaseService<SysLogin> {
 
 }

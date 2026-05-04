@@ -4,25 +4,16 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.xiyao.common.constant.Constant;
 import com.xiyao.encrypt.annotation.EncryptField;
+import com.xiyao.encrypt.core.encryptor.AbstractEncryptor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.io.Resources;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.ClassMetadata;
-import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
-import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * 加密管理类
@@ -32,9 +23,9 @@ import java.util.stream.Collectors;
 public class EncryptorManager {
 
     /**
-     * 缓存加密器
+     * 缓存加密器实例
      */
-    Map<Integer, IEncryptor> encryptorMap = new ConcurrentHashMap<>();
+    Map<String, IEncryptor> encryptorMap = new ConcurrentHashMap<>();
 
     /**
      * 类加密字段缓存
@@ -42,32 +33,22 @@ public class EncryptorManager {
     Map<Class<?>, Set<Field>> fieldCache = new ConcurrentHashMap<>();
 
     /**
-     * 构造方法传入类加密字段缓存
-     * 扫描 mybatisPlus 管理的实体类，找出所有 @EncryptField 注解的字段，存入缓存
-     *
-     * @param typeAliasesPackage 实体类包
-     */
-    public EncryptorManager(String typeAliasesPackage) {
-        scanEncryptClasses(typeAliasesPackage);
-    }
-
-    /**
      * 根据配置进行加密
      *
      * @param value          待加密的值
-     * @param encryptContext 加密相关的配置信息
+     * @param encryptContext 加解密配置参数
      */
     public String encrypt(String value, EncryptContext encryptContext) {
-        // 检查是否已经加密过（避免重复加密）
-        if (StringUtils.startsWith(value, Constant.ENCRYPT_HEADER)) {
-            // 已经是加密数据，直接返回
+        // 检查是否携带加密头标识
+        if (value.startsWith(Constant.ENCRYPT_HEADER)) {
+            // 存在加密头标识，说明是密文，直接返回
             return value;
         }
-        // 获取或创建加密器
-        IEncryptor encryptor = this.registerAndGetEncryptor(encryptContext);
+        // 获取加密器
+        IEncryptor encryptor = this.registerEncryptor(encryptContext);
         // 执行加密
         String encrypt = encryptor.encrypt(value);
-        // 添加加密头标识，用于解密时识别
+        // 添加加密头标识
         return Constant.ENCRYPT_HEADER + encrypt;
     }
 
@@ -75,18 +56,18 @@ public class EncryptorManager {
      * 根据配置进行解密
      *
      * @param value          待解密的值
-     * @param encryptContext 加密相关的配置信息
+     * @param encryptContext 加解密配置参数
      */
     public String decrypt(String value, EncryptContext encryptContext) {
-        // 检查是否带有加密头标识
-        if (!StringUtils.startsWith(value, Constant.ENCRYPT_HEADER)) {
-            // 没有加密头，说明是明文，直接返回
+        // 检查是否携带加密头标识
+        if (!value.startsWith(Constant.ENCRYPT_HEADER)) {
+            // 没有加密头标识，说明是明文，直接返回
             return value;
         }
         // 获取加密器
-        IEncryptor encryptor = this.registerAndGetEncryptor(encryptContext);
-        // 去掉加密头
-        String str = StringUtils.removeStart(value, Constant.ENCRYPT_HEADER);
+        IEncryptor encryptor = this.registerEncryptor(encryptContext);
+        // 删除加密头标识
+        String str = value.substring(Constant.ENCRYPT_HEADER.length());
         // 执行解密
         return encryptor.decrypt(str);
     }
@@ -94,85 +75,63 @@ public class EncryptorManager {
     /**
      * 注册加密执行者到缓存
      *
-     * @param encryptContext 加密执行者需要的相关配置参数
+     * @param encryptContext 加解密配置参数
      */
-    public IEncryptor registerAndGetEncryptor(EncryptContext encryptContext) {
-        // 根据算法 + 密钥生成唯一 key
-        int key = encryptContext.hashCode();
+    public IEncryptor registerEncryptor(EncryptContext encryptContext) {
+        // 使用算法名称作为 key
+        String key = encryptContext.getAlgorithm().name();
         if (encryptorMap.containsKey(key)) {
             // 命中缓存，直接返回
             return encryptorMap.get(key);
         }
         // 未命中，通过反射创建新实例
-        IEncryptor encryptor = ReflectUtil.newInstance(encryptContext.getAlgorithm().getClazz(), encryptContext);
+        Class<? extends AbstractEncryptor> clazz = encryptContext.getAlgorithm().getClazz();
+        IEncryptor encryptor = ReflectUtil.newInstance(clazz, encryptContext);
         encryptorMap.put(key, encryptor);
         return encryptor;
     }
 
     /**
      * 获取类加密字段缓存
-     */
-    public Set<Field> getFieldCache(Class<?> sourceClazz) {
-        // return ObjectUtils.notNullGetter(fieldCache, f -> {
-        //     return f.get(sourceClazz);
-        // })
-    return fieldCache.get(sourceClazz);
-    }
-
-    /**
-     * 移除缓存中的加密执行者
      *
-     * @param encryptContext 加密执行者需要的相关配置参数
+     * @param clazz 加密类
      */
-    public void removeEncryptor(EncryptContext encryptContext) {
-        this.encryptorMap.remove(encryptContext.hashCode());
-    }
-
-    /**
-     * 通过 typeAliasesPackage 设置的扫描包 扫描缓存实体
-     */
-    private void scanEncryptClasses(String typeAliasesPackage) {
-        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        CachingMetadataReaderFactory factory = new CachingMetadataReaderFactory();
-        String[] packagePatternArray = StringUtils.splitPreserveAllTokens(typeAliasesPackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
-        String classpath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX;
-        try {
-            for (String packagePattern : packagePatternArray) {
-                String path = ClassUtils.convertClassNameToResourcePath(packagePattern);
-                Resource[] resources = resolver.getResources(classpath + path + "/*.class");
-                for (Resource resource : resources) {
-                    ClassMetadata classMetadata = factory.getMetadataReader(resource).getClassMetadata();
-                    Class<?> clazz = Resources.classForName(classMetadata.getClassName());
-                    Set<Field> encryptFieldSet = getEncryptFieldSetFromClazz(clazz);
-                    if (CollUtil.isNotEmpty(encryptFieldSet)) {
-                        fieldCache.put(clazz, encryptFieldSet);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("初始化数据安全缓存时出错:{}", e.getMessage());
+    public Set<Field> getFieldCache(Class<?> clazz) {
+        if (fieldCache.containsKey(clazz)) {
+            // 命中缓存，直接返回
+            Set<Field> fieldSet = fieldCache.get(clazz);
+            return Collections.unmodifiableSet(fieldSet);
         }
+        // 未命中，通过反射创建新实例
+        Set<Field> fieldSet = getEncryptField(clazz);
+        if (CollUtil.isNotEmpty(fieldSet)) {
+            fieldCache.put(clazz, fieldSet);
+        }
+        return Collections.unmodifiableSet(fieldSet);
     }
 
     /**
-     * 获得一个类的加密字段集合
+     * 获得加密类的加密字段集合
+     *
+     * @param clazz 加密类
      */
-    private Set<Field> getEncryptFieldSetFromClazz(Class<?> clazz) {
+    private Set<Field> getEncryptField(Class<?> clazz) {
         Set<Field> fieldSet = new HashSet<>();
-        // 判断clazz如果是接口,内部类,匿名类就直接返回
-        if (clazz.isInterface() || clazz.isMemberClass() || clazz.isAnonymousClass()) {
+        // 接口，匿名类，直接返回
+        if (clazz.isInterface() || clazz.isAnonymousClass()) {
             return fieldSet;
         }
-        while (clazz != null) {
-            Field[] fields = clazz.getDeclaredFields();
-            fieldSet.addAll(Arrays.asList(fields));
-            clazz = clazz.getSuperclass();
-        }
-        fieldSet = fieldSet.stream().filter(field ->
-                        field.isAnnotationPresent(EncryptField.class) && field.getType() == String.class)
-                .collect(Collectors.toSet());
-        for (Field field : fieldSet) {
-            field.setAccessible(true);
+        Class<?> current = clazz;
+        while (current != null) {
+            for (Field field : current.getDeclaredFields()) {
+                // 存在加密注解，字段类型必须是 String
+                if (field.isAnnotationPresent(EncryptField.class) && field.getType() == String.class) {
+                    field.setAccessible(true);
+                    fieldSet.add(field);
+                }
+            }
+            // 加载父类字段
+            current = current.getSuperclass();
         }
         return fieldSet;
     }

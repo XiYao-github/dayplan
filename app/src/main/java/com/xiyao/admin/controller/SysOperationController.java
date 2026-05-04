@@ -2,7 +2,7 @@ package com.xiyao.admin.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.xiyao.common.base.BaseController;
+import com.xiyao.framework.base.BaseController;
 
 /**
  * <p>

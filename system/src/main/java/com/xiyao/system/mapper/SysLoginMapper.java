@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.common.base.BaseMapper;
+import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysLogin;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2026-04-28
  */
 @Mapper
-public interface SysLoginMapper extends BaseMapper<SysLogin> {
+public interface SysLoginMapper extends MyBaseMapper<SysLogin> {
 
 }

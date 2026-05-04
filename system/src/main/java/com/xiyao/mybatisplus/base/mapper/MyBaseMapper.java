@@ -1,0 +1,7 @@
+package com.xiyao.mybatisplus.base.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+public interface MyBaseMapper<T> extends BaseMapper<T> {
+
+}

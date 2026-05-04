@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.common.base.BaseMapper;
+import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,7 +17,7 @@ import java.util.Set;
  * @since 2026-04-28
  */
 @Mapper
-public interface SysMenuMapper extends BaseMapper<SysMenu> {
+public interface SysMenuMapper extends MyBaseMapper<SysMenu> {
 
 
     /**

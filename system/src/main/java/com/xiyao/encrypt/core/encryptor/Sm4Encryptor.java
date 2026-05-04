@@ -1,9 +1,8 @@
 package com.xiyao.encrypt.core.encryptor;
 
-
+import cn.hutool.core.util.StrUtil;
 import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.enums.AlgorithmType;
-import com.xiyao.encrypt.enums.EncodeType;
 import com.xiyao.encrypt.utils.EncryptUtils;
 
 /**
@@ -13,8 +12,17 @@ public class Sm4Encryptor extends AbstractEncryptor {
 
     private final EncryptContext context;
 
+    /**
+     * 构造方法
+     *
+     * @param context 加解密配置参数
+     */
     public Sm4Encryptor(EncryptContext context) {
         super(context);
+        String password = context.getPassword();
+        if (StrUtil.isBlank(password)) {
+            throw new IllegalArgumentException("SM4需要提供安全秘钥。");
+        }
         this.context = context;
     }
 

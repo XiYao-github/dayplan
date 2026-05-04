@@ -1,7 +1,7 @@
 package com.xiyao.system.service;
 
 import com.xiyao.system.entity.SysOperation;
-import com.xiyao.common.base.BaseService;
+import com.xiyao.mybatisplus.base.service.MyBaseService;
 
 /**
  * <p>
@@ -11,6 +11,6 @@ import com.xiyao.common.base.BaseService;
  * @author xiyao
  * @since 2026-04-28
  */
-public interface SysOperationService extends BaseService<SysOperation> {
+public interface SysOperationService extends MyBaseService<SysOperation> {
 
 }

@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysRoleMenu;
 import com.xiyao.system.mapper.SysRoleMenuMapper;
 import com.xiyao.system.service.SysRoleMenuService;
-import com.xiyao.common.base.BaseServiceImpl;
+import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-04-28
  */
 @Service
-public class SysRoleMenuServiceImpl extends BaseServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
+public class SysRoleMenuServiceImpl extends MyBaseServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
 
 }

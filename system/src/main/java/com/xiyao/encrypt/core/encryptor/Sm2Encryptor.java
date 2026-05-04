@@ -1,10 +1,9 @@
 package com.xiyao.encrypt.core.encryptor;
 
-
+import cn.hutool.core.util.StrUtil;
 import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.enums.AlgorithmType;
 import com.xiyao.encrypt.utils.EncryptUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * sm2算法实现
@@ -13,11 +12,16 @@ public class Sm2Encryptor extends AbstractEncryptor {
 
     private final EncryptContext context;
 
+    /**
+     * 构造方法
+     *
+     * @param context 加解密配置参数
+     */
     public Sm2Encryptor(EncryptContext context) {
         super(context);
-        String privateKey = context.getPrivateKey();
         String publicKey = context.getPublicKey();
-        if (StringUtils.isAnyEmpty(privateKey, publicKey)) {
+        String privateKey = context.getPrivateKey();
+        if (StrUtil.isBlank(publicKey) || StrUtil.isBlank(privateKey)) {
             throw new IllegalArgumentException("SM2公私钥均需要提供，公钥加密，私钥解密。");
         }
         this.context = context;

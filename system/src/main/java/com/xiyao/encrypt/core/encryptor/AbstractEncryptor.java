@@ -2,14 +2,17 @@ package com.xiyao.encrypt.core.encryptor;
 
 import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.core.IEncryptor;
+import lombok.AllArgsConstructor;
 
 /**
- * 所有加密执行者的基类
+ * 加密执行者基类
  */
+@AllArgsConstructor
 public abstract class AbstractEncryptor implements IEncryptor {
 
-    public AbstractEncryptor(EncryptContext context) {
-        // 用户配置校验与配置注入
-    }
+    /**
+     * 加解密配置参数
+     */
+    private final EncryptContext context;
 
 }

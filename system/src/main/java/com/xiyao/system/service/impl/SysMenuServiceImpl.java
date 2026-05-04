@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysMenu;
 import com.xiyao.system.mapper.SysMenuMapper;
 import com.xiyao.system.service.SysMenuService;
-import com.xiyao.common.base.BaseServiceImpl;
+import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-04-28
  */
 @Service
-public class SysMenuServiceImpl extends BaseServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
+public class SysMenuServiceImpl extends MyBaseServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
 
 }

@@ -1,117 +1,105 @@
 package com.xiyao.encrypt.interceptor;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
-import com.xiyao.common.utils.EmptyUtils;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.xiyao.encrypt.annotation.EncryptField;
 import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.core.EncryptorManager;
 import com.xiyao.encrypt.enums.AlgorithmType;
 import com.xiyao.encrypt.enums.EncodeType;
-import com.xiyao.encrypt.properties.EncryptorProperties;
+import com.xiyao.encrypt.properties.EncryptorData;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.plugin.*;
 
 import java.lang.reflect.Field;
 import java.sql.Statement;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * 出参解密拦截器
  */
 @Slf4j
 @Intercepts({@Signature(
-    type = ResultSetHandler.class,
-    method = "handleResultSets",
-    args = {Statement.class})
+        type = ResultSetHandler.class,
+        method = "handleResultSets",
+        args = {Statement.class})
 })
 @AllArgsConstructor
 public class DecryptInterceptor implements Interceptor {
 
     private final EncryptorManager encryptorManager;
-    private final EncryptorProperties defaultProperties;
+    private final EncryptorData properties;
 
+    /**
+     * 拦截器方法
+     */
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        // 开始进行参数解密
-        ResultSetHandler resultSetHandler = (ResultSetHandler) invocation.getTarget();
-        Field parameterHandlerField = resultSetHandler.getClass().getDeclaredField("parameterHandler");
-        parameterHandlerField.setAccessible(true);
-        Object target = parameterHandlerField.get(resultSetHandler);
-        if (target instanceof ParameterHandler parameterHandler) {
-            Object parameterObject = parameterHandler.getParameterObject();
-            if (EmptyUtils.isNotEmpty(parameterObject) && !(parameterObject instanceof String)) {
-                this.decryptHandler(parameterObject);
-            }
-        }
-        // 获取执行mysql执行结果
+        // 获得查询结果
         Object result = invocation.proceed();
-        if (result == null) {
-            return null;
-        }
         this.decryptHandler(result);
+        // 解密处理（核心功能）
         return result;
     }
 
     /**
-     * 解密对象
-     *
-     * @param sourceObject 待加密对象
+     * 递归解密对象
      */
-    private void decryptHandler(Object sourceObject) {
-        if (EmptyUtils.isEmpty(sourceObject)) {
+    private void decryptHandler(Object result) {
+        if (ObjectUtil.isEmpty(result)) {
             return;
         }
-        if (sourceObject instanceof Map<?, ?> map) {
-            new HashSet<>(map.values()).forEach(this::decryptHandler);
+        // 处理 Map 类型：遍历所有 value 并递归解密
+        if (result instanceof Map<?, ?> map) {
+            Collection<?> values = map.values();
+            values.forEach(this::decryptHandler);
             return;
         }
-        if (sourceObject instanceof List<?> list) {
-            if(EmptyUtils.isEmpty(list)) {
-                return;
-            }
-            // 判断第一个元素是否含有注解。如果没有直接返回，提高效率
-            Object firstItem = list.get(0);
-            if (EmptyUtils.isEmpty(firstItem) || EmptyUtils.isEmpty(encryptorManager.getFieldCache(firstItem.getClass()))) {
-                return;
-            }
-            list.forEach(this::decryptHandler);
+        // 处理 Collection 类型：遍历所有元素递归解密
+        if (result instanceof Collection<?> collection) {
+            collection.forEach(this::decryptHandler);
             return;
         }
-        // 不在缓存中的类,就是没有加密注解的类(当然也有可能是typeAliasesPackage写错)
-        Set<Field> fields = encryptorManager.getFieldCache(sourceObject.getClass());
-        if(EmptyUtils.isEmpty(fields)){
+        // 处理普通对象：获取类所有加密字段
+        Set<Field> fields = this.encryptorManager.getFieldCache(result.getClass());
+        // 没有需要解密的字段，直接返回
+        if (CollUtil.isEmpty(fields)) {
             return;
         }
         try {
+            // 遍历加密字段，解密后重新设置
             for (Field field : fields) {
-                field.set(sourceObject, this.decryptField(Convert.toStr(field.get(sourceObject)), field));
+                String encryptField = Convert.toStr(field.get(result));
+                String decryptField = this.decryptField(encryptField, field);
+                field.set(result, decryptField);
             }
         } catch (Exception e) {
-            log.error("处理解密字段时出错", e);
+            log.error("字段解密处理出错", e);
         }
     }
 
     /**
-     * 字段值进行加密。通过字段的批注注册新的加密算法
-     *
-     * @param value 待加密的值
-     * @param field 待加密字段
-     * @return 加密后结果
+     * 字段值进行解密
      */
     private String decryptField(String value, Field field) {
-        if (EmptyUtils.isEmpty(value)) {
+        if (StrUtil.isEmpty(value)) {
             return null;
         }
+        // 获取注解配置信息
         EncryptField encryptField = field.getAnnotation(EncryptField.class);
         EncryptContext encryptContext = new EncryptContext();
-        encryptContext.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT ? defaultProperties.getAlgorithm() : encryptField.algorithm());
-        encryptContext.setEncode(encryptField.encode() == EncodeType.DEFAULT ? defaultProperties.getEncode() : encryptField.encode());
-        encryptContext.setPassword(EmptyUtils.isBlank(encryptField.password()) ? defaultProperties.getPassword() : encryptField.password());
-        encryptContext.setPrivateKey(EmptyUtils.isBlank(encryptField.privateKey()) ? defaultProperties.getPrivateKey() : encryptField.privateKey());
-        encryptContext.setPublicKey(EmptyUtils.isBlank(encryptField.publicKey()) ? defaultProperties.getPublicKey() : encryptField.publicKey());
+        encryptContext.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT ? properties.getAlgorithm() : encryptField.algorithm());
+        encryptContext.setEncode(encryptField.encode() == EncodeType.DEFAULT ? properties.getEncode() : encryptField.encode());
+        encryptContext.setPassword(StrUtil.isBlank(encryptField.password()) ? properties.getPassword() : encryptField.password());
+        encryptContext.setPrivateKey(StrUtil.isBlank(encryptField.privateKey()) ? properties.getPrivateKey() : encryptField.privateKey());
+        encryptContext.setPublicKey(StrUtil.isBlank(encryptField.publicKey()) ? properties.getPublicKey() : encryptField.publicKey());
         return this.encryptorManager.decrypt(value, encryptContext);
     }
 
@@ -122,6 +110,6 @@ public class DecryptInterceptor implements Interceptor {
 
     @Override
     public void setProperties(Properties properties) {
-
     }
+
 }

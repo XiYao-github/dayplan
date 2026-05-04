@@ -1,11 +1,9 @@
 package com.xiyao.framework.config;
 
-import com.xiyao.framework.converter.MyEnumConverterFactory;
-import com.xiyao.framework.interceptor.DecryptInterceptor;
+import com.xiyao.common.converter.MyEnumConverterFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -20,11 +18,6 @@ public class MyWebConfig implements WebMvcConfigurer {
         registry.addConverterFactory(new MyEnumConverterFactory());
     }
 
-    // @Override
-    // public void addInterceptors(InterceptorRegistry registry) {
-    //     registry.addInterceptor(new DecryptInterceptor());
-    // }
-
     /**
      * 跨域
      */
@@ -36,9 +29,10 @@ public class MyWebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("*")
                 //是否允许证书（cookies）
                 .allowCredentials(true)
+                //设置允许的请求头
+                .allowedHeaders("*")
                 //设置允许的方法
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                //.allowedMethods("*")
+                .allowedMethods("*")
                 //跨域允许时间
                 .maxAge(3600);
     }

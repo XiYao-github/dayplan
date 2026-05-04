@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.common.base.BaseMapper;
+import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,7 +17,7 @@ import java.util.List;
  * @since 2026-04-28
  */
 @Mapper
-public interface SysRoleMapper extends BaseMapper<SysRole> {
+public interface SysRoleMapper extends MyBaseMapper<SysRole> {
 
     /**
      * 根据用户ID查询角色列表

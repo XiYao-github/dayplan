@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysConfig;
 import com.xiyao.system.mapper.SysConfigMapper;
 import com.xiyao.system.service.SysConfigService;
-import com.xiyao.common.base.BaseServiceImpl;
+import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2026-04-28
  */
 @Service
-public class SysConfigServiceImpl extends BaseServiceImpl<SysConfigMapper, SysConfig> implements SysConfigService {
+public class SysConfigServiceImpl extends MyBaseServiceImpl<SysConfigMapper, SysConfig> implements SysConfigService {
 
 }
