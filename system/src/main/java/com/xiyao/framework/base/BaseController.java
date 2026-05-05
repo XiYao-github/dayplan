@@ -14,13 +14,6 @@ public class BaseController {
     }
 
     /**
-     * 返回成功消息
-     */
-    public Result success(String message) {
-        return Result.success(message);
-    }
-
-    /**
      * 返回成功数据
      */
     public Result success(Object data) {

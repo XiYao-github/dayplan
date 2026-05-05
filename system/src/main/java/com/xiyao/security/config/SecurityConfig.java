@@ -1,9 +1,8 @@
 package com.xiyao.security.config;
 
 
-import com.xiyao.security.handler.AccessDeniedHandlerImpl;
+import com.xiyao.security.filter.JwtAuthenticationFilter;
 import com.xiyao.security.handler.AuthenticationEntryPointImpl;
-import com.xiyao.security.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,13 +23,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Autowired
-    private AccessDeniedHandlerImpl accessDeniedHandler;
-
-    @Autowired
     private AuthenticationEntryPointImpl authenticationEntryPoint;
 
     @Autowired
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * 密码编码器
@@ -49,21 +45,28 @@ public class SecurityConfig {
     }
 
     /**
-     * 配置 Spring Security 定义哪些路径放行、哪些需要认证
+     * 配置 Spring Security
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
+                // 禁用 CSRF（前后端分离无状态应用）
                 .csrf(AbstractHttpConfigurer::disable)
+                // 设置 Session 为无状态（不使用 Session 存储上下文）
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 认证失败处理类
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
+                // 请求授权规则
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/public/**").permitAll()
-                        .anyRequest().authenticated()               // 其他都需要认证
+                        // 放行登录接口（无需认证）
+                        .requestMatchers("/login", "/register", "/captcha", "/public/**").permitAll()
+                        // 放行静态资源（如文档等，按需添加）
+                        .requestMatchers("/doc.html").permitAll()
+                        // 其他任何请求都需要认证
+                        .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler))
-                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                // 添加 JWT 过滤器（在 UsernamePasswordAuthenticationFilter 之前执行）
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

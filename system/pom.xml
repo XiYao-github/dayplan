@@ -36,13 +36,6 @@
             <optional>true</optional>   <!-- 该依赖不会传递，且编译后不需要打包 -->
         </dependency>
 
-        <!-- Spring Boot Test：提供单元测试、集成测试支持（JUnit、Mockito 等） -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>   <!-- 仅在测试阶段有效，不会打包到最终产物 -->
-        </dependency>
-
         <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -109,11 +102,11 @@
             <version>1.70</version>
         </dependency>
 
-        <dependency>
+      <!--  <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
-        </dependency>
+        </dependency>-->
 
     </dependencies>
 

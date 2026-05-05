@@ -1,23 +1,24 @@
 package com.xiyao.security.controller;
 
-import com.xiyao.framework.base.BaseController;
+import cn.hutool.core.util.IdUtil;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.utils.Result;
+import com.xiyao.framework.base.BaseController;
+import com.xiyao.mybatisplus.utils.RedisUtils;
+import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.JwtUtils;
 import com.xiyao.system.entity.SysUser;
-import com.xiyao.system.service.SysUserService;
+import com.xiyao.system.entity.SysUserRole;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @RestController
 public class LoginController extends BaseController {
@@ -26,35 +27,62 @@ public class LoginController extends BaseController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private SysUserService sysUserService;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public Result login(@RequestBody Map<String, String> map) {
+    public Result login(@RequestBody SysUser user) {
 
-        String username = map.get("username");
-        String password = map.get("password");
+        String username = user.getUsername();
+        String password = user.getPassword();
 
         // 调用 AuthenticationManager 进行认证
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-
-        // 认证成功，获取 UserDetails
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // 生成 JWT（你的工具类）
-        String token = JwtUtils.generateToken(userDetails.getUsername());
+        // 认证成功，获取用户信息
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        // 生成 JWT
+        String loginUserKey = IdUtil.fastSimpleUUID();
+        String token = jwtUtils.generateToken(loginUserKey);
+        // 存储 token 到 Redis 中
+        redisUtils.set(JwtUtils.LOGIN_USER_KEY + loginUserKey, loginUser, JwtUtils.SECONDS);
+        // 返回 token
         return success(token);
     }
 
-    // hasRole('ADMIN')	        hasRole('ADMIN')	                用户拥有 ROLE_ADMIN 角色
-    // hasAuthority('xxx')	    hasAuthority('system:user:add')	    用户拥有某个权限
-    // hasAnyAuthority(...)	    hasAnyAuthority('a','b')	        有任意一个权限即可
-    // @ss.hasPermi('xxx')      @ss.hasPermi('system:user:list')    自定义 Bean 方法
-    @PreAuthorize("hasAuthority('system:user:list')")
-    @GetMapping("/list")
-    public Result list() {
-        List<SysUser> list = sysUserService.list();
-        return success(list);
+
+    @PostMapping("/register")
+    public Result register(@RequestBody SysUser user) {
+        // 检查用户名是否已存在
+        Long count = Db.lambdaQuery(SysUser.class).eq(SysUser::getUsername, user.getUsername()).count();
+        if (count > 0) {
+            return error("用户已存在");
+        }
+        // 注册新用户
+        SysUser newUser = new SysUser();
+        newUser.setUsername(user.getUsername());
+        // 加密密码
+        String encode = passwordEncoder.encode(user.getPassword());
+        newUser.setPassword(encode);
+        newUser.setNickName(user.getNickName());
+        newUser.setMobile(user.getMobile());
+        newUser.setEmail(user.getEmail());
+        newUser.setStatus(1);
+        newUser.setCreateTime(LocalDateTime.now());
+        newUser.setUpdateTime(LocalDateTime.now());
+        // 保存用户
+        Db.save(newUser);
+        // 默认分配普通用户角色（role_id=2），这里需要注入 SysUserRoleMapper 并插入关联
+        SysUserRole userRole = new SysUserRole();
+        userRole.setUserId(newUser.getId());
+        userRole.setRoleId(2L);
+        Db.save(userRole);
+        return success();
     }
 
 }

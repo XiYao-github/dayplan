@@ -30,9 +30,11 @@ spring:
   # redis配置
   data:
     redis:
-      host: localhost
+      host: 115.159.42.54
       port: 6379
       password: pR2mK9sV4tX6bQ8z
+      database: 0
+      timeout: 5s
 
 mybatis-plus:
   # 配置文件的位置
@@ -67,8 +69,14 @@ encryptor-api:
   # 请求解密私钥 非对称算法的公私钥 如：SM2 使用者请自行更换
   # 对应前端加密公钥 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKoR8mX0rGKLqzcWmOzbfj64K8ZIgOdHnzkXSOVOZbFu/TJhZ7rFAN+eaGkl3C4buccQd/EjEsj9ir7ijT7h96MCAwEAAQ==
   privateKey: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqhHyZfSsYourNxaY7Nt+PrgrxkiA50efORdI5U5lsW79MmFnusUA355oaSXcLhu5xxB38SMSyP2KvuKNPuH3owIDAQABAkAfoiLyL+Z4lf4Myxk6xUDgLaWGximj20CUf+5BKKnlrK+Ed8gAkM0HqoTt2UZwA5E2MzS4EI2gjfQhz5X28uqxAiEA3wNFxfrCZlSZHb0gn2zDpWowcSxQAgiCstxGUoOqlW8CIQDDOerGKH5OmCJ4Z21v+F25WaHYPxCFMvwxpcw99EcvDQIgIdhDTIqD2jfYjPTY8Jj3EDGPbH2HHuffvflECt3Ek60CIQCFRlCkHpi7hthhYhovyloRYsM+IS9h/0BzlEAuO0ktMQIgSPT3aFAgJYwKpqRYKlLDVcflZFCKY7u3UP8iWi1Qw0Y=
-  include-paths:                    # 可选：Filter 拦截的 URL 模式（默认 "/*"）
+  include-paths: # 可选：Filter 拦截的 URL 模式（默认 "/*"）
     - /api/**
-  exclude-paths:                    # 可选：排除路径（支持 Ant 风格）
+  exclude-paths: # 可选：排除路径（支持 Ant 风格）
     - /api/public/**
     - /health
+
+logging:
+  level:
+    org.springframework: WARN
+    org.springframework.test: INFO
+    com.xiyao: DEBUG
