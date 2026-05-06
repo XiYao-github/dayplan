@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Sql("/test-data.sql")
+// @Sql("/test-data.sql")
 public abstract class BaseSecurityTest {
 
     @Autowired

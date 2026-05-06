@@ -24,7 +24,7 @@ public class JwtUtils {
     public static final String LOGIN_USER_KEY = "login_user_key:";
 
     // 密钥
-    private static final byte[] SECRET = "secret".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] SECRET = "jwt_secret".getBytes(StandardCharsets.UTF_8);
 
     // 过期时间（单位：秒）
     public static final long SECONDS = 60 * 60; // 1小时
@@ -54,9 +54,13 @@ public class JwtUtils {
      * 验证Token
      */
     public boolean validateToken(String token) {
-        JWT jwt = JWT.of(token).setKey(SECRET);
-        // 验证签名，验证有效期
-        return jwt.verify() && jwt.validate(0);
+        try {
+            JWT jwt = JWT.of(token).setKey(SECRET);
+            // 验证签名，验证有效期
+            return jwt.verify() && jwt.validate(0);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
