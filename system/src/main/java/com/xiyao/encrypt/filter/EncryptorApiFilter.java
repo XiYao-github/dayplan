@@ -2,6 +2,8 @@ package com.xiyao.encrypt.filter;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.xiyao.encrypt.filter.wrapper.DecryptRequestWrapper;
+import com.xiyao.encrypt.filter.wrapper.EncryptResponseWrapper;
 import com.xiyao.encrypt.properties.EncryptorApi;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +20,7 @@ import java.util.List;
  * 加解密过滤器
  */
 @AllArgsConstructor
-public class CryptoFilter implements Filter {
+public class EncryptorApiFilter implements Filter {
 
     private final EncryptorApi properties;
 
@@ -65,7 +67,7 @@ public class CryptoFilter implements Filter {
             // 过滤器放行
             chain.doFilter(requestWrapper, responseWrapper);
             // 重置响应
-            responseWrapper.reset();
+            servletResponse.reset();
             // 响应加密
             responseWrapper.encryptContent(servletResponse, properties.getPublicKey(), properties.getHeaderFlag());
         } catch (Exception e) {

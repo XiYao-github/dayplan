@@ -1,4 +1,4 @@
-package com.xiyao.encrypt.filter;
+package com.xiyao.encrypt.filter.wrapper;
 
 import cn.hutool.core.io.IoUtil;
 import com.xiyao.encrypt.utils.EncryptUtils;

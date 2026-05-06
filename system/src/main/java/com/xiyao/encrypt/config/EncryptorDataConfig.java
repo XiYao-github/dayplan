@@ -6,18 +6,21 @@ import com.xiyao.encrypt.interceptor.DecryptInterceptor;
 import com.xiyao.encrypt.interceptor.EncryptInterceptor;
 import com.xiyao.encrypt.properties.EncryptorData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 数据加解密配置
  */
-@AutoConfiguration(after = MybatisPlusAutoConfiguration.class)
+// @AutoConfiguration(after = MybatisPlusAutoConfiguration.class)
+@Configuration
+@AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
 @EnableConfigurationProperties(EncryptorData.class)
 @ConditionalOnProperty(value = "encryptor-data.enable", havingValue = "true")
-public class EncryptorDataAutoConfiguration {
+public class EncryptorDataConfig {
 
     @Autowired
     private EncryptorData properties;

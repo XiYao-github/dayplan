@@ -2,14 +2,14 @@ package com.xiyao.encrypt.config;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xiyao.encrypt.filter.CryptoFilter;
+import com.xiyao.encrypt.filter.EncryptorApiFilter;
 import com.xiyao.encrypt.properties.EncryptorApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 import java.util.List;
@@ -17,16 +17,17 @@ import java.util.List;
 /**
  * 接口加解密配置
  */
-@AutoConfiguration
+// @AutoConfiguration
+@Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
 @ConditionalOnProperty(value = "encryptor-api.enabled", havingValue = "true")
-public class EncryptorApiAutoConfiguration {
+public class EncryptorApiConfig {
 
     @Autowired
     private EncryptorApi properties;
 
     @Bean
-    public CryptoFilter cryptoFilter() {
+    public EncryptorApiFilter cryptoFilter() {
         if (StrUtil.isBlank(properties.getHeaderFlag())) {
             throw new IllegalArgumentException("加解密头部标识不能为空");
         }
@@ -36,12 +37,12 @@ public class EncryptorApiAutoConfiguration {
         if (StrUtil.isBlank(properties.getPrivateKey())) {
             throw new IllegalArgumentException("请求解密私钥不能为空");
         }
-        return new CryptoFilter(properties);
+        return new EncryptorApiFilter(properties);
     }
 
     @Bean
-    public FilterRegistrationBean<CryptoFilter> cryptoFilterRegistration(CryptoFilter cryptoFilter) {
-        FilterRegistrationBean<CryptoFilter> registration = new FilterRegistrationBean<>();
+    public FilterRegistrationBean<EncryptorApiFilter> cryptoFilterRegistration(EncryptorApiFilter cryptoFilter) {
+        FilterRegistrationBean<EncryptorApiFilter> registration = new FilterRegistrationBean<>();
         // 注册过滤器
         registration.setFilter(cryptoFilter);
         // 设置 URL
