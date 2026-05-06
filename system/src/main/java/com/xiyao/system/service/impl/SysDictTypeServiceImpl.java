@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysDictType;
 import com.xiyao.system.mapper.SysDictTypeMapper;
 import com.xiyao.system.service.SysDictTypeService;
-import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

@@ -1,4 +1,4 @@
-package com.xiyao.mybatisplus;
+package com.xiyao.framework;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.model.ClassAnnotationAttributes;
-import com.xiyao.framework.base.BaseController;
-import com.xiyao.mybatisplus.base.mapper.MyBaseMapper;
-import com.xiyao.mybatisplus.base.service.MyBaseService;
-import com.xiyao.mybatisplus.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.framework.base.controller.MyBaseController;
+import com.xiyao.framework.base.mapper.MyBaseMapper;
+import com.xiyao.framework.base.service.MyBaseService;
+import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
 import lombok.Data;
 
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class CodeGenerator {
                 .strategyConfig((scanner, builder) -> builder
                         .addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all")))
                         // 父类控制器 -> 开启驼峰转连字符 -> 开启生成@RestController控制器 -> 格式化文件名称 -> 覆盖已有文件
-                        .controllerBuilder().superClass(BaseController.class).enableHyphenStyle().enableRestStyle().formatFileName("%sController").enableFileOverride()
+                        .controllerBuilder().superClass(MyBaseController.class).enableHyphenStyle().enableRestStyle().formatFileName("%sController").enableFileOverride()
                         // 禁用生成serialVersionUID -> 开启链式模型 -> 开启lombok模型
                         .entityBuilder().disableSerialVersionUID().enableChainModel().enableLombok(new ClassAnnotationAttributes(Data.class))
                         // 开启生成实体时生成字段注解 -> 设置乐观锁数据库表字段名称 -> 逻辑删除数据库字段名称 -> 数据库表字段映射到实体的命名策略

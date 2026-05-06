@@ -1,10 +1,10 @@
-package com.xiyao.framework.base;
+package com.xiyao.framework.base.controller;
 
 import com.xiyao.common.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BaseController {
+public class MyBaseController {
 
     /**
      * 返回成功

@@ -1,7 +1,7 @@
 package com.xiyao.system.service;
 
 import com.xiyao.system.entity.SysLogin;
-import com.xiyao.mybatisplus.base.service.MyBaseService;
+import com.xiyao.framework.base.service.MyBaseService;
 
 /**
  * <p>

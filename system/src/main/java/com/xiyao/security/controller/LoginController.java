@@ -3,8 +3,8 @@ package com.xiyao.security.controller;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.utils.Result;
-import com.xiyao.framework.base.BaseController;
-import com.xiyao.mybatisplus.utils.RedisUtils;
+import com.xiyao.framework.base.controller.MyBaseController;
+import com.xiyao.framework.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.JwtUtils;
 import com.xiyao.system.entity.SysUser;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 @RestController
-public class LoginController extends BaseController {
+public class LoginController extends MyBaseController {
 
     @Autowired
     private AuthenticationManager authenticationManager;

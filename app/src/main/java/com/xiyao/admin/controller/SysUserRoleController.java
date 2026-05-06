@@ -2,7 +2,7 @@ package com.xiyao.admin.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.xiyao.framework.base.BaseController;
+import com.xiyao.framework.base.controller.MyBaseController;
 
 /**
  * <p>
@@ -14,6 +14,6 @@ import com.xiyao.framework.base.BaseController;
  */
 @RestController
 @RequestMapping("/sys-user-role")
-public class SysUserRoleController extends BaseController {
+public class SysUserRoleController extends MyBaseController {
 
 }

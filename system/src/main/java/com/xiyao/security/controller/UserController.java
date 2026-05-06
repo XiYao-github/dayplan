@@ -2,7 +2,7 @@ package com.xiyao.security.controller;
 
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.utils.Result;
-import com.xiyao.framework.base.BaseController;
+import com.xiyao.framework.base.controller.MyBaseController;
 import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/system/user")
-public class UserController extends BaseController {
+public class UserController extends MyBaseController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;

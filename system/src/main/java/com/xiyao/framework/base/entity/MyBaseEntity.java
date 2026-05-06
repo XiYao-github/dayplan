@@ -1,4 +1,4 @@
-package com.xiyao.mybatisplus.base.entity;
+package com.xiyao.framework.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;

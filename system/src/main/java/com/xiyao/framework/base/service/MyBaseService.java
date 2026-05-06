@@ -1,4 +1,4 @@
-package com.xiyao.mybatisplus.base.service;
+package com.xiyao.framework.base.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 
