@@ -1,4 +1,4 @@
-package com.xiyao.framework.utils;
+package com.xiyao.common.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

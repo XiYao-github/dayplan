@@ -2,7 +2,7 @@ package com.xiyao.security.filter;
 
 
 import cn.hutool.core.util.StrUtil;
-import com.xiyao.framework.utils.RedisUtils;
+import com.xiyao.common.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.JwtUtils;
 import jakarta.servlet.FilterChain;

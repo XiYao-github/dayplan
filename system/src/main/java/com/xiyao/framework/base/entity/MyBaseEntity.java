@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.xiyao.common.constant.Constant;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +14,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Entity 基础类
+ */
 @Data
 @FieldNameConstants
 public class MyBaseEntity implements Serializable {
@@ -37,7 +39,7 @@ public class MyBaseEntity implements Serializable {
     private Map<String, Object> params = new HashMap<>();
 
     /**
-     * 主键
+     * 主键 ID（自增策略）
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -50,7 +52,7 @@ public class MyBaseEntity implements Serializable {
 
 
     /**
-     * 更新者
+     * 创建者 ID
      */
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     private Long createBy;
@@ -58,13 +60,13 @@ public class MyBaseEntity implements Serializable {
     /**
      * 创建时间
      */
-    @DateTimeFormat(pattern = Constant.DATE_TIME)
-    @JsonFormat(timezone = Constant.TIME_ZONE, pattern = Constant.DATE_TIME)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
-     * 更新者
+     * 更新者 ID
      */
     @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
     private Long updateBy;
@@ -72,16 +74,16 @@ public class MyBaseEntity implements Serializable {
     /**
      * 更新时间
      */
-    @DateTimeFormat(pattern = Constant.DATE_TIME)
-    @JsonFormat(timezone = Constant.TIME_ZONE, pattern = Constant.DATE_TIME)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     /**
      * 删除时间
      */
-    @DateTimeFormat(pattern = Constant.DATE_TIME)
-    @JsonFormat(timezone = Constant.TIME_ZONE, pattern = Constant.DATE_TIME)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("delete_time")
     private LocalDateTime deleteTime;
 

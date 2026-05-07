@@ -6,10 +6,23 @@ package com.xiyao.common.constant;
 public interface Constant {
 
     /**
-     * 日期时间格式
+     * 日期时间格式（前端常用格式）
      */
-    String DATE_TIME = "yyyy-MM-dd HH:mm:ss";
-    String DATE = "yyyy-MM-dd";
+    String PATTERN_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * 日期格式
+     */
+    String PATTERN_DATE = "yyyy-MM-dd";
+
+    /**
+     * 时间格式
+     */
+    String PATTERN_TIME = "HH:mm:ss";
+
+    /**
+     * 时区
+     */
     String TIME_ZONE = "GMT+8";
 
 

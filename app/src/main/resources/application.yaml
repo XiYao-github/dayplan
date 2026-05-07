@@ -1,26 +1,62 @@
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 9999
   servlet:
     # 应用的访问路径
     context-path: /dayplan
+    # 编码配置
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
     # 连接数满后的排队数，默认为100
-    accept-count: 1000
+    accept-count: 100
     threads:
       # tomcat最大线程数，默认为200
-      max: 800
+      max: 200
       # Tomcat启动初始化的线程数，默认值10
-      min-spare: 100
+      min-spare: 10
+    # 连接超时（毫秒）
+    connection-timeout: 30000
 
 # Spring配置
 spring:
   # 项目名称
   application:
     name: app
+  jackson:
+    # 日期格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 时区
+    time-zone: GMT+8
+    # 默认属性包含策略
+    default-property-inclusion: non_null
+    # 序列化配置
+    serialization:
+      # 日期不转时间戳
+      write-dates-as-timestamps: false
+      # 枚举转字符串
+      write-enums-using-to-string: true
+    # 反序列化配置
+    deserialization:
+      # 忽略未知属性(不报错，直接忽略)
+      fail-on-unknown-properties: false
+  # Spring MVC 参数绑定格式（GET 请求参数）
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+      date: yyyy-MM-dd
+      time: HH:mm:ss
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
 
   # mysql配置
   datasource:
@@ -74,6 +110,11 @@ encryptor-api:
 
 logging:
   level:
-    org.springframework: WARN
-    org.springframework.test: INFO
     com.xiyao: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
+  file:
+    name: ./logs/app.log
