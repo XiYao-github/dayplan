@@ -1,4 +1,4 @@
-package com.xiyao.common.utils;
+package com.xiyao.framework.utils;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;

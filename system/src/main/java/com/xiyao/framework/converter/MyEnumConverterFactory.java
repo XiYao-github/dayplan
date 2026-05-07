@@ -1,7 +1,7 @@
-package com.xiyao.common.converter;
+package com.xiyao.framework.converter;
 
 
-import com.xiyao.common.enums.BaseEnum;
+import com.xiyao.framework.enums.BaseEnum;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.stereotype.Component;

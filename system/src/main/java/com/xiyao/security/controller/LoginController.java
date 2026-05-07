@@ -4,7 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.framework.utils.Result;
 import com.xiyao.framework.base.controller.MyBaseController;
-import com.xiyao.common.utils.RedisUtils;
+import com.xiyao.framework.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.JwtUtils;
 import com.xiyao.system.entity.SysUser;
