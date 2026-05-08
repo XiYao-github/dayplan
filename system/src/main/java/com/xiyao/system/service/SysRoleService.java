@@ -1,7 +1,7 @@
 package com.xiyao.system.service;
 
 import com.xiyao.system.entity.SysRole;
-import com.xiyao.framework.base.service.MyBaseService;
+import com.xiyao.common.base.service.MyBaseService;
 
 /**
  * <p>

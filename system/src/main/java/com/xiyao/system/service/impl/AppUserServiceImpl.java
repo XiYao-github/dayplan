@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.AppUser;
 import com.xiyao.system.mapper.AppUserMapper;
 import com.xiyao.system.service.AppUserService;
-import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

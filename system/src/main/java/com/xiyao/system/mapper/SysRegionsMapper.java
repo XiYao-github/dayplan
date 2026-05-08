@@ -1,6 +1,6 @@
 package com.xiyao.system.mapper;
 
-import com.xiyao.framework.base.mapper.MyBaseMapper;
+import com.xiyao.common.base.mapper.MyBaseMapper;
 import com.xiyao.system.entity.SysRegions;
 import org.apache.ibatis.annotations.Mapper;
 

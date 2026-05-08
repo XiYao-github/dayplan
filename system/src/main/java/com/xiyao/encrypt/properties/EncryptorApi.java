@@ -13,12 +13,12 @@ import java.util.List;
 public class EncryptorApi {
 
     /**
-     * 加密开关
+     * 是否开启加密
      */
     private Boolean enabled;
 
     /**
-     * 头部标识
+     * 加密头标识
      */
     private String headerFlag;
 
@@ -33,7 +33,7 @@ public class EncryptorApi {
     private String privateKey;
 
     /**
-     * 包含加解密路径
+     * 包含加解密路径(默认 "/*")
      */
     private List<String> includePaths;
     /**

@@ -1,4 +1,4 @@
-package com.xiyao.framework.utils;
+package com.xiyao.common.utils;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.fill.Column;
 import com.baomidou.mybatisplus.generator.model.ClassAnnotationAttributes;
-import com.xiyao.framework.base.controller.MyBaseController;
-import com.xiyao.framework.base.mapper.MyBaseMapper;
-import com.xiyao.framework.base.service.MyBaseService;
-import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.common.base.controller.MyBaseController;
+import com.xiyao.common.base.mapper.MyBaseMapper;
+import com.xiyao.common.base.service.MyBaseService;
+import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
 import lombok.Data;
 
 import java.util.Arrays;

@@ -27,10 +27,7 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-        if (value == null) {
-            // 值为空，写入 null
-            gen.writeNull();
-        } else if (strategy != null) {
+        if (strategy != null && value != null) {
             // 调用策略的 apply 方法进行脱敏
             String desensitized = strategy.apply(value);
             // 写入脱敏字符串

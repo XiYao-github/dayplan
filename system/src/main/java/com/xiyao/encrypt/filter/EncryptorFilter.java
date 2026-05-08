@@ -20,7 +20,7 @@ import java.util.List;
  * 加解密过滤器
  */
 @AllArgsConstructor
-public class EncryptorApiFilter implements Filter {
+public class EncryptorFilter implements Filter {
 
     private final EncryptorApi properties;
 

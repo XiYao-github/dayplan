@@ -2,7 +2,7 @@ package com.xiyao.security.handler;
 
 
 import cn.hutool.json.JSONUtil;
-import com.xiyao.framework.utils.Result;
+import com.xiyao.common.utils.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

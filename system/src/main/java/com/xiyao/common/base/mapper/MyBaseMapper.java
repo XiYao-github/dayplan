@@ -1,4 +1,4 @@
-package com.xiyao.framework.base.mapper;
+package com.xiyao.common.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,12 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class RedisConfig {
+
+    /**
+     * 注入 Spring 全局配置的 ObjectMapper（来自 JacksonConfig）
+     */
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 配置 RedisTemplate，用于直接操作 Redis
@@ -67,17 +74,17 @@ public class RedisConfig {
     }
 
     /**
-     * 创建 Jackson2JsonRedisSerializer，配置 ObjectMapper
+     * 创建 Jackson2JsonRedisSerializer，配置 redisMapper
      */
     private Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer() {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper redisMapper = this.objectMapper.copy();
         // 设置对所有字段进行序列化检测
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        redisMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         // 启用默认类型：在 JSON 中存储 @class 信息，以便反序列化时还原具体类型
-        objectMapper.activateDefaultTyping(
+        redisMapper.activateDefaultTyping(
                 LaissezFaireSubTypeValidator.instance,   // 允许的类型验证器（宽松）
                 ObjectMapper.DefaultTyping.NON_FINAL,    // 非 final 类才存储类型信息
                 JsonTypeInfo.As.WRAPPER_ARRAY);          // 类型信息以数组形式包装
-        return new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        return new Jackson2JsonRedisSerializer<>(redisMapper, Object.class);
     }
 }

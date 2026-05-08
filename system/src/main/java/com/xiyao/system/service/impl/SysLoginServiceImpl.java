@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysLogin;
 import com.xiyao.system.mapper.SysLoginMapper;
 import com.xiyao.system.service.SysLoginService;
-import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

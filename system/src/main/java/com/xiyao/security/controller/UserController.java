@@ -1,8 +1,8 @@
 package com.xiyao.security.controller;
 
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.xiyao.framework.utils.Result;
-import com.xiyao.framework.base.controller.MyBaseController;
+import com.xiyao.common.utils.Result;
+import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;
 import jakarta.validation.Valid;

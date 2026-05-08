@@ -1,11 +1,10 @@
 package com.xiyao.encrypt.config;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
+import com.xiyao.encrypt.core.EncryptorManager;
 import com.xiyao.encrypt.interceptor.DecryptInterceptor;
 import com.xiyao.encrypt.interceptor.EncryptInterceptor;
 import com.xiyao.encrypt.properties.EncryptorData;
-import com.xiyao.encrypt.properties.EncryptorManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,20 +27,17 @@ public class EncryptorDataConfig {
 
     @Bean
     public EncryptorManager encryptorManager() {
-        if (StrUtil.isBlank(properties.getPassword())) {
-            throw new IllegalArgumentException("密钥不能为空");
-        }
         return new EncryptorManager();
     }
 
     @Bean
-    public EncryptInterceptor mybatisEncryptInterceptor(EncryptorManager encryptorManager) {
-        return new EncryptInterceptor(encryptorManager,properties);
+    public EncryptInterceptor encryptInterceptor(EncryptorManager encryptorManager) {
+        return new EncryptInterceptor(encryptorManager, properties);
     }
 
     @Bean
-    public DecryptInterceptor mybatisDecryptInterceptor(EncryptorManager encryptorManager) {
-        return new DecryptInterceptor(encryptorManager,properties);
+    public DecryptInterceptor decryptInterceptor(EncryptorManager encryptorManager) {
+        return new DecryptInterceptor(encryptorManager, properties);
     }
 
 }

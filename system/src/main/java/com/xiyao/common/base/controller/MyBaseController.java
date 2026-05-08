@@ -1,6 +1,6 @@
-package com.xiyao.framework.base.controller;
+package com.xiyao.common.base.controller;
 
-import com.xiyao.framework.utils.Result;
+import com.xiyao.common.utils.Result;
 import lombok.extern.slf4j.Slf4j;
 
 /**

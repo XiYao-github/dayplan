@@ -2,7 +2,7 @@ package com.xiyao.encrypt.config;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xiyao.encrypt.filter.EncryptorApiFilter;
+import com.xiyao.encrypt.filter.EncryptorFilter;
 import com.xiyao.encrypt.properties.EncryptorApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,7 +27,7 @@ public class EncryptorApiConfig {
     private EncryptorApi properties;
 
     @Bean
-    public EncryptorApiFilter cryptoFilter() {
+    public EncryptorFilter encryptorFilter() {
         if (StrUtil.isBlank(properties.getHeaderFlag())) {
             throw new IllegalArgumentException("加解密头部标识不能为空");
         }
@@ -37,12 +37,12 @@ public class EncryptorApiConfig {
         if (StrUtil.isBlank(properties.getPrivateKey())) {
             throw new IllegalArgumentException("请求解密私钥不能为空");
         }
-        return new EncryptorApiFilter(properties);
+        return new EncryptorFilter(properties);
     }
 
     @Bean
-    public FilterRegistrationBean<EncryptorApiFilter> cryptoFilterRegistration(EncryptorApiFilter cryptoFilter) {
-        FilterRegistrationBean<EncryptorApiFilter> registration = new FilterRegistrationBean<>();
+    public FilterRegistrationBean<EncryptorFilter> filterFilterRegistrationBean(EncryptorFilter cryptoFilter) {
+        FilterRegistrationBean<EncryptorFilter> registration = new FilterRegistrationBean<>();
         // 注册过滤器
         registration.setFilter(cryptoFilter);
         // 设置 URL

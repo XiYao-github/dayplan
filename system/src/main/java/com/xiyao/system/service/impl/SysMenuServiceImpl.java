@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import com.xiyao.system.entity.SysMenu;
 import com.xiyao.system.mapper.SysMenuMapper;
 import com.xiyao.system.service.SysMenuService;
-import com.xiyao.framework.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**

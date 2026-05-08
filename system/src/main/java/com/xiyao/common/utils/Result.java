@@ -1,4 +1,4 @@
-package com.xiyao.framework.utils;
+package com.xiyao.common.utils;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;

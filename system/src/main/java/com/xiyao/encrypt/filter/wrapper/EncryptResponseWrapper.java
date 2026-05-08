@@ -89,24 +89,28 @@ public class EncryptResponseWrapper extends HttpServletResponseWrapper {
     }
 
     /**
-     * 加密内容
+     * (包装器 -> 加密 -> 响应)
+     *
+     * @param response   原始响应
+     * @param publicKey  响应加密公钥
+     * @param headerFlag 加密头标识
      */
-    public void encryptContent(HttpServletResponse servletResponse, String publicKey, String headerFlag) throws IOException {
+    public void encryptContent(HttpServletResponse response, String publicKey, String headerFlag) throws IOException {
         // 生成 sm4Key
         String sm4Key = RandomUtil.randomString(16);
         // 使用 sm2 加密 sm4Key
         String encryptKey = EncryptUtils.encryptBySm2(sm4Key, publicKey);
         // 设置响应头，vue版本需要设置
-        servletResponse.addHeader("Access-Control-Expose-Headers", headerFlag);
-        servletResponse.setHeader("Access-Control-Allow-Origin", "*");
-        servletResponse.setHeader("Access-Control-Allow-Methods", "*");
-        servletResponse.setHeader(headerFlag, encryptKey);
-        servletResponse.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.addHeader("Access-Control-Expose-Headers", headerFlag);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+        response.setHeader(headerFlag, encryptKey);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         // 获取接口响应内容
         String content = this.getContent();
         // 使用 sm4 加密 content 明文
         String encryptContent = EncryptUtils.encryptBySm4(content, sm4Key);
         // 响应加密内容
-        servletResponse.getWriter().write(encryptContent);
+        response.getWriter().write(encryptContent);
     }
 }

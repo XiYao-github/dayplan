@@ -4,8 +4,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.xiyao.encrypt.annotation.EncryptField;
+import com.xiyao.encrypt.core.EncryptContext;
+import com.xiyao.encrypt.core.EncryptorManager;
+import com.xiyao.encrypt.enums.AlgorithmType;
+import com.xiyao.encrypt.enums.EncodeType;
 import com.xiyao.encrypt.properties.EncryptorData;
-import com.xiyao.encrypt.properties.EncryptorManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
@@ -30,7 +34,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class DecryptInterceptor implements Interceptor {
 
-    private final EncryptorManager encryptorManager;
+    private final EncryptorManager manager;
     private final EncryptorData properties;
 
     /**
@@ -64,7 +68,7 @@ public class DecryptInterceptor implements Interceptor {
             return;
         }
         // 处理普通对象：获取类所有加密字段
-        Set<Field> fields = this.encryptorManager.getFieldCache(result.getClass());
+        Set<Field> fields = this.manager.getFieldCache(result.getClass());
         // 没有需要解密的字段，直接返回
         if (CollUtil.isEmpty(fields)) {
             return;
@@ -73,17 +77,30 @@ public class DecryptInterceptor implements Interceptor {
             // 遍历加密字段，解密后重新设置
             for (Field field : fields) {
                 String encryptField = Convert.toStr(field.get(result));
-                if (StrUtil.isBlank(encryptField)) {
-                    // 字段值进行解密
-                    String decryptField = this.encryptorManager.decrypt(encryptField, this.properties.getPassword());
-                    field.set(result, decryptField);
-                } else {
-                    field.set(result, null);
-                }
+                String decryptField = this.decryptField(encryptField, field);
+                field.set(result, decryptField);
             }
         } catch (Exception e) {
             log.error("字段解密处理出错", e);
         }
+    }
+
+    /**
+     * 字段值进行解密
+     */
+    private String decryptField(String value, Field field) {
+        if (StrUtil.isBlank(value)) {
+            return null;
+        }
+        // 获取注解配置信息
+        EncryptField encryptField = field.getAnnotation(EncryptField.class);
+        EncryptContext context = new EncryptContext();
+        context.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT ? properties.getAlgorithm() : encryptField.algorithm());
+        context.setEncode(encryptField.encode() == EncodeType.DEFAULT ? properties.getEncode() : encryptField.encode());
+        context.setPassword(StrUtil.isBlank(encryptField.password()) ? properties.getPassword() : encryptField.password());
+        context.setPrivateKey(StrUtil.isBlank(encryptField.privateKey()) ? properties.getPrivateKey() : encryptField.privateKey());
+        context.setPublicKey(StrUtil.isBlank(encryptField.publicKey()) ? properties.getPublicKey() : encryptField.publicKey());
+        return this.manager.decrypt(value, context);
     }
 
     @Override

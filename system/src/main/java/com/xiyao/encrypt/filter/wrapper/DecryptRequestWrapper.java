@@ -21,6 +21,13 @@ public class DecryptRequestWrapper extends HttpServletRequestWrapper {
 
     private final byte[] body;
 
+    /**
+     * (请求 -> 解密 -> 包装器)
+     *
+     * @param request    原始请求
+     * @param privateKey 请求解密私钥
+     * @param headerFlag 加密头标识
+     */
     public DecryptRequestWrapper(HttpServletRequest request, String privateKey, String headerFlag) throws IOException {
         super(request);
         // 获取 sm4Key 密文

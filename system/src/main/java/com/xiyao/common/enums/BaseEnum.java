@@ -1,4 +1,4 @@
-package com.xiyao.framework.enums;
+package com.xiyao.common.enums;
 
 public interface BaseEnum<T> {
 

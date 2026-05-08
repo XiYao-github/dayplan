@@ -47,8 +47,6 @@ public class JacksonConfig {
         // ==================== 序列化配置（Java → JSON） ====================
         // 日期不转时间戳：禁用默认的数组格式 [2024,1,15,14,30,0]，输出字符串（如 "2024-01-15 14:30:00"），避免前端解析数组格式的麻烦
         builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // 启用枚举的 toString() 值输出，便于前端直接展示中文（枚举需重写 toString 方法）
-        builder.featuresToEnable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
 
         // ==================== 反序列化配置（JSON → Java） ====================
         // 忽略未知属性，前端多传字段时不报错，只反序列化已知字段，提升接口兼容性

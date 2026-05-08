@@ -1,10 +1,9 @@
 package com.xiyao.framework.config;
 
-import com.xiyao.framework.converter.MyEnumConverterFactory;
+import com.xiyao.common.converter.MyEnumConverterFactory;
 import com.xiyao.framework.resolver.CurrentUserArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -76,7 +75,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addConverterFactory(new MyEnumConverterFactory());
 
         // ==================== String → LocalDateTime ====================
-        registry.addConverter((Converter<String, LocalDateTime>) source -> {
+        registry.addConverter(String.class, LocalDateTime.class, source -> {
             if (source.trim().isEmpty()) {
                 return null;
             }
@@ -89,7 +88,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         });
 
         // ==================== String → LocalDate ====================
-        registry.addConverter((Converter<String, LocalDate>) source -> {
+        registry.addConverter(String.class, LocalDate.class, source -> {
             if (source.trim().isEmpty()) {
                 return null;
             }
@@ -102,7 +101,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         });
 
         // ==================== String → LocalTime ====================
-        registry.addConverter((Converter<String, LocalTime>) source -> {
+        registry.addConverter(String.class, LocalTime.class, source -> {
             if (source.trim().isEmpty()) {
                 return null;
             }

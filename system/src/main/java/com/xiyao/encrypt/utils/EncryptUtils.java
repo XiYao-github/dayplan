@@ -30,7 +30,28 @@ public class EncryptUtils {
             throw new IllegalArgumentException("SM4需要传入秘钥信息");
         }
         // sm4算法的秘钥要求是16位长度
-        if (password.length() != 16) {
+        int sm4PasswordLength = 16;
+        if (sm4PasswordLength != password.length()) {
+            throw new IllegalArgumentException("SM4秘钥长度要求为16位");
+        }
+        SM4 sm4 = SmUtil.sm4(password.getBytes(StandardCharsets.UTF_8));
+        return sm4.encryptHex(data, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * SM4加密（Hex编码）
+     *
+     * @param data     待加密数据
+     * @param password 秘钥字符串
+     * @return 加密后字符串, 采用Hex编码
+     */
+    public static String encryptBySm4Hex(String data, String password) {
+        if (StrUtil.isBlank(password)) {
+            throw new IllegalArgumentException("SM4需要传入秘钥信息");
+        }
+        // sm4算法的秘钥要求是16位长度
+        int sm4PasswordLength = 16;
+        if (sm4PasswordLength != password.length()) {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
         }
         SM4 sm4 = SmUtil.sm4(password.getBytes(StandardCharsets.UTF_8));
@@ -40,7 +61,7 @@ public class EncryptUtils {
     /**
      * sm4解密
      *
-     * @param data     待解密数据
+     * @param data     待解密数据（可以是Base64或Hex编码）
      * @param password 秘钥字符串
      * @return 解密后字符串
      */
@@ -49,7 +70,8 @@ public class EncryptUtils {
             throw new IllegalArgumentException("SM4需要传入秘钥信息");
         }
         // sm4算法的秘钥要求是16位长度
-        if (password.length() != 16) {
+        int sm4PasswordLength = 16;
+        if (sm4PasswordLength != password.length()) {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
         }
         SM4 sm4 = SmUtil.sm4(password.getBytes(StandardCharsets.UTF_8));
@@ -64,6 +86,21 @@ public class EncryptUtils {
      * @return 加密后字符串
      */
     public static String encryptBySm2(String data, String publicKey) {
+        if (StrUtil.isBlank(publicKey)) {
+            throw new IllegalArgumentException("SM2需要传入公钥进行加密");
+        }
+        SM2 sm2 = SmUtil.sm2(null, publicKey);
+        return sm2.encryptHex(data, StandardCharsets.UTF_8, KeyType.PublicKey);
+    }
+
+    /**
+     * sm2公钥加密
+     *
+     * @param data      待加密数据
+     * @param publicKey 公钥
+     * @return 加密后字符串, 采用Hex编码
+     */
+    public static String encryptBySm2Hex(String data, String publicKey) {
         if (StrUtil.isBlank(publicKey)) {
             throw new IllegalArgumentException("SM2需要传入公钥进行加密");
         }
