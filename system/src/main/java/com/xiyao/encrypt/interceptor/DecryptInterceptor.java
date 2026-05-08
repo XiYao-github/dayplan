@@ -4,12 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xiyao.encrypt.annotation.EncryptField;
-import com.xiyao.encrypt.core.EncryptContext;
-import com.xiyao.encrypt.core.EncryptorManager;
-import com.xiyao.encrypt.enums.AlgorithmType;
-import com.xiyao.encrypt.enums.EncodeType;
 import com.xiyao.encrypt.properties.EncryptorData;
+import com.xiyao.encrypt.properties.EncryptorManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
@@ -77,30 +73,17 @@ public class DecryptInterceptor implements Interceptor {
             // 遍历加密字段，解密后重新设置
             for (Field field : fields) {
                 String encryptField = Convert.toStr(field.get(result));
-                String decryptField = this.decryptField(encryptField, field);
-                field.set(result, decryptField);
+                if (StrUtil.isBlank(encryptField)) {
+                    // 字段值进行解密
+                    String decryptField = this.encryptorManager.decrypt(encryptField, this.properties.getPassword());
+                    field.set(result, decryptField);
+                } else {
+                    field.set(result, null);
+                }
             }
         } catch (Exception e) {
             log.error("字段解密处理出错", e);
         }
-    }
-
-    /**
-     * 字段值进行解密
-     */
-    private String decryptField(String value, Field field) {
-        if (StrUtil.isEmpty(value)) {
-            return null;
-        }
-        // 获取注解配置信息
-        EncryptField encryptField = field.getAnnotation(EncryptField.class);
-        EncryptContext encryptContext = new EncryptContext();
-        encryptContext.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT ? properties.getAlgorithm() : encryptField.algorithm());
-        encryptContext.setEncode(encryptField.encode() == EncodeType.DEFAULT ? properties.getEncode() : encryptField.encode());
-        encryptContext.setPassword(StrUtil.isBlank(encryptField.password()) ? properties.getPassword() : encryptField.password());
-        encryptContext.setPrivateKey(StrUtil.isBlank(encryptField.privateKey()) ? properties.getPrivateKey() : encryptField.privateKey());
-        encryptContext.setPublicKey(StrUtil.isBlank(encryptField.publicKey()) ? properties.getPublicKey() : encryptField.publicKey());
-        return this.encryptorManager.decrypt(value, encryptContext);
     }
 
     @Override

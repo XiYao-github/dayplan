@@ -155,20 +155,6 @@ public class GlobalExceptionHandler {
 
     // ==================== 业务异常 ====================
 
-    /**
-     * 自定义业务异常
-     * <p>
-     * 使用示例：
-     * throw new MyBaseException(HttpStatus.NOT_FOUND, "用户不存在");
-     * throw new MyBaseException(1001, "用户不存在");
-     */
-    @ExceptionHandler(MyBaseException.class)
-    public Result handleBizException(MyBaseException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.warn("业务异常: 请求地址'{}', 错误码={}, 错误信息={}",
-                requestURI, e.getCode(), e.getMessage());
-        return Result.error(e.getCode(), e.getMessage());
-    }
 
     // ==================== 系统异常（500） ====================
 

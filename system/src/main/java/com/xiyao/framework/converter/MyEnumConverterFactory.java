@@ -4,6 +4,7 @@ package com.xiyao.framework.converter;
 import com.xiyao.framework.enums.BaseEnum;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -24,7 +25,7 @@ public class MyEnumConverterFactory implements ConverterFactory<String, BaseEnum
         }
 
         @Override
-        public T convert(String source) {
+        public T convert(@NonNull String source) {
             // 空值判断
             if (!StringUtils.hasText(source)) {
                 return null;

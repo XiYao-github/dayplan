@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.xiyao.encrypt.annotation.Sensitive;
 import com.xiyao.encrypt.enums.SensitiveStrategy;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,17 +19,11 @@ import java.io.IOException;
  *
  */
 @Slf4j
+@AllArgsConstructor
+@NoArgsConstructor
 public class SensitiveSerializer extends JsonSerializer<String> implements ContextualSerializer {
 
-    private final SensitiveStrategy strategy;
-
-    public SensitiveSerializer() {
-        this.strategy = null;
-    }
-
-    public SensitiveSerializer(SensitiveStrategy strategy) {
-        this.strategy = strategy;
-    }
+    private  SensitiveStrategy strategy;
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
