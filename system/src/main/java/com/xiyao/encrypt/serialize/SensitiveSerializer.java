@@ -23,7 +23,7 @@ import java.io.IOException;
 @NoArgsConstructor
 public class SensitiveSerializer extends JsonSerializer<String> implements ContextualSerializer {
 
-    private  SensitiveStrategy strategy;
+    private SensitiveStrategy strategy;
 
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
