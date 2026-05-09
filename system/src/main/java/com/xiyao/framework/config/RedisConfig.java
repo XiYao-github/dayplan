@@ -56,7 +56,7 @@ public class RedisConfig {
      * 配置 RedisCacheManager，用于 @Cacheable 等注解的缓存管理
      */
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
         // 获取 Jackson 序列化器
         Jackson2JsonRedisSerializer<Object> jacksonSerializer = jackson2JsonRedisSerializer();
 
