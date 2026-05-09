@@ -1,7 +1,6 @@
 package com.xiyao.encrypt.enums;
 
 import com.xiyao.encrypt.core.encryptor.AbstractEncryptor;
-import com.xiyao.encrypt.core.encryptor.Base64Encryptor;
 import com.xiyao.encrypt.core.encryptor.Sm2Encryptor;
 import com.xiyao.encrypt.core.encryptor.Sm4Encryptor;
 import lombok.AllArgsConstructor;
@@ -18,11 +17,6 @@ public enum AlgorithmType {
      * 默认使用yml配置
      */
     DEFAULT(null),
-
-    /**
-     * base64
-     */
-    BASE64(Base64Encryptor.class),
 
     /**
      * sm4

@@ -89,26 +89,26 @@ encryptor-data:
   # 是否开启加密
   enable: true
   # 加密算法
-  algorithm: BASE64
+  algorithm: SM4
   # 编码方式
   encode: BASE64
   # 密钥(对称加密算法)
-  password:
+  password: password
   # 公钥(非对称加密算法)
-  publicKey:
+  publicKey: publicKey
   # 私钥(非对称加密算法)
-  privateKey:
+  privateKey: privateKey
 
 # 接口加密
 encryptor-api:
   # 是否开启加密
   enabled: true
   # 加密头标识
-  headerFlag: encrypt-key
+  headerFlag: headerFlag
   # 响应加密公钥(非对称加密算法)
-  publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJnNwrj4hi/y3CCJu868ghCG5dUj8wZK++RNlTLcXoMmdZWEQ/u02RgD5LyLAXGjLOjbMtC+/J9qofpSGTKSx/MCAwEAAQ==
+  publicKey: publicKey
   # 请求解密私钥(非对称加密算法)
-  privateKey: MIIBVAIBADANBgkqhkiG9w0BAQEFAASCAT4wggE6AgEAAkEAqhHyZfSsYourNxaY7Nt+PrgrxkiA50efORdI5U5lsW79MmFnusUA355oaSXcLhu5xxB38SMSyP2KvuKNPuH3owIDAQABAkAfoiLyL+Z4lf4Myxk6xUDgLaWGximj20CUf+5BKKnlrK+Ed8gAkM0HqoTt2UZwA5E2MzS4EI2gjfQhz5X28uqxAiEA3wNFxfrCZlSZHb0gn2zDpWowcSxQAgiCstxGUoOqlW8CIQDDOerGKH5OmCJ4Z21v+F25WaHYPxCFMvwxpcw99EcvDQIgIdhDTIqD2jfYjPTY8Jj3EDGPbH2HHuffvflECt3Ek60CIQCFRlCkHpi7hthhYhovyloRYsM+IS9h/0BzlEAuO0ktMQIgSPT3aFAgJYwKpqRYKlLDVcflZFCKY7u3UP8iWi1Qw0Y=
+  privateKey: privateKey
   # 包含加解密路径(默认 "/*")
   includePaths:
     - /api/**
@@ -116,13 +116,13 @@ encryptor-api:
   excludePaths:
     - /api/public/**
 
-logging:
-  level:
-    com.xiyao: DEBUG
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-  pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
-    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
-  file:
-    name: ./logs/app.log
+#logging:
+#  level:
+#    com.xiyao: DEBUG
+#    org.springframework.web: INFO
+#    org.springframework.security: INFO
+#  pattern:
+#    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
+#    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
+#  file:
+#    name: ./logs/app.log

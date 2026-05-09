@@ -117,8 +117,8 @@ public class EncryptorManager {
      */
     private Set<Field> getEncryptField(Class<?> clazz) {
         Set<Field> fieldSet = new HashSet<>();
-        // 接口，匿名类，直接返回
-        if (clazz.isInterface() || clazz.isAnonymousClass()) {
+        // 接口，内部类，匿名类，直接返回
+        if (clazz.isInterface() || clazz.isMemberClass() ||  clazz.isAnonymousClass()) {
             return fieldSet;
         }
         Class<?> current = clazz;

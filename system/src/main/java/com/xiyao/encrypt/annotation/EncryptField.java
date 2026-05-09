@@ -9,7 +9,6 @@ import java.lang.annotation.*;
  * 字段加解密注解
  */
 @Inherited
-@Documented
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EncryptField {

@@ -1,7 +1,8 @@
 package com.xiyao.framework.config;
 
 import com.xiyao.common.converter.MyEnumConverterFactory;
-import com.xiyao.framework.resolver.CurrentUserArgumentResolver;
+import com.xiyao.framework.resolver.WebUserArgumentResolver;
+import com.xiyao.framework.resolver.AppUserArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -33,7 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 // 置允许跨域请求的域名
                 .allowedOriginPatterns("*")
-                // 是否允许证书（cookies）
+                // 是否允许证书(cookies)
                 .allowCredentials(true)
                 // 设置允许的请求头
                 .allowedHeaders("*")
@@ -49,11 +50,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         WebMvcConfigurer.super.addInterceptors(registry);
-        // TODO: 后续扩展 - TraceId 拦截器（记录请求参数、耗时等）
+        // TODO: 后续扩展 - TraceId 拦截器(记录请求参数、耗时等)
         // registry.addInterceptor(new TraceIdInterceptor()).addPathPatterns("/**").order(1);
-        // TODO: 后续扩展 - 请求日志拦截器（记录请求参数、耗时等）
+        // TODO: 后续扩展 - 请求日志拦截器(记录请求参数、耗时等)
         // registry.addInterceptor(new LogInterceptor()).addPathPatterns("/**").order(2);
-        // TODO: 后续扩展 - 限流拦截器（使用Resilience4j注解替代，暂不需要）
+        // TODO: 后续扩展 - 限流拦截器(使用Resilience4j注解替代，暂不需要)
         // registry.addInterceptor(new RateLimitInterceptor()).addPathPatterns("/**").order(3);
     }
 
@@ -62,8 +63,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        // 后台管理用户参数解析器（@CurrentUser）
-        resolvers.add(new CurrentUserArgumentResolver());
+        // 后台用户参数解析器(@WebUser)
+        resolvers.add(new WebUserArgumentResolver());
+        // 小程序用户参数解析器(@WebUser)
+        resolvers.add(new AppUserArgumentResolver());
     }
 
     /**
@@ -71,7 +74,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        // 枚举转换器（您的原有配置）
+        // 枚举转换器(您的原有配置)
         registry.addConverterFactory(new MyEnumConverterFactory());
 
         // ==================== String → LocalDateTime ====================
