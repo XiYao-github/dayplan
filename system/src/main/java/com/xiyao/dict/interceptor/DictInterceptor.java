@@ -9,7 +9,7 @@
 // import org.apache.ibatis.reflection.MetaObject;
 // import org.apache.ibatis.reflection.SystemMetaObject;
 // import travel.dict.annotation.DataDict;
-// import travel.base.utils.SpringContextUtils;
+// import travel.base.utils.SpringUtils;
 // import travel.dict.service.DictService;
 //
 // import java.lang.reflect.Array;
@@ -73,7 +73,7 @@
 //             return;
 //         }
 //         //根据code获取数据字典字段
-//         DictService dictService = SpringContextUtils.getBean(DictService.class);
+//         DictService dictService = SpringUtils.getBean(DictService.class);
 //         //Map<String, String> dictMap = dictService.lambdaQuery().eq(DictEntity::getCode, dataDict.code())
 //         //        .list().parallelStream().collect(Collectors.toMap(DictEntity::getValue, DictEntity::getLabel));
 //         Map<String, String> dictMap = dictService.queryMap(dataDict.code());

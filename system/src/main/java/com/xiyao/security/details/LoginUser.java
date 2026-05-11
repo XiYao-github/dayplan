@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class LoginUser implements UserDetails {
 
     /**
-     * 用户基本信息（原始对象）
+     * 用户id（原始对象）
      */
     private Long userId;
 

@@ -1,9 +1,11 @@
-package com.xiyao.encrypt.core;
+package com.xiyao.encrypt.properties;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.xiyao.common.constant.Constant;
 import com.xiyao.encrypt.annotation.EncryptField;
+import com.xiyao.encrypt.core.EncryptContext;
+import com.xiyao.encrypt.core.IEncryptor;
 import com.xiyao.encrypt.core.encryptor.AbstractEncryptor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

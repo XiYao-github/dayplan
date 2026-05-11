@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * 接口加解密配置
  */
-// @AutoConfiguration
 @Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
 @ConditionalOnProperty(value = "encryptor-api.enabled", havingValue = "true")

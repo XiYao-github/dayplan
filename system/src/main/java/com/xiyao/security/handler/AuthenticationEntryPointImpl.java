@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 认证失败入口（未登录或 token 无效时返回 401）
+ * 认证失败入口
  */
 @Slf4j
 @Component

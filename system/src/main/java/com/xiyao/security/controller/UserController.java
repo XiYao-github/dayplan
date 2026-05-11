@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+/**
+ * 用户管理(测试)
+ */
 @RestController
 @RequestMapping("/system/user")
 public class UserController extends MyBaseController {
@@ -23,7 +25,7 @@ public class UserController extends MyBaseController {
     private PasswordEncoder passwordEncoder;
 
     /**
-     * 用户列表（分页 + 条件查询）
+     * 用户列表
      */
     @PreAuthorize("hasAuthority('sys:user:list')")
     @GetMapping("/list")

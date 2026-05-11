@@ -2,7 +2,6 @@ package com.xiyao.framework.config;
 
 import com.xiyao.common.converter.MyEnumConverterFactory;
 import com.xiyao.framework.resolver.WebUserArgumentResolver;
-import com.xiyao.framework.resolver.AppUserArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -54,8 +53,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // registry.addInterceptor(new TraceIdInterceptor()).addPathPatterns("/**").order(1);
         // TODO: 后续扩展 - 请求日志拦截器(记录请求参数、耗时等)
         // registry.addInterceptor(new LogInterceptor()).addPathPatterns("/**").order(2);
-        // TODO: 后续扩展 - 限流拦截器(使用Resilience4j注解替代，暂不需要)
-        // registry.addInterceptor(new RateLimitInterceptor()).addPathPatterns("/**").order(3);
     }
 
     /**
@@ -66,7 +63,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 后台用户参数解析器(@WebUser)
         resolvers.add(new WebUserArgumentResolver());
         // 小程序用户参数解析器(@WebUser)
-        resolvers.add(new AppUserArgumentResolver());
+        // resolvers.add(new AppUserArgumentResolver());
     }
 
     /**

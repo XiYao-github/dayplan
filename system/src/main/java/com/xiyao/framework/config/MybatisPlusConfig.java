@@ -10,6 +10,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MybatisPlus 配置类
+ */
 @Configuration
 @MapperScan("com.xiyao.**.mapper")
 public class MybatisPlusConfig {

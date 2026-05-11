@@ -19,6 +19,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
+/**
+ * Redis 配置类
+ */
 @Configuration
 @EnableCaching
 public class RedisConfig {

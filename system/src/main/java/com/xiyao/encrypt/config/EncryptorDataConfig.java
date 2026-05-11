@@ -1,10 +1,10 @@
 package com.xiyao.encrypt.config;
 
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
-import com.xiyao.encrypt.core.EncryptorManager;
 import com.xiyao.encrypt.interceptor.DecryptInterceptor;
 import com.xiyao.encrypt.interceptor.EncryptInterceptor;
 import com.xiyao.encrypt.properties.EncryptorData;
+import com.xiyao.encrypt.properties.EncryptorManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 数据加解密配置
  */
-// @AutoConfiguration(after = MybatisPlusAutoConfiguration.class)
 @Configuration
 @AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
 @EnableConfigurationProperties(EncryptorData.class)

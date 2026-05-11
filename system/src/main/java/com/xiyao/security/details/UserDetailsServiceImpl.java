@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 实现 UserDetailsService 接口，用于 Spring Security 获取用户信息和授权信息
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -39,6 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .eq(SysUser::getDeleted, 0)
                 .select(SysUser::getId, SysUser::getUsername, SysUser::getPassword, SysUser::getStatus)
                 .one();
+        // 判断用户状态
         if (ObjectUtil.isEmpty(user)) {
             throw new UsernameNotFoundException("用户不存在");
         } else if (user.getStatus() == 0) {

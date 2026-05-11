@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
+/**
+ * 登录控制器
+ */
 @RestController
 public class LoginController extends MyBaseController {
 
@@ -41,15 +44,16 @@ public class LoginController extends MyBaseController {
         String username = user.getUsername();
         String password = user.getPassword();
 
-        // 调用 AuthenticationManager 进行认证
+        // 创建 UsernamePasswordAuthenticationToken 对象
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        // 使用 AuthenticationManager 认证
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         // 认证成功，获取用户信息
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         // 生成 JWT
         String loginUserKey = IdUtil.fastSimpleUUID();
         String token = jwtUtils.generateToken(loginUserKey);
-        // 存储 token 到 Redis 中
+        // 用户信息存储到缓存
         redisUtils.set(JwtUtils.LOGIN_USER_KEY + loginUserKey, loginUser, JwtUtils.SECONDS);
         // 返回 token
         return success(token);
