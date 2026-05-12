@@ -5,9 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.system.entity.*;
-import com.xiyao.system.mapper.SysMenuMapper;
-import com.xiyao.system.mapper.SysRoleMapper;
-import com.xiyao.system.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,12 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-
-    private final SysUserMapper userMapper;
-
-    private final SysRoleMapper roleMapper;
-
-    private final SysMenuMapper menuMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -64,8 +55,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // 查询用户关联的三员类型
         Set<Integer> adminTypes = Db.lambdaQuery(SysRole.class)
                 .in(SysRole::getId, roleIdList)
-                .select(SysRole::getRoleType)
-                .list().stream().map(SysRole::getRoleType).collect(Collectors.toSet());
+                .select(SysRole::getType)
+                .list().stream().map(SysRole::getType).collect(Collectors.toSet());
         // 取最大角色类型（用户只会分配一种角色类型）
         Integer adminType = adminTypes.stream().max(Integer::compare).orElse(0);
         // 构造对象返回

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 字典类型
+ * 字典数据
  * </p>
  *
  * @author xiyao
@@ -22,17 +22,11 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
-@TableName("sys_dict_type")
-public class SysDictType {
+@TableName("dict_data")
+public class DictData {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 字典名称
-     */
-    @TableField("dict_name")
-    private String dictName;
 
     /**
      * 字典类型
@@ -41,10 +35,28 @@ public class SysDictType {
     private String dictType;
 
     /**
+     * 字典标签
+     */
+    @TableField("dict_label")
+    private String dictLabel;
+
+    /**
+     * 字典键值
+     */
+    @TableField("dict_value")
+    private String dictValue;
+
+    /**
      * 状态(0.停用 1.正常)
      */
     @TableField("status")
     private Integer status;
+
+    /**
+     * 是否默认(0.否 1.是)
+     */
+    @TableField("is_default")
+    private Integer isDefault;
 
     /**
      * 备注

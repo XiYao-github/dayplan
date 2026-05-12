@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Accessors(chain = true)
-@TableName("sys_operation")
-public class SysOperation {
+@TableName("log_operation")
+public class LogOperation {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;

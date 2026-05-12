@@ -1,6 +1,6 @@
 package com.xiyao.common.config;
 
-import com.xiyao.system.entity.SysDictData;
+import com.xiyao.system.entity.DictData;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +18,7 @@ public class DictManager {
     /**
      * 数据字典缓存
      */
-    Map<String, Set<SysDictData>> dictMap = new ConcurrentHashMap<>();
+    Map<String, Set<DictData>> dictMap = new ConcurrentHashMap<>();
 
 
 

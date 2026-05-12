@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
  * @since 2026-04-28
  */
 @Data
-@TableName("sys_login")
+@TableName("log_login")
 @Accessors(chain = true)
-public class SysLogin {
+public class LogLogin {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
