@@ -1,15 +1,16 @@
 package com.xiyao.security.controller;
 
-import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.xiyao.common.utils.Result;
 import com.xiyao.common.base.controller.MyBaseController;
-import com.xiyao.common.utils.RedisUtils;
+import com.xiyao.common.utils.Result;
 import com.xiyao.security.details.LoginUser;
+import com.xiyao.security.details.UserVo;
 import com.xiyao.security.utils.JwtUtils;
 import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,45 +24,35 @@ import java.time.LocalDateTime;
 /**
  * 登录控制器
  */
+@Slf4j
 @RestController
+@RequiredArgsConstructor
+@ConditionalOnBean(AuthenticationManager.class)
 public class LoginController extends MyBaseController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RedisUtils redisUtils;
-
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public Result login(@RequestBody SysUser user) {
-
+    public Result login(@RequestBody UserVo user) {
+        // 获取用户名和密码
         String username = user.getUsername();
         String password = user.getPassword();
-
         // 创建 UsernamePasswordAuthenticationToken 对象
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         // 使用 AuthenticationManager 认证
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         // 认证成功，获取用户信息
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        // 生成 JWT
-        String loginUserKey = IdUtil.fastSimpleUUID();
-        String token = jwtUtils.generateToken(loginUserKey);
-        // 用户信息存储到缓存
-        redisUtils.set(JwtUtils.LOGIN_USER_KEY + loginUserKey, loginUser, JwtUtils.SECONDS);
-        // 返回 token
-        return success(token);
+        // 生成 token 返回
+        return success(jwtUtils.getToken(loginUser));
     }
 
-
     @PostMapping("/register")
-    public Result register(@RequestBody SysUser user) {
+    public Result register(@RequestBody UserVo user) {
         // 检查用户名是否已存在
         Long count = Db.lambdaQuery(SysUser.class).eq(SysUser::getUsername, user.getUsername()).count();
         if (count > 0) {
@@ -73,15 +64,12 @@ public class LoginController extends MyBaseController {
         // 加密密码
         String encode = passwordEncoder.encode(user.getPassword());
         newUser.setPassword(encode);
-        newUser.setNickName(user.getNickName());
-        newUser.setMobile(user.getMobile());
-        newUser.setEmail(user.getEmail());
         newUser.setStatus(1);
         newUser.setCreateTime(LocalDateTime.now());
         newUser.setUpdateTime(LocalDateTime.now());
         // 保存用户
         Db.save(newUser);
-        // 默认分配普通用户角色（role_id=2），这里需要注入 SysUserRoleMapper 并插入关联
+        // 默认分配普通用户角色(测试)
         SysUserRole userRole = new SysUserRole();
         userRole.setUserId(newUser.getId());
         userRole.setRoleId(2L);
@@ -89,4 +77,8 @@ public class LoginController extends MyBaseController {
         return success();
     }
 
+    @PostMapping("/logout")
+    public Result logout() {
+        return success();
+    }
 }

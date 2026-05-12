@@ -1,16 +1,15 @@
-package com.xiyao.security.details;
+package com.xiyao.security.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.xiyao.system.entity.SysMenu;
-import com.xiyao.system.entity.SysRoleMenu;
-import com.xiyao.system.entity.SysUser;
-import com.xiyao.system.entity.SysUserRole;
+import com.xiyao.security.details.LoginUser;
+import com.xiyao.system.entity.*;
 import com.xiyao.system.mapper.SysMenuMapper;
 import com.xiyao.system.mapper.SysRoleMapper;
 import com.xiyao.system.mapper.SysUserMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,17 +21,16 @@ import java.util.stream.Collectors;
 /**
  * 实现 UserDetailsService 接口，用于 Spring Security 获取用户信息和授权信息
  */
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
-    private SysUserMapper userMapper;
+    private final SysUserMapper userMapper;
 
-    @Autowired
-    private SysRoleMapper roleMapper;
+    private final SysRoleMapper roleMapper;
 
-    @Autowired
-    private SysMenuMapper menuMapper;
+    private final SysMenuMapper menuMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -63,8 +61,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .in(SysMenu::getId, menuIdList)
                 .select(SysMenu::getPerms)
                 .list().stream().map(SysMenu::getPerms).filter(StrUtil::isNotBlank).collect(Collectors.toSet());
+        // 查询用户关联的三员类型
+        Set<Integer> adminTypes = Db.lambdaQuery(SysRole.class)
+                .in(SysRole::getId, roleIdList)
+                .select(SysRole::getRoleType)
+                .list().stream().map(SysRole::getRoleType).collect(Collectors.toSet());
+        // 取最大角色类型（用户只会分配一种角色类型）
+        Integer adminType = adminTypes.stream().max(Integer::compare).orElse(0);
         // 构造对象返回
-        return new LoginUser(user.getId(), user, perms);
+        return new LoginUser(user.getId(), adminType, user, perms);
     }
 
 }

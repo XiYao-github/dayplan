@@ -15,17 +15,17 @@ public class EncryptorData {
     /**
      * 是否开启加密
      */
-    private Boolean enable;
+    private Boolean enable = false;
 
     /**
      * 加密算法
      */
-    private AlgorithmType algorithm;
+    private AlgorithmType algorithm = AlgorithmType.SM4;
 
     /**
      * 编码方式
      */
-    private EncodeType encode;
+    private EncodeType encode = EncodeType.HEX;
 
     /**
      * 密钥(对称加密算法)

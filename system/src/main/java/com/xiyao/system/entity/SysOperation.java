@@ -38,6 +38,18 @@ public class SysOperation {
     private String username;
 
     /**
+     * 三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)
+     */
+    @TableField("admin_type")
+    private Integer adminType;
+
+    /**
+     * 操作模块
+     */
+    @TableField("module")
+    private String module;
+
+    /**
      * 操作描述
      */
     @TableField("operation")

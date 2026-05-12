@@ -47,6 +47,12 @@ public class SysRole {
     private Integer status;
 
     /**
+     * 角色类型（0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员）
+     */
+    @TableField("type")
+    private Integer type;
+
+    /**
      * 备注
      */
     @TableField("remark")

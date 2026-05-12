@@ -79,19 +79,38 @@ mybatis-plus:
     # 开启自动驼峰命名
     map-underscore-to-camel-case: true
     # 打印SQL日志到控制台
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     # 关闭启动图标
     banner: false
 
+# 权限过滤
+security-data:
+  # 是否开启权限
+  enabled: false
+  # 过滤路径
+  includePaths:
+    - /login
+    - /register
+    - /captcha
+    - /public/**
+  # 静态路径
+  staticPaths:
+    - /doc.html
+  jwt:
+    # 密钥
+    secret: secret-key
+    # 密钥有效期(秒)
+    expire: 60*60*24
+
 # 数据加密
 encryptor-data:
   # 是否开启加密
-  enable: true
+  enable: false
   # 加密算法
   algorithm: SM4
   # 编码方式
-  encode: BASE64
+  encode: HEX
   # 密钥(对称加密算法)
   password: password
   # 公钥(非对称加密算法)
@@ -102,7 +121,7 @@ encryptor-data:
 # 接口加密
 encryptor-api:
   # 是否开启加密
-  enabled: true
+  enabled: false
   # 加密头标识
   headerFlag: headerFlag
   # 响应加密公钥(非对称加密算法)
@@ -126,3 +145,47 @@ encryptor-api:
 #    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
 #  file:
 #    name: ./logs/app.log
+
+resilience4j:
+  # 限流器配置
+  ratelimiter:
+    instances:
+      paymentService:
+        limitRefreshPeriod: 1s          # 令牌刷新周期：1秒
+        limitForPeriod: 5               # 每周期5个令牌 → QPS=5
+        timeoutDuration: 0              # 无令牌立即失败，不等待
+
+  # 舱壁隔离配置（信号量模式）
+  bulkhead:
+    instances:
+      paymentService:
+        maxConcurrentCalls: 10          # 最大并发数
+        maxWaitDuration: 0              # 无可用资源立即拒绝
+
+  # 熔断器配置
+  circuitbreaker:
+    instances:
+      paymentService:
+        slidingWindowSize: 10           # 滑动窗口大小（10次调用）
+        slidingWindowType: COUNT_BASED  # 基于请求次数统计
+        failureRateThreshold: 50        # 失败率阈值50%
+        waitDurationInOpenState: 10s    # 熔断开启持续时间
+        permittedNumberOfCallsInHalfOpenState: 3  # 半开状态允许的试探请求数
+        minimumNumberOfCalls: 5         # 最少请求数（低于此值不熔断）
+
+  # 重试配置
+  retry:
+    instances:
+      paymentService:
+        maxAttempts: 3                  # 最大重试次数（含首次）
+        waitDuration: 500ms             # 重试间隔
+        retryExceptions: # 触发重试的异常类型
+          - java.io.IOException
+          - org.springframework.web.client.HttpServerErrorException
+
+  # 超时配置
+  timelimiter:
+    instances:
+      paymentService:
+        timeoutDuration: 3s             # 超时时间3秒
+        cancelRunningFuture: true       # 超时后取消执行

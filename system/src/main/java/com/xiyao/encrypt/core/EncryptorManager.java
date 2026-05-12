@@ -1,14 +1,11 @@
-package com.xiyao.encrypt.properties;
+package com.xiyao.encrypt.core;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.xiyao.common.constant.Constant;
 import com.xiyao.encrypt.annotation.EncryptField;
-import com.xiyao.encrypt.core.EncryptContext;
-import com.xiyao.encrypt.core.IEncryptor;
 import com.xiyao.encrypt.core.encryptor.AbstractEncryptor;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -20,7 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 加密管理类
  */
-@Slf4j
 @NoArgsConstructor
 public class EncryptorManager {
 

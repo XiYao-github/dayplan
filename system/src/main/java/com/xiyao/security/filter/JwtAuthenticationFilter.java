@@ -3,18 +3,16 @@ package com.xiyao.security.filter;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.xiyao.common.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -22,26 +20,22 @@ import java.io.IOException;
 /**
  * JWT 认证过滤器
  */
-@Component
+@Slf4j
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtUtils jwtUtils;
 
-    @Autowired
-    private RedisUtils redisUtils;
+    private static final String TOKEN_PREFIX = "Bearer ";
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
+        String token = getToken(request);
         if (StrUtil.isNotBlank(token) && jwtUtils.validateToken(token)) {
             // 解析用户账号
-            String loginTokenKey = jwtUtils.getLoginTokenKey(token);
-            // 缓存获取用户信息
-            LoginUser loginUser = redisUtils.get(JwtUtils.LOGIN_USER_KEY + loginTokenKey, LoginUser.class);
+            LoginUser loginUser = jwtUtils.getLoginUser(token);
             if (ObjectUtil.isNotEmpty(loginUser)) {
                 // 构造已认证的 Authentication 对象
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
@@ -55,5 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
+    /**
+     * 获取请求 Token
+     */
+    private String getToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (StrUtil.isNotBlank(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
+            return bearerToken.replace(TOKEN_PREFIX, "");
+        }
+        return bearerToken;
+    }
 }

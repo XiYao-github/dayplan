@@ -1,9 +1,12 @@
 package com.xiyao.security.config;
 
-
+import com.xiyao.common.utils.RedisUtils;
 import com.xiyao.security.filter.JwtAuthenticationFilter;
 import com.xiyao.security.handler.AuthenticationEntryPointImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xiyao.security.properties.SecurityData;
+import com.xiyao.security.utils.JwtUtils;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,13 +25,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableMethodSecurity
+@EnableConfigurationProperties(SecurityData.class)
+@ConditionalOnProperty(value = "security-data.enabled", havingValue = "true")
 public class SecurityConfig {
 
-    @Autowired
-    private AuthenticationEntryPointImpl authenticationEntryPoint;
+    /**
+     * 认证工具类
+     */
+    @Bean
+    public JwtUtils jwtUtils(RedisUtils redisUtils) {
+        return new JwtUtils(redisUtils);
+    }
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    /**
+     * 认证管理器
+     */
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtUtils jwtUtils) {
+        return new JwtAuthenticationFilter(jwtUtils);
+    }
 
     /**
      * 密码编码器
@@ -47,28 +62,28 @@ public class SecurityConfig {
     }
 
     /**
-     * 配置 Spring Security
+     * 配置 Spring Security 过滤器链
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter, SecurityData properties) throws Exception {
         return http
                 // 禁用 CSRF（前后端分离无状态应用）
                 .csrf(AbstractHttpConfigurer::disable)
                 // 设置 Session 为无状态（不使用 Session 存储上下文）
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 认证失败处理类
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
                 // 请求授权规则
                 .authorizeHttpRequests(auth -> auth
-                        // 放行登录接口（无需认证）
-                        .requestMatchers("/login", "/register", "/captcha", "/public/**").permitAll()
-                        // 放行静态资源（如文档等，按需添加）
-                        .requestMatchers("/doc.html").permitAll()
+                        // 放行登录接口(无需认证)
+                        .requestMatchers(properties.getIncludePaths().toArray(String[]::new)).permitAll()
+                        // 放行静态资源(如文档等，按需添加)
+                        .requestMatchers(properties.getStaticPaths().toArray(String[]::new)).permitAll()
                         // 其他任何请求都需要认证
                         .anyRequest().authenticated()
                 )
-                // 添加 JWT 过滤器（在 UsernamePasswordAuthenticationFilter 之前执行）
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // 添加 JWT 过滤器(UsernamePasswordAuthenticationFilter 之前执行)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

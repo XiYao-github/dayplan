@@ -55,7 +55,6 @@
             <optional>true</optional>
         </dependency>
 
-
         <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -103,6 +102,19 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15to18</artifactId>
             <version>1.69</version>
+        </dependency>
+
+        <!-- Spring Boot 3.x 必须使用 resilience4j-spring-boot3 -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-spring-boot3</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+
+        <!-- Actuator 监控（可选，用于暴露指标） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
     </dependencies>

@@ -26,22 +26,27 @@ import java.util.stream.Collectors;
 public class LoginUser implements UserDetails {
 
     /**
-     * 用户id（原始对象）
+     * 用户id(原始对象)
      */
     private Long userId;
 
     /**
-     * 用户基本信息（原始对象）
+     * 三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)
+     */
+    private Integer adminType;
+
+    /**
+     * 用户基本信息(原始对象)
      */
     private SysUser sysUser;
 
     /**
-     * 权限标识集合（如 ["system:user:list"]）
+     * 权限标识集合(如 ["system:user:list"])
      */
     private Set<String> permissions;
 
     /**
-     * 获取权限列表（
+     * 获取权限列表
      */
     @Override
     @JsonIgnore // 序列化时忽略，避免权限列表暴露给前端

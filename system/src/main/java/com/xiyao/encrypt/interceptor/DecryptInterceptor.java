@@ -9,7 +9,7 @@ import com.xiyao.encrypt.core.EncryptContext;
 import com.xiyao.encrypt.enums.AlgorithmType;
 import com.xiyao.encrypt.enums.EncodeType;
 import com.xiyao.encrypt.properties.EncryptorData;
-import com.xiyao.encrypt.properties.EncryptorManager;
+import com.xiyao.encrypt.core.EncryptorManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
