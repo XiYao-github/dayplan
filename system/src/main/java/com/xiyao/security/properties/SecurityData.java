@@ -14,7 +14,7 @@ import java.util.List;
 public class SecurityData {
 
     /**
-     * 是否开启加密
+     * 是否开启权限过滤
      */
     private Boolean enabled = false;
 
@@ -28,4 +28,22 @@ public class SecurityData {
      */
     private List<String> staticPaths = new ArrayList<>();
 
+    /**
+     * JWT 配置
+     */
+    private JwtData jwt;
+
+    @Data
+    public static class JwtData {
+
+        /**
+         * 密钥
+         */
+        private String secret;
+
+        /**
+         * 过期时间(秒)
+         */
+        private Long expire;
+    }
 }

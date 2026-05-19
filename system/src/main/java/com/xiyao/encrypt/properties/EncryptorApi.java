@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,7 +36,8 @@ public class EncryptorApi {
     /**
      * 包含加解密路径(默认 "/*")
      */
-    private List<String> includePaths = new ArrayList<>(Collections.singletonList("/*"));
+    private List<String> includePaths = new ArrayList<>();
+
     /**
      * 排除加解密路径
      */

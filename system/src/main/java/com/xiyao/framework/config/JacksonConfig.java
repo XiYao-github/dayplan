@@ -1,34 +1,50 @@
 package com.xiyao.framework.config;
 
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.xiyao.common.constant.Constant;
-import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 /**
- * Jackson 序列化配置类
+ * Jackson JSON 配置类
  */
-@Slf4j
 @Configuration
 public class JacksonConfig {
 
+    private static final String DEFAULT_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
+    private static final String DEFAULT_TIME_PATTERN = "HH:mm:ss";
+    private static final String DEFAULT_TIME_ZONE = "GMT+8";
+
     /**
-     * 配置 Jackson 并注入 ObjectMapper（覆盖 Spring Boot 默认配置）
+     * 配置 Jackson 并注入 ObjectMapper
+     * <p>
      * 使用 @Primary 确保此 ObjectMapper 被优先使用
      */
     @Bean
@@ -36,38 +52,70 @@ public class JacksonConfig {
     public ObjectMapper objectMapper() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
 
-        // ==================== 基础格式配置 ====================
-        // 全局日期时间格式：yyyy-MM-dd HH:mm:ss
-        builder.simpleDateFormat(Constant.PATTERN_DATE_TIME);
-        // 全局时区：GMT+8
-        builder.timeZone(Constant.TIME_ZONE);
-        // 序列化时排除 null 值，精简响应体，减少网络传输量
-        builder.serializationInclusion(JsonInclude.Include.NON_NULL);
+        // 日期时间格式配置
+        builder.simpleDateFormat(JacksonConfig.DEFAULT_DATE_TIME_PATTERN);
+        builder.timeZone(DEFAULT_TIME_ZONE);
 
-        // ==================== 序列化配置（Java → JSON） ====================
-        // 日期不转时间戳：禁用默认的数组格式 [2024,1,15,14,30,0]，输出字符串（如 "2024-01-15 14:30:00"），避免前端解析数组格式的麻烦
-        builder.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        // ==================== 反序列化配置（JSON → Java） ====================
-        // 忽略未知属性，前端多传字段时不报错，只反序列化已知字段，提升接口兼容性
-        builder.featuresToDisable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        // ==================== Java 8 时间类型支持 ====================
-        // 注册 JavaTimeModule 并自定义 LocalDateTime 格式 LocalDate、LocalTime 等其他时间类型使用 JavaTimeModule 默认配置即可
+        // 时间类型
         JavaTimeModule javaTimeModule = new JavaTimeModule();
-        // LocalDateTime 序列化格式：yyyy-MM-dd HH:mm:ss
-        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(Constant.PATTERN_DATE_TIME)));
-        // LocalDateTime 反序列化格式：yyyy-MM-dd HH:mm:ss
-        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(Constant.PATTERN_DATE_TIME)));
+        // LocalDateTime 序列化/反序列化
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_DATE_TIME_PATTERN)));
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_DATE_TIME_PATTERN)));
+        // LocalDate 序列化/反序列化
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_DATE_PATTERN)));
+        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_DATE_PATTERN)));
+        // LocalTime 序列化/反序列化
+        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_TIME_PATTERN)));
+        javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(JacksonConfig.DEFAULT_TIME_PATTERN)));
 
-        // 注册 SimpleModule 将 Long 类型序列化为 String 字符串
-        SimpleModule longModule = new SimpleModule();
-        longModule.addSerializer(Long.class, ToStringSerializer.instance);
-        longModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        // Date 序列化/反序列化
+        SimpleModule dateModule = new SimpleModule();
+        dateModule.addSerializer(Date.class, new JsonSerializer<>() {
+            @Override
+            public void serialize(Date value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+                String format = DateUtil.format(value, JacksonConfig.DEFAULT_DATE_TIME_PATTERN);
+                gen.writeString(format);
+            }
+        });
+        dateModule.addDeserializer(Date.class, new JsonDeserializer<>() {
+            @Override
+            public Date deserialize(JsonParser p, DeserializationContext context) throws IOException {
+                DateTime parse = DateUtil.parse(p.getText());
+                if (ObjectUtils.isNull(parse)) {
+                    return null;
+                }
+                return parse.toJdkDate();
+            }
+        });
+
+        // Long/BigInteger/BigDecimal 序列化转字符串
+        SimpleModule customModule = new SimpleModule();
+        customModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+        customModule.addSerializer(Long.class, ToStringSerializer.instance);
+        customModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
+        customModule.addSerializer(BigDecimal.class, ToStringSerializer.instance);
 
         // 注册模块
-        builder.modules(javaTimeModule, longModule);
+        builder.modules(javaTimeModule, dateModule, customModule);
+        builder.serializationInclusion(JsonInclude.Include.NON_NULL);
 
-        return builder.build();
+        // 配置属性
+        ObjectMapper objectMapper = builder.build();
+
+        // 序列化特性配置
+        // 允许序列化空对象
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        // 日期不转时间戳
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        // 反序列化特性配置
+        // 忽略未知属性
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        // 空字符串转为 null
+        objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+
+        return objectMapper;
     }
 }
+
+

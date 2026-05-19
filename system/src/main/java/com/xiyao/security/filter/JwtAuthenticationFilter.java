@@ -26,13 +26,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
 
-    private static final String TOKEN_PREFIX = "Bearer ";
-
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = getToken(request);
+        String token = jwtUtils.getHeaderToken(request);
         if (StrUtil.isNotBlank(token) && jwtUtils.validateToken(token)) {
             // 解析用户账号
             LoginUser loginUser = jwtUtils.getLoginUser(token);
@@ -47,16 +43,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
-    }
-
-    /**
-     * 获取请求 Token
-     */
-    private String getToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StrUtil.isNotBlank(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
-            return bearerToken.replace(TOKEN_PREFIX, "");
-        }
-        return bearerToken;
     }
 }

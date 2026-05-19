@@ -99,7 +99,7 @@ public class EncryptResponseWrapper extends HttpServletResponseWrapper {
         // 生成 sm4Key
         String sm4Key = RandomUtil.randomString(16);
         // 使用 sm2 加密 sm4Key
-        String encryptKey = EncryptUtils.encryptBySm2(sm4Key, publicKey);
+        String encryptKey = EncryptUtils.encryptBySm2Hex(sm4Key, publicKey);
         // 设置响应头，vue版本需要设置
         response.addHeader("Access-Control-Expose-Headers", headerFlag);
         response.setHeader("Access-Control-Allow-Origin", "*");
@@ -109,7 +109,7 @@ public class EncryptResponseWrapper extends HttpServletResponseWrapper {
         // 获取接口响应内容
         String content = this.getContent();
         // 使用 sm4 加密 content 明文
-        String encryptContent = EncryptUtils.encryptBySm4(content, sm4Key);
+        String encryptContent = EncryptUtils.encryptBySm4Hex(content, sm4Key);
         // 响应加密内容
         response.getWriter().write(encryptContent);
     }

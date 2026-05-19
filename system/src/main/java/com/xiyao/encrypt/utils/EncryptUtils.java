@@ -1,6 +1,7 @@
 package com.xiyao.encrypt.utils;
 
 import cn.hutool.core.util.HexUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.BCUtil;
 import cn.hutool.crypto.KeyUtil;
@@ -9,7 +10,6 @@ import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
 import cn.hutool.crypto.symmetric.SM4;
 
-import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 
@@ -35,7 +35,7 @@ public class EncryptUtils {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
         }
         SM4 sm4 = SmUtil.sm4(password.getBytes(StandardCharsets.UTF_8));
-        return sm4.encryptHex(data, StandardCharsets.UTF_8);
+        return sm4.encryptBase64(data, StandardCharsets.UTF_8);
     }
 
     /**
@@ -90,7 +90,7 @@ public class EncryptUtils {
             throw new IllegalArgumentException("SM2需要传入公钥进行加密");
         }
         SM2 sm2 = SmUtil.sm2(null, publicKey);
-        return sm2.encryptHex(data, StandardCharsets.UTF_8, KeyType.PublicKey);
+        return sm2.encryptBase64(data, StandardCharsets.UTF_8, KeyType.PublicKey);
     }
 
     /**
@@ -124,24 +124,54 @@ public class EncryptUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println("========== SM4 测试 ==========");
-        SecretKey secretKey1 = KeyUtil.generateKey("SM4");
-        SecretKey secretKey2 = SmUtil.sm4().getSecretKey();
-        // 转为Hex字符串（32位十六进制）
-        String hexKey1 = HexUtil.encodeHexStr(secretKey1.getEncoded());
-        String hexKey2 = HexUtil.encodeHexStr(secretKey2.getEncoded());
-        System.out.println("SM4 密钥(Hex): " + hexKey1);
-        System.out.println("SM4 密钥(Hex): " + hexKey2);
+        System.out.println("========== 生成 SM2 密钥对 ==========");
 
-
-        System.out.println("\n========== SM2 测试 ==========");
+        // 生成 SM2 密钥对
         KeyPair keyPair = KeyUtil.generateKeyPair("SM2");
-        SM2 sm2 = SmUtil.sm2();
-        String hexKey3 = HexUtil.encodeHexStr(BCUtil.encodeECPrivateKey(keyPair.getPrivate()));
-        String hexKey4 = HexUtil.encodeHexStr(BCUtil.encodeECPublicKey(keyPair.getPublic()));
-        System.out.println("SM2 私钥(Hex): " + hexKey3);
-        System.out.println("SM2 公钥(Hex): " + hexKey4);
 
+        String privateKey = HexUtil.encodeHexStr(BCUtil.encodeECPrivateKey(keyPair.getPrivate()));
+        String publicKey = HexUtil.encodeHexStr(BCUtil.encodeECPublicKey(keyPair.getPublic()));
+
+        System.out.println("SM2 私钥(Hex): " + privateKey);
+        System.out.println("SM2 公钥(Hex): " + publicKey);
+
+        System.out.println("========== 生成 SM4 密钥 ==========");
+
+        String password = RandomUtil.randomStringUpper(16);
+        System.out.println("SM4 密钥(字符串): " + password);
+        System.out.println("密钥字节长度: " + password.length());
+
+        System.out.println("========== 原始数据 ==========");
+        String plainText = "这是需要加密的敏感数据，内容可能很长...";
+        System.out.println("明文: " + plainText);
+
+        System.out.println("========== 加密过程 ==========");
+
+        // 使用 SM4 加密明文
+        String encryptDataHex = encryptBySm4Hex(plainText, password);
+        System.out.println("SM4 加密后的数据(Hex): " + encryptDataHex);
+
+        // 使用 SM2 公钥加密 SM4 密钥
+        String encryptSm4KeyHex = encryptBySm2Hex(password, publicKey);
+        System.out.println("SM2 加密后的SM4密钥(Hex): " + encryptSm4KeyHex);
+
+        System.out.println("========== 5. 解密过程 ==========");
+
+        // 使用 SM2 私钥解密，获取 SM4 密钥
+        String decryptSm4Key = decryptBySm2(encryptSm4KeyHex, privateKey);
+        System.out.println("SM2 解密后的SM4密钥: " + decryptSm4Key);
+
+        // 验证 SM4 密钥是否一致
+        boolean keyMatch = password.equals(decryptSm4Key);
+        System.out.println("SM4 密钥验证: " + (keyMatch ? "✅ 一致" : "❌ 不一致"));
+
+        // 使用 SM4 密钥解密数据
+        String decryptText = decryptBySm4(encryptDataHex, decryptSm4Key);
+        System.out.println("SM4 解密后的明文: " + decryptText);
+
+        // 最终验证
+        boolean dataMatch = plainText.equals(decryptText);
+        System.out.println("数据完整性验证: " + (dataMatch ? "✅ 成功" : "❌ 失败"));
     }
 
 }

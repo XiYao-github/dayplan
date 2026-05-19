@@ -1,25 +1,25 @@
-drop table if exists app_user;
-create table app_user
-(
-    id          bigint auto_increment
-        primary key,
-    openid      varchar(100)            not null comment '微信openid',
-    name        varchar(100) default '' null comment '昵称',
-    phone       varchar(100) default '' null comment '电话',
-    sex         int          default 0  null comment '性别(0.未知 1.男 2.女)',
-    avatar      varchar(100) default '' null comment '头像',
-    regions     varchar(50)  default '' null comment '地区',
-    login_ip    varchar(128)            null comment '最后登录ip',
-    login_date  datetime                null comment '最后登录时间',
-    status      int          default 1  null comment '状态(0.停用 1.正常)',
-    remark      varchar(500)            null comment '备注',
-    create_time datetime                null comment '创建时间',
-    update_time datetime                null comment '更新时间',
-    delete_time datetime                null comment '删除时间',
-    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
-    version     int          default 0  null comment '乐观锁'
-)
-    comment '用户';
+# drop table if exists app_user;
+# create table app_user
+# (
+#     id          bigint auto_increment
+#         primary key,
+#     openid      varchar(100)            not null comment '微信openid',
+#     name        varchar(100) default '' null comment '昵称',
+#     phone       varchar(100) default '' null comment '电话',
+#     sex         int          default 0  null comment '性别(0.未知 1.男 2.女)',
+#     avatar      varchar(100) default '' null comment '头像',
+#     regions     varchar(50)  default '' null comment '地区',
+#     login_ip    varchar(128)            null comment '最后登录ip',
+#     login_date  datetime                null comment '最后登录时间',
+#     status      int          default 1  null comment '状态(0.停用 1.正常)',
+#     remark      varchar(500)            null comment '备注',
+#     create_time datetime                null comment '创建时间',
+#     update_time datetime                null comment '更新时间',
+#     delete_time datetime                null comment '删除时间',
+#     deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
+#     version     int          default 0  null comment '乐观锁'
+# )
+#     comment '用户';
 
 drop table if exists dict_data;
 create table dict_data

@@ -1,6 +1,6 @@
 package com.xiyao.framework.resolver;
 
-import com.xiyao.framework.annotation.WebUser;
+import com.xiyao.framework.annotation.CurrentUser;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.SecurityUtils;
 import org.springframework.core.MethodParameter;
@@ -13,10 +13,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 /**
  * 后台用户参数解析器
  */
-public class WebUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(WebUser.class) && parameter.getParameterType().isAssignableFrom(LoginUser.class);
+        return parameter.hasParameterAnnotation(CurrentUser.class) && parameter.getParameterType().isAssignableFrom(LoginUser.class);
     }
 
     @Nullable

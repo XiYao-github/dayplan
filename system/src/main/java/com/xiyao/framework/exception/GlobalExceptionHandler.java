@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ==================== 认证授权异常（400-499） ====================
-
     /**
      * Spring Security 认证异常（未登录、登录失败等）
      * 常见子类：
@@ -30,8 +28,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AuthenticationException.class)
     public Result handleAuthenticationException(AuthenticationException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.warn("请求地址'{}', 认证失败: {}", requestURI, e.getMessage());
+        log.warn("请求地址'{}', 认证失败: {}", request.getRequestURI(), e.getMessage());
 
         if (e instanceof BadCredentialsException) {
             return Result.error(HttpStatus.UNAUTHORIZED.value(), "用户名或密码错误");
@@ -50,8 +47,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(AccessDeniedException.class)
     public Result handleAccessDeniedException(AccessDeniedException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.warn("请求地址'{}', 权限不足: {}", requestURI, e.getMessage());
+        log.warn("请求地址'{}', 权限不足: {}", request.getRequestURI(), e.getMessage());
         return Result.error(HttpStatus.FORBIDDEN.value(), "权限不足，拒绝访问");
     }
 
@@ -60,8 +56,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public Result handleRuntimeException(RuntimeException e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.error("运行时异常: 请求地址'{}', 异常类型: {}", requestURI, e.getClass().getName(), e);
+        log.error("运行时异常: 请求地址'{}', 异常类型: {}", request.getRequestURI(), e.getClass().getName(), e);
         return Result.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统繁忙，请稍后再试");
     }
 
@@ -70,8 +65,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e, HttpServletRequest request) {
-        String requestURI = request.getRequestURI();
-        log.error("系统异常: 请求地址'{}', 异常类型: {}", requestURI, e.getClass().getName(), e);
+        log.error("系统异常: 请求地址'{}', 异常类型: {}", request.getRequestURI(), e.getClass().getName(), e);
         return Result.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统异常，请联系管理员");
     }
 }

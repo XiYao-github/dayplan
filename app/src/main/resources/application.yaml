@@ -28,22 +28,6 @@ spring:
   # 项目名称
   application:
     name: app
-  jackson:
-    # 日期格式
-    date-format: yyyy-MM-dd HH:mm:ss
-    # 时区
-    time-zone: GMT+8
-    # 默认属性包含策略
-    default-property-inclusion: non_null
-    # 序列化配置
-    serialization:
-      # 日期不转时间戳
-      write-dates-as-timestamps: false
-    # 反序列化配置
-    deserialization:
-      # 忽略未知属性(不报错，直接忽略)
-      fail-on-unknown-properties: false
-  # Spring MVC 参数绑定格式（GET 请求参数）
   mvc:
     format:
       date-time: yyyy-MM-dd HH:mm:ss
@@ -58,6 +42,7 @@ spring:
 
   # mysql配置
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://115.159.42.54:3306/dayplan?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&cachePrepStmts=true&rewriteBatchedStatements=true
     username: root
     password: tR5sW8yB3eH6qM9c
@@ -70,23 +55,21 @@ spring:
       database: 0
       timeout: 5s
 
-mybatis-plus:
-  # 配置文件的位置
-  # config-location: classpath:/mybatis-config.xml
-  # Mapper 对应的 XML 文件位置
-  mapper-locations: classpath:/mapper/**/*.xml
-  configuration:
-    # 开启自动驼峰命名
-    map-underscore-to-camel-case: true
-    # 打印SQL日志到控制台
-    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  global-config:
-    # 关闭启动图标
-    banner: false
+logging:
+  level:
+    com.example.demo.mapper: debug
+    org.springframework.web: info
+    org.springframework.data.redis: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ./logs/app.log
+
 
 # 权限过滤
 security-data:
-  # 是否开启权限
+  # 是否开启权限过滤
   enabled: false
   # 过滤路径
   includePaths:
@@ -100,7 +83,7 @@ security-data:
   jwt:
     # 密钥
     secret: secret-key
-    # 密钥有效期(秒)
+    # 过期时间(秒)
     expire: 60*60*24
 
 # 数据加密
@@ -134,58 +117,3 @@ encryptor-api:
   # 排除加解密路径
   excludePaths:
     - /api/public/**
-
-#logging:
-#  level:
-#    com.xiyao: DEBUG
-#    org.springframework.web: INFO
-#    org.springframework.security: INFO
-#  pattern:
-#    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
-#    file: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] %-5level [%thread] %logger{36} - %msg%n'
-#  file:
-#    name: ./logs/app.log
-
-resilience4j:
-  # 限流器配置
-  ratelimiter:
-    instances:
-      paymentService:
-        limitRefreshPeriod: 1s          # 令牌刷新周期：1秒
-        limitForPeriod: 5               # 每周期5个令牌 → QPS=5
-        timeoutDuration: 0              # 无令牌立即失败，不等待
-
-  # 舱壁隔离配置（信号量模式）
-  bulkhead:
-    instances:
-      paymentService:
-        maxConcurrentCalls: 10          # 最大并发数
-        maxWaitDuration: 0              # 无可用资源立即拒绝
-
-  # 熔断器配置
-  circuitbreaker:
-    instances:
-      paymentService:
-        slidingWindowSize: 10           # 滑动窗口大小（10次调用）
-        slidingWindowType: COUNT_BASED  # 基于请求次数统计
-        failureRateThreshold: 50        # 失败率阈值50%
-        waitDurationInOpenState: 10s    # 熔断开启持续时间
-        permittedNumberOfCallsInHalfOpenState: 3  # 半开状态允许的试探请求数
-        minimumNumberOfCalls: 5         # 最少请求数（低于此值不熔断）
-
-  # 重试配置
-  retry:
-    instances:
-      paymentService:
-        maxAttempts: 3                  # 最大重试次数（含首次）
-        waitDuration: 500ms             # 重试间隔
-        retryExceptions: # 触发重试的异常类型
-          - java.io.IOException
-          - org.springframework.web.client.HttpServerErrorException
-
-  # 超时配置
-  timelimiter:
-    instances:
-      paymentService:
-        timeoutDuration: 3s             # 超时时间3秒
-        cancelRunningFuture: true       # 超时后取消执行

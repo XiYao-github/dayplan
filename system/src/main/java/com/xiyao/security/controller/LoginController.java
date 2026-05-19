@@ -8,6 +8,7 @@ import com.xiyao.security.details.UserVo;
 import com.xiyao.security.utils.JwtUtils;
 import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +38,9 @@ public class LoginController extends MyBaseController {
 
     private final JwtUtils jwtUtils;
 
+    /**
+     * 登录
+     */
     @PostMapping("/login")
     public Result login(@RequestBody UserVo user) {
         // 获取用户名和密码
@@ -51,6 +56,9 @@ public class LoginController extends MyBaseController {
         return success(jwtUtils.getToken(loginUser));
     }
 
+    /**
+     * 注册
+     */
     @PostMapping("/register")
     public Result register(@RequestBody UserVo user) {
         // 检查用户名是否已存在
@@ -77,8 +85,14 @@ public class LoginController extends MyBaseController {
         return success();
     }
 
-    @PostMapping("/logout")
-    public Result logout() {
-        return success();
+    /**
+     * 退出登录
+     */
+    @DeleteMapping("/logout")
+    public Result logout(HttpServletRequest request) {
+        // 获取 token
+        String token = jwtUtils.getHeaderToken(request);
+        // 删除 token
+        return jwtUtils.removeToken(token) ? success() : error("退出登录失败");
     }
 }

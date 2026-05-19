@@ -33,8 +33,8 @@ public class SecurityConfig {
      * 认证工具类
      */
     @Bean
-    public JwtUtils jwtUtils(RedisUtils redisUtils) {
-        return new JwtUtils(redisUtils);
+    public JwtUtils jwtUtils(RedisUtils redisUtils, SecurityData properties) {
+        return new JwtUtils(redisUtils, properties);
     }
 
     /**
