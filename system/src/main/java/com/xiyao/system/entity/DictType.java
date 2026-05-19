@@ -18,11 +18,11 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-28
+ * @since 2026-05-19
  */
 @Data
-@Accessors(chain = true)
 @TableName("dict_type")
+@Accessors(chain = true)
 public class DictType {
 
     @TableId(value = "id", type = IdType.AUTO)

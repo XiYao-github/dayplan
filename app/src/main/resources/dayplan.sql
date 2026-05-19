@@ -1,6 +1,8 @@
+drop table if exists app_user;
 create table app_user
 (
-    id          bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
     openid      varchar(100)            not null comment '微信openid',
     name        varchar(100) default '' null comment '昵称',
     phone       varchar(100) default '' null comment '电话',
@@ -16,27 +18,51 @@ create table app_user
     delete_time datetime                null comment '删除时间',
     deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
     version     int          default 0  null comment '乐观锁'
+)
+    comment '用户';
 
-) comment '用户';
-
-create table sys_regions
+drop table if exists dict_data;
+create table dict_data
 (
-    code          bigint                 not null comment '区划代码',
-    parent_code   bigint      default 0  not null comment '父级区划代码',
-    name          varchar(50) default '' not null comment '名称',
-    province_code bigint                 null comment '省/直辖市代码',
-    province_name varchar(50)            null comment '省/直辖市名称',
-    city_code     bigint                 null comment '市代码',
-    city_name     varchar(50)            null comment '市名称',
-    area_code     bigint                 null comment '区/县代码',
-    area_name     varchar(50)            null comment '区/县名称',
-    sort          int                    null comment '排序',
-    level         int                    null comment '级别(1.省/直辖市, 2.市, 3.区/县/地级市)'
-) comment '行政区划';
+    id          bigint auto_increment
+        primary key,
+    dict_type   varchar(100) default '' null comment '字典类型',
+    dict_code   varchar(100) default '' null comment '字典编码',
+    dict_label  varchar(100) default '' null comment '字典标签',
+    dict_value  varchar(100) default '' null comment '字典键值',
+    status      int          default 1  null comment '状态(0.停用 1.正常)',
+    is_default  int          default 0  null comment '是否默认(0.否 1.是)',
+    remark      varchar(500)            null comment '备注',
+    create_time datetime                null comment '创建时间',
+    update_time datetime                null comment '更新时间',
+    delete_time datetime                null comment '删除时间',
+    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
+    version     int          default 0  null comment '乐观锁'
+)
+    comment '字典数据';
 
-create table sys_login
+drop table if exists dict_type;
+create table dict_type
 (
-    id         bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
+    dict_name   varchar(100) default '' null comment '字典名称',
+    dict_type   varchar(100) default '' null comment '字典类型',
+    status      int          default 1  null comment '状态(0.停用 1.正常)',
+    remark      varchar(500)            null comment '备注',
+    create_time datetime                null comment '创建时间',
+    update_time datetime                null comment '更新时间',
+    delete_time datetime                null comment '删除时间',
+    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
+    version     int          default 0  null comment '乐观锁'
+)
+    comment '字典类型';
+
+drop table if exists log_login;
+create table log_login
+(
+    id         bigint auto_increment
+        primary key,
     user_id    bigint                  not null comment '用户id',
     username   varchar(100) default '' not null comment '用户账号',
     ipaddr     varchar(128) default '' null comment '登录ip',
@@ -49,11 +75,15 @@ create table sys_login
 )
     comment '访问记录';
 
-create table sys_operation
+drop table if exists log_operation;
+create table log_operation
 (
-    id             bigint auto_increment primary key,
+    id             bigint auto_increment
+        primary key,
     user_id        bigint                  not null comment '用户id',
     username       varchar(100) default '' not null comment '用户账号',
+    admin_type     int          default 0  not null comment '三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)',
+    module         varchar(50)  default '' null comment '操作模块',
     operation      varchar(100) default '' null comment '操作描述',
     url            varchar(256) default '' null comment '请求url',
     ipaddr         varchar(128) default '' null comment '操作ip',
@@ -70,9 +100,29 @@ create table sys_operation
 )
     comment '操作记录';
 
+drop table if exists sys_address;
+create table sys_address
+(
+    code          bigint                 not null comment '区划代码'
+        primary key,
+    parent_code   bigint      default 0  not null comment '父级区划代码',
+    name          varchar(50) default '' not null comment '名称',
+    province_code bigint                 null comment '省/直辖市代码',
+    province_name varchar(50)            null comment '省/直辖市名称',
+    city_code     bigint                 null comment '市代码',
+    city_name     varchar(50)            null comment '市名称',
+    area_code     bigint                 null comment '区/县代码',
+    area_name     varchar(50)            null comment '区/县名称',
+    sort          int                    null comment '排序',
+    level         int                    null comment '级别(1.省/直辖市, 2.市, 3.区/县/地级市)'
+)
+    comment '系统地址';
+
+drop table if exists sys_config;
 create table sys_config
 (
-    id          bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
     name        varchar(100)  not null comment '参数名',
     value       varchar(500)  not null comment '参数值',
     status      int default 1 null comment '状态(0.停用 1.正常)',
@@ -82,43 +132,14 @@ create table sys_config
     delete_time datetime      null comment '删除时间',
     deleted     int default 0 null comment '逻辑删除(0.未删除 1.已删除)',
     version     int default 0 null comment '乐观锁'
-) comment '系统配置';
-
-create table sys_dict_data
-(
-    id          bigint auto_increment primary key,
-    dict_type   varchar(100) default '' null comment '字典类型',
-    dict_label  varchar(100) default '' null comment '字典标签',
-    dict_value  varchar(100) default '' null comment '字典键值',
-    status      int          default 1  null comment '状态(0.停用 1.正常)',
-    is_default  int          default 0  null comment '是否默认(0.否 1.是)',
-    remark      varchar(500)            null comment '备注',
-    create_time datetime                null comment '创建时间',
-    update_time datetime                null comment '更新时间',
-    delete_time datetime                null comment '删除时间',
-    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
-    version     int          default 0  null comment '乐观锁'
 )
-    comment '字典数据';
+    comment '系统配置';
 
-create table sys_dict_type
-(
-    id          bigint auto_increment primary key,
-    dict_name   varchar(100) default '' null comment '字典名称',
-    dict_type   varchar(100) default '' null comment '字典类型',
-    status      int          default 1  null comment '状态(0.停用 1.正常)',
-    remark      varchar(500)            null comment '备注',
-    create_time datetime                null comment '创建时间',
-    update_time datetime                null comment '更新时间',
-    delete_time datetime                null comment '删除时间',
-    deleted     int          default 0  null comment '逻辑删除(0.未删除 1.已删除)',
-    version     int          default 0  null comment '乐观锁'
-)
-    comment '字典类型';
-
+drop table if exists sys_menu;
 create table sys_menu
 (
-    id          bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
     parent_id   bigint       default 0   not null comment '父菜单id',
     title       varchar(50)              not null comment '菜单标题',
     name        varchar(50)              not null comment '菜单名称',
@@ -138,12 +159,15 @@ create table sys_menu
 )
     comment '系统菜单';
 
+drop table if exists sys_role;
 create table sys_role
 (
-    id          bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
     name        varchar(30)   not null comment '角色名称',
     sort        int           null comment '顺序',
     status      int default 1 null comment '状态(0.停用 1.正常)',
+    type        int default 0 null comment '角色类型（0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员）',
     remark      varchar(500)  null comment '备注',
     create_time datetime      null comment '创建时间',
     update_time datetime      null comment '更新时间',
@@ -153,9 +177,19 @@ create table sys_role
 )
     comment '系统角色';
 
+drop table if exists sys_role_menu;
+create table sys_role_menu
+(
+    role_id bigint not null comment '角色id',
+    menu_id bigint not null comment '菜单id'
+)
+    comment '角色关联菜单';
+
+drop table if exists sys_user;
 create table sys_user
 (
-    id          bigint auto_increment primary key,
+    id          bigint auto_increment
+        primary key,
     username    varchar(30)             not null comment '账号',
     password    varchar(100) default '' not null comment '密码',
     salt        varchar(50)  default '' not null comment '盐',
@@ -176,13 +210,7 @@ create table sys_user
 )
     comment '系统用户';
 
-create table sys_role_menu
-(
-    role_id bigint not null comment '角色id',
-    menu_id bigint not null comment '菜单id'
-)
-    comment '角色关联菜单';
-
+drop table if exists sys_user_role;
 create table sys_user_role
 (
     user_id bigint not null comment '用户id',
@@ -191,45 +219,3 @@ create table sys_user_role
     comment '用户关联角色';
 
 
--- 清空相关表（谨慎，仅在测试环境中执行）
-truncate table sys_user;
-truncate table sys_role;
-truncate table sys_user_role;
-truncate table sys_menu;
-truncate table sys_role_menu;
-
--- 插入角色
-INSERT INTO sys_role (id, name, sort, status)
-VALUES (1, '超级管理员', 1, 1),
-       (2, '普通用户', 2, 1);
-
--- 插入菜单（简化版）
-INSERT INTO sys_menu (id, parent_id, title, name, type, perms, status)
-VALUES (1, 0, '用户管理', 'user', 1, '', 1),
-       (2, 1, '用户列表', 'list', 2, 'sys:user:list', 1),
-       (3, 1, '新增用户', 'add', 2, 'sys:user:add', 1),
-       (4, 1, '编辑用户', 'edit', 2, 'sys:user:edit', 1),
-       (5, 1, '删除用户', 'delete', 2, 'sys:user:delete', 1);
-
--- 分配超级管理员拥有所有权限
-INSERT INTO sys_role_menu (role_id, menu_id)
-VALUES (1, 1),
-       (1, 2),
-       (1, 3),
-       (1, 4),
-       (1, 5);
--- 普通用户只有列表权限
-INSERT INTO sys_role_menu (role_id, menu_id)
-VALUES (2, 1),
-       (2, 2);
-
--- 插入用户（密码 123456 预先用 BCrypt 加密，生成一个固定的密文）
--- 实际可以使用测试工具类统一编码，这里给出示例密文（对应 "123456"）
-INSERT INTO sys_user (id, username, password, status, deleted)
-VALUES (1, 'admin', '$2a$10$NkM2sZ7YKc5kYqQ5eE2PNOqC5bJ5qF5qR5qX5qZ5qL5qW5qE5qR5qS', 1, 0),
-       (2, 'user', '$2a$10$NkM2sZ7YKc5kYqQ5eE2PNOqC5bJ5qF5qR5qX5qZ5qL5qW5qE5qR5qS', 1, 0);
-
--- 用户角色关联
-INSERT INTO sys_user_role (user_id, role_id)
-VALUES (1, 1),
-       (2, 2);

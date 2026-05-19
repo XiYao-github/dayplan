@@ -18,11 +18,11 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-04-28
+ * @since 2026-05-19
  */
 @Data
-@Accessors(chain = true)
 @TableName("dict_data")
+@Accessors(chain = true)
 public class DictData {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -33,6 +33,12 @@ public class DictData {
      */
     @TableField("dict_type")
     private String dictType;
+
+    /**
+     * 字典编码
+     */
+    @TableField("dict_code")
+    private String dictCode;
 
     /**
      * 字典标签

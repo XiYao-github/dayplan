@@ -46,7 +46,7 @@ public class CodeGenerator {
                         .parent(PACKAGE).entity("entity").service("service").serviceImpl("service.impl").mapper("mapper").xml("mapper.xml").controller("controller")
                 )
                 .strategyConfig((scanner, builder) -> builder
-                        .addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all")))
+                        // .addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all")))
                         // 父类控制器 -> 开启驼峰转连字符 -> 开启生成@RestController控制器 -> 格式化文件名称 -> 覆盖已有文件
                         .controllerBuilder().superClass(MyBaseController.class).enableHyphenStyle().enableRestStyle().formatFileName("%sController").enableFileOverride()
                         // 禁用生成serialVersionUID -> 开启链式模型 -> 开启lombok模型
