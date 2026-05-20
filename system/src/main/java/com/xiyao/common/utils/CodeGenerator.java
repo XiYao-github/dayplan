@@ -54,7 +54,7 @@ public class CodeGenerator {
                         // 开启生成实体时生成字段注解 -> 设置乐观锁数据库表字段名称 -> 逻辑删除数据库字段名称 -> 数据库表字段映射到实体的命名策略
                         .enableTableFieldAnnotation().versionColumnName("version").logicDeleteColumnName("deleted").columnNaming(NamingStrategy.underline_to_camel)
                         // 添加父类公共字段 -> 自定义继承的Entity类全称 -> 格式化文件名称
-                        // .addSuperEntityColumns("id", "remark", "create_time", "update_time", "delete_time", "deleted", "version").superClass(MyBaseEntity.class).formatFileName("%sEntity")
+                        // .addSuperEntityColumns("id", "remark", "create_time", "update_time", "delete_time", "deleted", "version").superClass(MyBaseEvent.class).formatFileName("%sEntity")
                         // 添加表字段填充
                         .addTableFills(new Column("create_time", FieldFill.INSERT), new Column("update_time", FieldFill.INSERT_UPDATE))
                         // 指定生成的主键的ID类型 -> 覆盖已有文件 -> 设置字段是否生成文档注释

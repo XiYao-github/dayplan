@@ -1,24 +1,22 @@
 package com.xiyao.log.event;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.xiyao.common.base.event.MyBaseEvent;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 登录日志事件
  */
-
 @Data
-public class LogLoginEvent implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class LogLoginEvent extends MyBaseEvent {
 
     /**
-     * 用户id
+     * 用户ID
      */
     private Long userId;
 
@@ -41,10 +39,5 @@ public class LogLoginEvent implements Serializable {
      * 提示消息
      */
     private String message;
-
-    /**
-     * 请求体
-     */
-    private HttpServletRequest request;
 
 }

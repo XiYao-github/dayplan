@@ -59,17 +59,17 @@ create table dict_type
 drop table if exists log_login;
 create table log_login
 (
-    id          bigint auto_increment primary key,
-    user_id     bigint                  not null comment '用户id',
-    username    varchar(100) default '' not null comment '用户账号',
-    login_time  datetime                null comment '登录时间',
-    status      int          default 1  null comment '登录状态(0.失败 1.成功)',
-    message     text                    null comment '提示消息',
-    ipaddr      varchar(20)  default '' null comment 'ip地址',
-    location    varchar(200) default '' null comment 'ip归属地',
-    os          varchar(50)  default '' null comment '操作系统',
-    browser     varchar(50)  default '' null comment '浏览器',
-    device_type varchar(50)  default '' null comment '设备类型'
+    id         bigint auto_increment primary key,
+    user_id    bigint                  not null comment '用户id',
+    username   varchar(100) default '' not null comment '用户账号',
+    login_time datetime                null comment '登录时间',
+    status     int          default 1  null comment '登录状态(0.失败 1.成功)',
+    message    text                    null comment '提示消息',
+    ip         varchar(20)  default '' null comment '客户端ip',
+    location   varchar(200) default '' null comment 'ip归属地',
+    os         varchar(100) default '' null comment '系统类型',
+    browser    varchar(100) default '' null comment '浏览器类型',
+    platform   varchar(100) default '' null comment '平台类型'
 )
     comment '登录记录';
 
@@ -86,16 +86,16 @@ create table log_operation
     operation_time   datetime                null comment '操作时间',
     status           int          default 1  null comment '操作状态(0.失败 1.成功)',
     message          text                    null comment '提示消息',
-    request_url      varchar(200) default '' null comment '请求url',
     request_method   varchar(10)  default '' null comment '请求方式',
+    request_url      varchar(200) default '' null comment '请求url',
     request_param    longtext                null comment '请求参数',
     return_result    longtext                null comment '返回结果',
     cost_time        bigint                  null comment '消耗时间(毫秒)',
-    ipaddr           varchar(20)  default '' null comment 'ip地址',
+    ip               varchar(20)  default '' null comment '客户端ip',
     location         varchar(200) default '' null comment 'ip归属地',
-    os               varchar(50)  default '' null comment '操作系统',
-    browser          varchar(50)  default '' null comment '浏览器',
-    device_type      varchar(50)  default '' null comment '设备类型'
+    os               varchar(100) default '' null comment '系统类型',
+    browser          varchar(100) default '' null comment '浏览器类型',
+    platform         varchar(100) default '' null comment '平台类型'
 )
     comment '操作记录';
 

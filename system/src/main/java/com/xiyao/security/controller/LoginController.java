@@ -1,8 +1,12 @@
 package com.xiyao.security.controller;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.Result;
+import com.xiyao.framework.exception.BusinessException;
+import com.xiyao.log.enums.OperationStatus;
+import com.xiyao.log.event.LogLoginEvent;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.details.UserVo;
 import com.xiyao.security.utils.JwtUtils;
@@ -33,9 +37,7 @@ import java.time.LocalDateTime;
 public class LoginController extends MyBaseController {
 
     private final AuthenticationManager authenticationManager;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtUtils jwtUtils;
 
     /**
@@ -46,14 +48,32 @@ public class LoginController extends MyBaseController {
         // 获取用户名和密码
         String username = user.getUsername();
         String password = user.getPassword();
-        // 创建 UsernamePasswordAuthenticationToken 对象
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-        // 使用 AuthenticationManager 认证
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
-        // 认证成功，获取用户信息
-        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        // 生成 token 返回
-        return success(jwtUtils.getToken(loginUser));
+        // 发布事件
+        LogLoginEvent event = new LogLoginEvent();
+        try {
+            // 创建 UsernamePasswordAuthenticationToken 对象
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+            // 使用 AuthenticationManager 认证
+            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            // 认证成功，获取用户信息
+            LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
+            // 成功事件
+            event.setUserId(loginUser.getUserId()).setUsername(loginUser.getUsername())
+                    .setStatus(OperationStatus.SUCCESS.ordinal()).setMessage("登录成功")
+                    .setLoginTime(LocalDateTime.now());
+            SpringUtil.publishEvent(event);
+
+            // 生成 token 返回
+            return success(jwtUtils.getToken(loginUser));
+        } catch (Exception e) {
+            // 失败事件
+            event.setUsername(user.getUsername()).setStatus(OperationStatus.FAIL.ordinal())
+                    .setMessage(e.getMessage()).setLoginTime(LocalDateTime.now());
+            SpringUtil.publishEvent(event);
+
+            throw new BusinessException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -95,4 +115,5 @@ public class LoginController extends MyBaseController {
         // 删除 token
         return jwtUtils.removeToken(token) ? success() : error("退出失败");
     }
+
 }

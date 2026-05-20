@@ -1,23 +1,22 @@
 package com.xiyao.log.event;
 
+import com.xiyao.common.base.event.MyBaseEvent;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 操作日志事件
  */
-
 @Data
-public class LogOperationEvent implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = true)
+public class LogOperationEvent extends MyBaseEvent {
 
     /**
-     * 用户id
+     * 用户ID
      */
     private Long userId;
 
@@ -27,32 +26,27 @@ public class LogOperationEvent implements Serializable {
     private String username;
 
     /**
-     * 三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)
-     */
-    private Integer adminType;
-
-    /**
      * 操作模块
      */
-    private String operationModule;
+    private String module;
 
     /**
-     * 操作方法
+     * 操作方法（类名.方法名）
      */
-    private String operationMethod;
+    private String method;
 
     /**
-     * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除)
+     * 操作类型（0.其他 1.查询 2.新增 3.更新 4.删除 5.导出 6.导入）
      */
-    private Integer operationType;
+    private Integer type;
 
     /**
      * 操作时间
      */
-    private LocalDateTime operationTime;
+    private LocalDateTime time;
 
     /**
-     * 操作状态(0.失败 1.成功)
+     * 操作状态（0.失败 1.成功）
      */
     private Integer status;
 
@@ -62,17 +56,7 @@ public class LogOperationEvent implements Serializable {
     private String message;
 
     /**
-     * 请求url
-     */
-    private String requestUrl;
-
-    /**
-     * 请求方式
-     */
-    private String requestMethod;
-
-    /**
-     * 请求参数
+     * 请求参数（请求行、请求体）
      */
     private String requestParam;
 
@@ -82,7 +66,7 @@ public class LogOperationEvent implements Serializable {
     private String returnResult;
 
     /**
-     * 消耗时间(毫秒)
+     * 消耗时间（毫秒）
      */
     private Long costTime;
 }

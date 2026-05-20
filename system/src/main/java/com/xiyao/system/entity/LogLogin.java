@@ -56,10 +56,10 @@ public class LogLogin {
     private String message;
 
     /**
-     * ip地址
+     * 客户端IP
      */
-    @TableField("ipaddr")
-    private String ipaddr;
+    @TableField("ip")
+    private String ip;
 
     /**
      * ip归属地
@@ -68,20 +68,20 @@ public class LogLogin {
     private String location;
 
     /**
-     * 操作系统
+     * 系统类型
      */
     @TableField("os")
     private String os;
 
     /**
-     * 浏览器
+     * 浏览器类型
      */
     @TableField("browser")
     private String browser;
 
     /**
-     * 设备类型
+     * 平台类型
      */
-    @TableField("device_type")
-    private String deviceType;
+    @TableField("platform")
+    private String platform;
 }

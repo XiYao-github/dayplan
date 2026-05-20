@@ -80,16 +80,16 @@ public class LogOperation {
     private String message;
 
     /**
-     * 请求url
-     */
-    @TableField("request_url")
-    private String requestUrl;
-
-    /**
      * 请求方式
      */
     @TableField("request_method")
     private String requestMethod;
+
+    /**
+     * 请求url
+     */
+    @TableField("request_url")
+    private String requestUrl;
 
     /**
      * 请求参数
@@ -110,10 +110,10 @@ public class LogOperation {
     private Long costTime;
 
     /**
-     * ip地址
+     * 客户端IP
      */
-    @TableField("ipaddr")
-    private String ipaddr;
+    @TableField("ip")
+    private String ip;
 
     /**
      * ip归属地
@@ -122,20 +122,20 @@ public class LogOperation {
     private String location;
 
     /**
-     * 操作系统
+     * 系统类型
      */
     @TableField("os")
     private String os;
 
     /**
-     * 浏览器
+     * 浏览器类型
      */
     @TableField("browser")
     private String browser;
 
     /**
-     * 设备类型
+     * 平台类型
      */
-    @TableField("device_type")
-    private String deviceType;
+    @TableField("platform")
+    private String platform;
 }
