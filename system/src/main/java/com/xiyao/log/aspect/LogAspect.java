@@ -15,11 +15,13 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -40,64 +42,41 @@ public class LogAspect {
 
     /**
      * 环绕通知：拦截并记录操作日志
-     *
-     * @param point 切点，包含目标方法的信息
-     * @param log   日志注解，包含模块、操作类型等配置
-     * @return 目标方法的执行结果
-     * @throws Throwable 目标方法抛出的异常
      */
     @Around("@annotation(log)")
     public Object around(ProceedingJoinPoint point, Log log) throws Throwable {
-        // 记录开始时间
         long startTime = System.currentTimeMillis();
-
-        // 构建日志事件对象（基础信息）
         LogOperationEvent event = buildBaseEvent(point, log);
-        Object result = null;
-        boolean success = true;
-        String errorMessage = null;
 
         try {
-            // 执行目标方法
-            result = point.proceed();
+            Object result = point.proceed();
+            handleSuccess(event, result, log.isSaveResponseData());
             return result;
-
         } catch (Throwable e) {
-            // 记录异常信息
-            success = false;
-            errorMessage = e.getMessage();
+            handleFail(event, e);
             throw e;
-
         } finally {
-            // 统一处理日志记录
-            handleLogResult(event, result, success, errorMessage);
             event.setCostTime(System.currentTimeMillis() - startTime);
             event.setTime(LocalDateTime.now());
-
-            // 发布事件，异步保存到数据库
             SpringUtil.publishEvent(event);
         }
     }
 
     /**
-     * 构建基础事件对象
+     * 构建基础事件
      */
     private LogOperationEvent buildBaseEvent(ProceedingJoinPoint point, Log log) {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
 
         LogOperationEvent event = new LogOperationEvent();
-
-        // 用户信息
         event.setUserId(SecurityUtils.getUserId());
         event.setUsername(SecurityUtils.getUsername());
-
-        // 操作信息
+        event.setAdminType(SecurityUtils.getAdminType());
         event.setModule(log.module());
         event.setType(log.operationType().ordinal());
         event.setMethod(method.getDeclaringClass().getSimpleName() + "." + method.getName());
 
-        // 请求参数（根据配置）
         if (log.isSaveRequestData()) {
             event.setRequestParam(getRequestParams(point));
         }
@@ -106,21 +85,22 @@ public class LogAspect {
     }
 
     /**
-     * 处理日志结果（成功/失败）
+     * 处理成功结果
      */
-    private void handleLogResult(LogOperationEvent event, Object result, boolean success, String errorMessage) {
-        if (success) {
-            event.setStatus(OperationStatus.SUCCESS.ordinal());
-            event.setMessage("操作成功");
-
-            // 保存响应结果（根据配置）
-            if (result != null) {
-                event.setReturnResult(JSONUtil.toJsonStr(result));
-            }
-        } else {
-            event.setStatus(OperationStatus.FAIL.ordinal());
-            event.setMessage(StrUtil.sub(errorMessage, 0, 500));
+    private void handleSuccess(LogOperationEvent event, Object result, boolean saveResponseData) {
+        event.setStatus(OperationStatus.SUCCESS.ordinal());
+        event.setMessage("操作成功");
+        if (saveResponseData && result != null) {
+            event.setReturnResult(JSONUtil.toJsonStr(result));
         }
+    }
+
+    /**
+     * 处理失败结果
+     */
+    private void handleFail(LogOperationEvent event, Throwable e) {
+        event.setStatus(OperationStatus.FAIL.ordinal());
+        event.setMessage(StrUtil.sub(e.getMessage(), 0, 500));
     }
 
     /**
@@ -133,17 +113,21 @@ public class LogAspect {
                 return "";
             }
 
-            // 过滤掉框架对象和文件对象
-            Object[] businessArgs = new Object[args.length];
-            int index = 0;
-            for (Object arg : args) {
-                if (arg != null && !isExcludedObject(arg)) {
-                    businessArgs[index++] = arg;
+            // 使用 LinkedHashMap 保持参数顺序，便于排查问题
+            Map<String, Object> params = new LinkedHashMap<>();
+            String[] paramNames = ((MethodSignature) point.getSignature()).getParameterNames();
+
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                if (arg == null || isExcludedObject(arg)) {
+                    continue;
                 }
+                // 参数名优先使用参数列表中的名称，否则用下标
+                String name = (paramNames != null && i < paramNames.length) ? paramNames[i] : "arg" + i;
+                params.put(name, arg);
             }
 
-            return JSONUtil.toJsonStr(businessArgs);
-
+            return JSONUtil.toJsonStr(params);
         } catch (Exception e) {
             log.warn("获取请求参数失败: {}", e.getMessage());
             return "";
@@ -153,49 +137,59 @@ public class LogAspect {
     /**
      * 判断是否为需要排除的对象
      * <p>
-     * 排除以下类型：
-     * <ul>
-     *     <li>HttpServletRequest / HttpServletResponse - 框架对象，无法序列化</li>
-     *     <li>MultipartFile - 文件对象，序列化会很大且无意义</li>
-     *     <li>BindingResult - Spring 校验结果，不需要记录</li>
-     * </ul>
+     * 排除：框架对象、文件对象、校验结果对象
      * </p>
      */
     private boolean isExcludedObject(Object obj) {
         if (obj == null) {
-            return false;
+            return true;
         }
 
         Class<?> clazz = obj.getClass();
 
-        // 直接判断常见类型
-        if (obj instanceof HttpServletRequest ||
-                obj instanceof HttpServletResponse ||
-                obj instanceof MultipartFile) {
+        // 1. 框架对象（无法序列化）
+        if (obj instanceof HttpServletRequest || obj instanceof HttpServletResponse) {
             return true;
         }
 
-        // 判断是否为 MultipartFile 数组或集合
-        if (clazz.isArray()) {
-            return MultipartFile.class.isAssignableFrom(clazz.getComponentType());
+        // 2. 文件对象（太大且无意义）
+        if (obj instanceof MultipartFile) {
+            return true;
+        }
+        // MultipartFile 数组
+        if (clazz.isArray() && MultipartFile.class.isAssignableFrom(clazz.getComponentType())) {
+            return true;
         }
 
+        // 3. Spring 校验结果
+        if (obj instanceof BindingResult) {
+            return true;
+        }
+
+        // 4. 集合/Map 中的文件对象
         if (obj instanceof Collection) {
-            Collection<?> collection = (Collection<?>) obj;
-            if (!collection.isEmpty()) {
-                Object first = collection.iterator().next();
-                return first instanceof MultipartFile;
-            }
+            return containsMultipartFile((Collection<?>) obj);
         }
-
         if (obj instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) obj;
-            if (!map.isEmpty()) {
-                Object firstValue = map.values().iterator().next();
-                return firstValue instanceof MultipartFile;
-            }
+            return containsMultipartFile(((Map<?, ?>) obj).values());
         }
 
+        return false;
+    }
+
+    /**
+     * 判断集合/Collection 是否包含 MultipartFile
+     */
+    private boolean containsMultipartFile(Collection<?> collection) {
+        if (collection.isEmpty()) {
+            return false;
+        }
+        // 检查任意一个元素是否为 MultipartFile
+        for (Object item : collection) {
+            if (item instanceof MultipartFile) {
+                return true;
+            }
+        }
         return false;
     }
 }

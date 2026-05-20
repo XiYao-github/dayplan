@@ -26,6 +26,11 @@ public class LogOperationEvent extends MyBaseEvent {
     private String username;
 
     /**
+     * 三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)
+     */
+    private Integer adminType;
+
+    /**
      * 操作模块
      */
     private String module;
