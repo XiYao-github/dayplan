@@ -1,7 +1,7 @@
-package com.xiyao.common.converter;
+package com.xiyao.dict.converter;
 
 
-import com.xiyao.common.enums.BaseEnum;
+import com.xiyao.dict.enums.BaseEnum;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.lang.NonNull;

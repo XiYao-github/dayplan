@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-05-20
  */
 @Data
 @Accessors(chain = true)
@@ -46,74 +46,20 @@ public class LogOperation {
     /**
      * 操作模块
      */
-    @TableField("module")
-    private String module;
+    @TableField("operation_module")
+    private String operationModule;
 
     /**
-     * 操作描述
+     * 操作方法
      */
-    @TableField("operation")
-    private String operation;
+    @TableField("operation_method")
+    private String operationMethod;
 
     /**
-     * 请求url
-     */
-    @TableField("url")
-    private String url;
-
-    /**
-     * 操作ip
-     */
-    @TableField("ipaddr")
-    private String ipaddr;
-
-    /**
-     * 操作地点
-     */
-    @TableField("location")
-    private String location;
-
-    /**
-     * 方法名称
-     */
-    @TableField("method_name")
-    private String methodName;
-
-    /**
-     * 请求方式
-     */
-    @TableField("req_method")
-    private String reqMethod;
-
-    /**
-     * 操作类型(0.其它 1.查询 2.新增 3.修改 4.删除)
+     * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除)
      */
     @TableField("operation_type")
     private Integer operationType;
-
-    /**
-     * 请求参数
-     */
-    @TableField("param")
-    private String param;
-
-    /**
-     * 返回结果
-     */
-    @TableField("result")
-    private String result;
-
-    /**
-     * 状态(0.失败 1.成功)
-     */
-    @TableField("status")
-    private Integer status;
-
-    /**
-     * 错误消息
-     */
-    @TableField("error_msg")
-    private String errorMsg;
 
     /**
      * 操作时间
@@ -122,8 +68,74 @@ public class LogOperation {
     private LocalDateTime operationTime;
 
     /**
+     * 操作状态(0.失败 1.成功)
+     */
+    @TableField("status")
+    private Integer status;
+
+    /**
+     * 提示消息
+     */
+    @TableField("message")
+    private String message;
+
+    /**
+     * 请求url
+     */
+    @TableField("request_url")
+    private String requestUrl;
+
+    /**
+     * 请求方式
+     */
+    @TableField("request_method")
+    private String requestMethod;
+
+    /**
+     * 请求参数
+     */
+    @TableField("request_param")
+    private String requestParam;
+
+    /**
+     * 返回结果
+     */
+    @TableField("return_result")
+    private String returnResult;
+
+    /**
      * 消耗时间(毫秒)
      */
     @TableField("cost_time")
     private Long costTime;
+
+    /**
+     * ip地址
+     */
+    @TableField("ipaddr")
+    private String ipaddr;
+
+    /**
+     * ip归属地
+     */
+    @TableField("location")
+    private String location;
+
+    /**
+     * 操作系统
+     */
+    @TableField("os")
+    private String os;
+
+    /**
+     * 浏览器
+     */
+    @TableField("browser")
+    private String browser;
+
+    /**
+     * 设备类型
+     */
+    @TableField("device_type")
+    private String deviceType;
 }

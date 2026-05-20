@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- * 访问记录 Mapper 接口
+ * 登录记录 Mapper 接口
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-05-20
  */
 @Mapper
 public interface LogLoginMapper extends MyBaseMapper<LogLogin> {

@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.xiyao.common.base.entity.MyBaseEntity;
-import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
@@ -73,15 +72,15 @@ public class MybatisPlusConfig {
             /**
              * 获取当前用户（需根据实际认证方式实现） 可从 SecurityContext、ThreadLocal、Request 中获取
              */
-            private LoginUser getCurrentUser() {
-                return SecurityUtils.getLoginUser();
+            private Long getUserId() {
+                return SecurityUtils.getUserId();
             }
 
             @Override
             public void insertFill(MetaObject metaObject) {
                 log.info("开始插入填充...");
 
-                Long userId = getCurrentUser().getUserId();
+                Long userId = getUserId();
                 LocalDateTime now = LocalDateTime.now();
 
                 this.strictInsertFill(metaObject, MyBaseEntity.Fields.createBy, Long.class, userId);
@@ -95,7 +94,7 @@ public class MybatisPlusConfig {
             public void updateFill(MetaObject metaObject) {
                 log.info("开始更新填充...");
 
-                Long userId = getCurrentUser().getUserId();
+                Long userId = getUserId();
                 LocalDateTime now = LocalDateTime.now();
 
                 this.strictUpdateFill(metaObject, MyBaseEntity.Fields.updateBy, Long.class, userId);

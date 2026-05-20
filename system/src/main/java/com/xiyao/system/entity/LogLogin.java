@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 访问记录
+ * 登录记录
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-05-20
  */
 @Data
 @TableName("log_login")
@@ -38,22 +38,34 @@ public class LogLogin {
     private String username;
 
     /**
-     * 登录ip
+     * 登录时间
+     */
+    @TableField("login_time")
+    private LocalDateTime loginTime;
+
+    /**
+     * 登录状态(0.失败 1.成功)
+     */
+    @TableField("status")
+    private Integer status;
+
+    /**
+     * 提示消息
+     */
+    @TableField("message")
+    private String message;
+
+    /**
+     * ip地址
      */
     @TableField("ipaddr")
     private String ipaddr;
 
     /**
-     * 登录地点
+     * ip归属地
      */
     @TableField("location")
     private String location;
-
-    /**
-     * 浏览器类型
-     */
-    @TableField("browser")
-    private String browser;
 
     /**
      * 操作系统
@@ -62,20 +74,14 @@ public class LogLogin {
     private String os;
 
     /**
-     * 状态(0.失败 1.成功)
+     * 浏览器
      */
-    @TableField("status")
-    private Integer status;
+    @TableField("browser")
+    private String browser;
 
     /**
-     * 错误消息
+     * 设备类型
      */
-    @TableField("error_msg")
-    private String errorMsg;
-
-    /**
-     * 访问时间
-     */
-    @TableField("login_time")
-    private LocalDateTime loginTime;
+    @TableField("device_type")
+    private String deviceType;
 }

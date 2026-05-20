@@ -1,4 +1,4 @@
-package com.xiyao.common.enums;
+package com.xiyao.dict.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonCreator;

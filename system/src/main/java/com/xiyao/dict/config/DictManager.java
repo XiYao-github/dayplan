@@ -1,4 +1,4 @@
-package com.xiyao.common.config;
+package com.xiyao.dict.config;
 
 import com.xiyao.system.entity.DictData;
 import lombok.NoArgsConstructor;

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-05-20
  */
 @Mapper
 public interface LogOperationMapper extends MyBaseMapper<LogOperation> {

@@ -24,8 +24,7 @@
 drop table if exists dict_data;
 create table dict_data
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     dict_type   varchar(100) default '' null comment '字典类型',
     dict_code   varchar(100) default '' null comment '字典编码',
     dict_label  varchar(100) default '' null comment '字典标签',
@@ -44,8 +43,7 @@ create table dict_data
 drop table if exists dict_type;
 create table dict_type
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     dict_name   varchar(100) default '' null comment '字典名称',
     dict_type   varchar(100) default '' null comment '字典类型',
     status      int          default 1  null comment '状态(0.停用 1.正常)',
@@ -61,50 +59,50 @@ create table dict_type
 drop table if exists log_login;
 create table log_login
 (
-    id         bigint auto_increment
-        primary key,
-    user_id    bigint                  not null comment '用户id',
-    username   varchar(100) default '' not null comment '用户账号',
-    ipaddr     varchar(128) default '' null comment '登录ip',
-    location   varchar(200) default '' null comment '登录地点',
-    browser    varchar(50)  default '' null comment '浏览器类型',
-    os         varchar(50)  default '' null comment '操作系统',
-    status     int          default 1  null comment '状态(0.失败 1.成功)',
-    error_msg  text                    null comment '错误消息',
-    login_time datetime                null comment '访问时间'
+    id          bigint auto_increment primary key,
+    user_id     bigint                  not null comment '用户id',
+    username    varchar(100) default '' not null comment '用户账号',
+    login_time  datetime                null comment '登录时间',
+    status      int          default 1  null comment '登录状态(0.失败 1.成功)',
+    message     text                    null comment '提示消息',
+    ipaddr      varchar(20)  default '' null comment 'ip地址',
+    location    varchar(200) default '' null comment 'ip归属地',
+    os          varchar(50)  default '' null comment '操作系统',
+    browser     varchar(50)  default '' null comment '浏览器',
+    device_type varchar(50)  default '' null comment '设备类型'
 )
-    comment '访问记录';
+    comment '登录记录';
 
 drop table if exists log_operation;
 create table log_operation
 (
-    id             bigint auto_increment
-        primary key,
-    user_id        bigint                  not null comment '用户id',
-    username       varchar(100) default '' not null comment '用户账号',
-    admin_type     int          default 0  not null comment '三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)',
-    module         varchar(50)  default '' null comment '操作模块',
-    operation      varchar(100) default '' null comment '操作描述',
-    url            varchar(256) default '' null comment '请求url',
-    ipaddr         varchar(128) default '' null comment '操作ip',
-    location       varchar(200) default '' null comment '操作地点',
-    method_name    varchar(200) default '' null comment '方法名称',
-    req_method     varchar(10)  default '' null comment '请求方式',
-    operation_type int          default 0  null comment '操作类型(0.其它 1.查询 2.新增 3.修改 4.删除)',
-    param          longtext                null comment '请求参数',
-    result         longtext                null comment '返回结果',
-    status         int          default 1  null comment '状态(0.失败 1.成功)',
-    error_msg      text                    null comment '错误消息',
-    operation_time datetime                null comment '操作时间',
-    cost_time      bigint                  null comment '消耗时间(毫秒)'
+    id               bigint auto_increment primary key,
+    user_id          bigint                  not null comment '用户id',
+    username         varchar(100) default '' not null comment '用户账号',
+    admin_type       int          default 0  not null comment '三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)',
+    operation_module varchar(50)  default '' null comment '操作模块',
+    operation_method varchar(100) default '' null comment '操作方法',
+    operation_type   int          default 0  null comment '操作类型(0.其它 1.查询 2.新增 3.更新 4.删除)',
+    operation_time   datetime                null comment '操作时间',
+    status           int          default 1  null comment '操作状态(0.失败 1.成功)',
+    message          text                    null comment '提示消息',
+    request_url      varchar(200) default '' null comment '请求url',
+    request_method   varchar(10)  default '' null comment '请求方式',
+    request_param    longtext                null comment '请求参数',
+    return_result    longtext                null comment '返回结果',
+    cost_time        bigint                  null comment '消耗时间(毫秒)',
+    ipaddr           varchar(20)  default '' null comment 'ip地址',
+    location         varchar(200) default '' null comment 'ip归属地',
+    os               varchar(50)  default '' null comment '操作系统',
+    browser          varchar(50)  default '' null comment '浏览器',
+    device_type      varchar(50)  default '' null comment '设备类型'
 )
     comment '操作记录';
 
 drop table if exists sys_address;
 create table sys_address
 (
-    code          bigint                 not null comment '区划代码'
-        primary key,
+    code          bigint                 not null comment '区划代码',
     parent_code   bigint      default 0  not null comment '父级区划代码',
     name          varchar(50) default '' not null comment '名称',
     province_code bigint                 null comment '省/直辖市代码',
@@ -121,8 +119,7 @@ create table sys_address
 drop table if exists sys_config;
 create table sys_config
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     name        varchar(100)  not null comment '参数名',
     value       varchar(500)  not null comment '参数值',
     status      int default 1 null comment '状态(0.停用 1.正常)',
@@ -138,8 +135,7 @@ create table sys_config
 drop table if exists sys_menu;
 create table sys_menu
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     parent_id   bigint       default 0   not null comment '父菜单id',
     title       varchar(50)              not null comment '菜单标题',
     name        varchar(50)              not null comment '菜单名称',
@@ -162,8 +158,7 @@ create table sys_menu
 drop table if exists sys_role;
 create table sys_role
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     name        varchar(30)   not null comment '角色名称',
     sort        int           null comment '顺序',
     status      int default 1 null comment '状态(0.停用 1.正常)',
@@ -188,8 +183,7 @@ create table sys_role_menu
 drop table if exists sys_user;
 create table sys_user
 (
-    id          bigint auto_increment
-        primary key,
+    id          bigint auto_increment primary key,
     username    varchar(30)             not null comment '账号',
     password    varchar(100) default '' not null comment '密码',
     salt        varchar(50)  default '' not null comment '盐',

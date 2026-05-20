@@ -1,4 +1,4 @@
-package com.xiyao.common.annotation;
+package com.xiyao.dict.annotation;
 
 import java.lang.annotation.*;
 
