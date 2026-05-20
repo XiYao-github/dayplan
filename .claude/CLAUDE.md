@@ -37,7 +37,7 @@
 - 框架：Vue 3 + Vite
 - 状态管理：Pinia
 - 路由：Vue Router（动态路由 + 权限守卫）
-- UI 组件：Element Plus（公安网严肃主题）
+- UI 组件：Element Plus
 - HTTP：Axios（JWT Token、请求签名、SM2/SM4 加密）
 - 安全：CSRF Token、空闲自动登出、按钮级权限
 

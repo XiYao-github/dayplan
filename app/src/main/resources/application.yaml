@@ -95,11 +95,11 @@ encryptor-data:
   # 编码方式
   encode: HEX
   # 密钥(对称加密算法)
-  password: password
+  password: 4283CKFQ64YUZ7JW
   # 公钥(非对称加密算法)
-  publicKey: publicKey
+  publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
   # 私钥(非对称加密算法)
-  privateKey: privateKey
+  privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
 
 # 接口加密
 encryptor-api:
@@ -108,9 +108,9 @@ encryptor-api:
   # 加密头标识
   headerFlag: headerFlag
   # 响应加密公钥(非对称加密算法)
-  publicKey: publicKey
+  publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
   # 请求解密私钥(非对称加密算法)
-  privateKey: privateKey
+  privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
   # 包含加解密路径(默认 "/*")
   includePaths:
     - /api/**

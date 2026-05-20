@@ -2,6 +2,7 @@ package com.xiyao.security.config;
 
 import com.xiyao.common.utils.RedisUtils;
 import com.xiyao.security.filter.JwtAuthenticationFilter;
+import com.xiyao.security.handler.AccessDeniedHandlerImpl;
 import com.xiyao.security.handler.AuthenticationEntryPointImpl;
 import com.xiyao.security.properties.SecurityData;
 import com.xiyao.security.utils.JwtUtils;
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -69,10 +71,17 @@ public class SecurityConfig {
         return http
                 // 禁用 CSRF（前后端分离无状态应用）
                 .csrf(AbstractHttpConfigurer::disable)
+                // 启用 CORS 会读取 WebMvcConfig 的跨域配置
+                .cors(Customizer.withDefaults())
                 // 设置 Session 为无状态（不使用 Session 存储上下文）
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 // 认证失败处理类
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(new AuthenticationEntryPointImpl()))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new AuthenticationEntryPointImpl())
+                        .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                )
                 // 请求授权规则
                 .authorizeHttpRequests(auth -> auth
                         // 放行登录接口(无需认证)

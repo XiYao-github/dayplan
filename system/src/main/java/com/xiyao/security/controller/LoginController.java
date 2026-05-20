@@ -86,13 +86,13 @@ public class LoginController extends MyBaseController {
     }
 
     /**
-     * 退出登录
+     * 退出
      */
     @DeleteMapping("/logout")
     public Result logout(HttpServletRequest request) {
         // 获取 token
         String token = jwtUtils.getHeaderToken(request);
         // 删除 token
-        return jwtUtils.removeToken(token) ? success() : error("退出登录失败");
+        return jwtUtils.removeToken(token) ? success() : error("退出失败");
     }
 }
