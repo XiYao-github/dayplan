@@ -296,16 +296,6 @@ system/src/main/java/com/xiyao/trace/
     └── TraceFilter.java              # Servlet 过滤器，生成 traceId
 ```
 
-### 使用示例
-```java
-@Trace(module = "用户管理", operation = "查询用户")
-@GetMapping("/{id}")
-public Result<User> getUser(@PathVariable Long id) {
-    log.info("查询用户信息");
-    return Result.success(userService.getById(id));
-}
-```
-
 ### 日志输出示例
 ```
 ▶ [用户管理] 查询用户 - traceId=550e8400-e29b-41d4-a716-446655440000, spanId=01
