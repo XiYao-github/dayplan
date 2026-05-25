@@ -1,73 +1,128 @@
 ## 项目概述
-- 项目名称：dayplan（公安网高安全等级企业级全栈框架）
-- 架构模式：Spring Boot 3 单体式多模块 Maven 项目
-- 安全等级：等保合规，公安网标准
-- 项目模块：采用插件化 + 扩展包形式 结构解耦 易于扩展
 
-## 模块结构
+- 项目名称：Dayplan（公安网高安全等级企业级全栈框架）
+- 架构模式：Spring Boot 3 单体式多模块 Maven 项目，前后端分离
+- 安全等级：等保合规，公安网标准
+- 核心理念：以“可插拔模块化”方式组织代码，通过配置开关控制功能加载，保持核心稳定，结构解耦，易于扩展
+
+## 模块结构与职责
+
+- 项目采用分层、分模块的设计，分为三层：
+- system（基础能力层）、service（业务逻辑层）、app（对外接口层）。
+- 当前框架状态下 service 与 app 层为空，所有通用能力均由 system 层提供。
 
 ### system 层（基础能力）
-- framework：Spring Boot 3 + Redis + Mybatis-Plus 基础配置
-- security：Spring Security 6 + JWT + RBAC，扩展三员管理
-- governance：流量治理，注解驱动，动态调整阈值(限流、熔断、降级、隔离、重试、超时、防重)
-- encrypt：国密 SM2/SM3/SM4 mybatis 拦截器加密、过滤器请求响应加解密、 jackson 序列化期间脱敏
+
+- framework：基于 Spring Boot 3 的自动配置模块，封装 WebMvc、Jackson、MyBatis-Plus、Redis 等基础依赖配置，是所有模块的底层支撑。
+- security：集成 Spring Security 6 + JWT，实现细粒度 RBAC 权限控制，并扩展支持等保要求的三员管理。
+    - 三员相互制约，账户严格分离，任何一人无法完成超越职责的操作：
+    - 系统管理员：负责系统配置、用户账号管理，不能操作业务数据和安全审计；
+    - 安全保密管理员：负责用户权限分配、安全策略设置，不能查看审计日志；
+    - 安全审计管理员：负责查看和导出审计日志，监督其他两员操作，无任何配置权限。
+- governance：基于 Resilience4j + AOP，通过注解声明方式提供(限流、熔断、降级、隔离、重试、超时、防重(幂等)等流量治理能力，无需业务代码耦合。
+- crypto :国密算法支持模块，全面适配等保密码要求：
+    - 集成 SM2/SM3/SM4 算法（使用 Hutool + bouncycastle 包装）；
+    - MyBatis 拦截器实现数据库敏感字段透明加解密：仅需在实体字段上添加自定义注解，入库自动加密，出库自动解密；
+    - 过滤器实现请求/响应体加解密，配合前端完成“SM4 加密数据 + SM2 保护密钥”的全链路加密；
+    - Jackson 自定义序列化器，对敏感字段进行脱敏。
 - dict：数据字典回显、自动映射枚举
-- log：日志审计，等保合规，防篡改
-- common：任务调度、线程池、监控、文件、短信、代码生成器、Demo测试案例、SpringDoc、javadoc
+- log：满足等保合规的审计日志模块，支持操作日志防篡改（签名哈希链）和全链路追踪(traceId)。
+- common
+    - 动态线程池管理；
+    - 文件存储（本地存储、云存储）；
+    - 短信、邮件发送；
+    - EasyExcel 工具封装；
+    - Smart-Doc 接口文档生成配置；
+- codegen：基于 Velocity 的代码生成器，可连接数据库表生成完整代码。支持自定义模板、生成路径和覆盖策略，大幅减少重复编码。
+- test：测试脚手架：提供 JUnit 5 + MockMvc 基础配置、随机测试数据生成器、数据库自动回滚、Mock 工具以及 JMH
+  性能基准测试模板，保证测试一致性和效率。
 
 ### service 层（业务逻辑）
-- 纯业务逻辑实现，按领域划分模块
-- 不直接暴露给外部
+
+- 纯业务逻辑实现，按领域划分模块，依赖 system 层提供的各种能力。
+- 该层不直接暴露 HTTP 接口，通过 app 层被调用，保证逻辑与外部协议解耦。
+- 当前框架状态下为空，业务开发时在此添加模块。
 
 ### app 层（对外接口）
-- 管理后台接口
-- 小程序接口
-- 开放 API 接口
 
-
-
+- 管理后台接口（供 Vue3 管理端消费）
+- 小程序接口（供 UniApp 小程序端消费）
+- 开放 API 接口（供第三方系统对接，采用 SM3 签名保障安全）
 
 ## 后端技术栈
-- 基础框架：Spring Boot、Lombok
-- 安全框架：Spring Security、Jwt、Hutool、国密 SM2/SM3/SM4
-- 数据库：MySQL、HikariCP、Mybatis-Plus、Redis、Redisson
-- 弹性治理：、AOP、
-- 日志监控：SLF4J、Logback
-- 工具框驾：Validation、EasyExcel、Hutool、Spring-Cache
+
+- 基础框架：Spring Boot 3, Lombok
+- 安全框架：Spring Security 6, JWT, 国密
+- 数据库：MySQL, HikariCP, MyBatis-Plus
+- 缓存框架：Redis, Spring-Cache, Redisson
+- 弹性治理：Resilience4j, AOP
 - 消息队列：RabbitMQ
-- 构建工具：Docker、Maven
+- 文档生成：Smart-Doc
+- 工具框驾：Validation, EasyExcel, Hutool
+- 构建工具：Maven, Docker, Shell
 
 ## 前端技术栈
 
 ### 管理后台
+
 - 框架：Vue 3 + Vite
 - 状态管理：Pinia
 - 路由：Vue Router（动态路由 + 权限守卫）
 - UI 组件：Element Plus
-- HTTP：Axios（JWT Token、请求签名、SM2/SM4 加密）
-- 安全：CSRF Token、空闲自动登出、按钮级权限
+- HTTP 请求：Axios（JWT、Token、请求签名、加密）
+- 安全：按钮级权限、空闲自动登出、前端加密
 
 ### 小程序端
+
 - 框架：UniApp（Vue 3 + 微信小程序/H5 多端）
 - 状态管理：Pinia
 - UI 组件：uni-ui
-- 特性：微信静默登录、分包加载、请求签名加密
+- 特性：微信静默登录、分包加载、请求签名与加密同管理后台一致
+
+## 加密流程
+
+- 为保证敏感数据在网络中始终保密，框架制定了严格的加密策略：
+- 数据加密：请求体/响应体使用 SM4 对称加密，密钥随机生成；
+- 密钥保护：SM4 密钥使用 SM2 公钥加密，密文放入自定义请求头传输；
+- 前后端获取自定义请求头内密文，使用 SM2 私钥解密得到 SM4 密钥，再解密数据，响应同理；
+
+## 后端设计说明
+
+- 项目不拆分独立的 Starter 包，而是在单体多模块内通过 Spring 的条件装配实现功能可插拔。
+- 每个独立功能对应的配置类会使用 @ConditionalOnProperty 注解，配合 application.yml 中的配置项控制是否加载。
+- 这样在打包时所有代码仍在一起，但运行时可以按需启用或禁用模块，达到“伪插件”效果，且无需维护复杂的 Maven 依赖关系。
+
+### MyBatis-Plus 数据规范
+
+- 逻辑删除：配置自动过滤已删除数据，防止物理删除风险。
+- 乐观锁：更新时自动校验，避免脏写。
+- 自动填充：创建时间、更新时间、创建人、更新人等字段自动维护。
+- 分页插件：全局配置分页合理化，防止深度分页问题。
+- 字段加密存储：在实体字段上使用自定义注解 @CryptoField，通过 MyBatis 拦截器写入前加密、读取后解密，对业务代码完全透明。
 
 ## 运维部署
+
 - 容器化：Docker + docker-compose
 - Web 服务：Nginx（反向代理、静态资源托管）
-- 更新流程：SSH 脚本拉取代码 → 前端构建 → Maven 打包 → 滚动更新
+- 更新流程：SSH 执行脚本 → Git 拉取最新代码 → 前端构建 → Maven 打包 → Docker 镜像构建 → 滚动更新容器。
 
 ## 开发规范
-- 代码注释使用中文
+
 - 遵循阿里巴巴 Java 开发手册
-- 敏感数据必须加密（SM2/SM3/SM4）
-- 接口响应统一封装格式
-- 异常统一处理
+- 代码注释语言使用中文，方法和文档注释使用标准 javadoc 格式
+- 所有接口响应使用统一封装体 Result
+- 敏感数据必须经过 SM4 加密后存储，使用 @CryptoField 注解声明；
+- 接口响应统一封装格式(Result 包含 code、msg、data、traceId)
+- 异常通过全局 @RestControllerAdvice 统一处理，返回标准错误码；
+- 审计日志通过 @AuditLog 注解记录，确保操作可追溯；
+- 禁止在 Controller 中编写复杂业务，业务逻辑均下沉至 service 层；
+- 单元测试要求覆盖核心逻辑，提交前需通过。
 
 ## 对话要求
-- 回答时结合本项目架构特点
+
+- 基于本框架特点，后续开发与答疑中将遵循以下原则
 - 提供代码时注明应该放在哪个模块（system/service/app）
-- 涉及加密操作时优先使用国密算法
-- 安全相关的修改需额外说明
+- 涉及加密相关功能，优先使用 SM2/SM3/SM4 国密算法
+- 安全相关的修改会额外说明其等保合规意义和三员影响
+- 框架级能力扩展建议优先使用 @ConditionalOnProperty 进行可插拔设计
 

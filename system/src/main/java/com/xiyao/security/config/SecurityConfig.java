@@ -139,6 +139,9 @@ public class SecurityConfig {
                 // ========== 请求授权 ==========
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/audit/**").hasRole("AUDIT_ADMIN")
+                        .requestMatchers("/user/**", "/role/**").hasAnyRole("SYSTEM_ADMIN", "SECURITY_ADMIN")
+                        .requestMatchers("/config/**").hasRole("SYSTEM_ADMIN")
                         // 放行登录接口（无需认证即可访问）
                         .requestMatchers(properties.getIncludePaths().toArray(String[]::new)).permitAll()
                         // 放行静态资源路径

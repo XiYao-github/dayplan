@@ -142,17 +142,6 @@ public class Result implements Serializable {
      * @return 失败结果
      */
     public static Result error(String msg) {
-        return error(msg, null);
-    }
-
-    /**
-     * 返回失败（带消息和数据）
-     *
-     * @param msg  错误消息
-     * @param data 错误详情
-     * @return 失败结果
-     */
-    public static Result error(String msg, Object data) {
         return error(ERROR, msg);
     }
 
@@ -164,19 +153,7 @@ public class Result implements Serializable {
      * @return 失败结果
      */
     public static Result error(Integer code, String msg) {
-        return error(code, msg, null);
-    }
-
-    /**
-     * 返回失败（完整参数）
-     *
-     * @param code 错误码
-     * @param msg  错误消息
-     * @param data 错误详情
-     * @return 失败结果
-     */
-    public static Result error(Integer code, String msg, Object data) {
-        return result(code, msg, data);
+        return result(code, msg, null);
     }
 
     // ==================== 内部方法 ====================
