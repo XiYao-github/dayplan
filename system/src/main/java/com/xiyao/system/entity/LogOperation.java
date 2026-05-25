@@ -44,16 +44,16 @@ public class LogOperation {
     private Integer adminType;
 
     /**
-     * 操作模块
-     */
-    @TableField("operation_module")
-    private String operationModule;
-
-    /**
      * 操作方法
      */
     @TableField("operation_method")
     private String operationMethod;
+
+    /**
+     * 操作模块
+     */
+    @TableField("operation_module")
+    private String operationModule;
 
     /**
      * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除)
@@ -80,18 +80,6 @@ public class LogOperation {
     private String message;
 
     /**
-     * 请求方式
-     */
-    @TableField("request_method")
-    private String requestMethod;
-
-    /**
-     * 请求url
-     */
-    @TableField("request_url")
-    private String requestUrl;
-
-    /**
      * 请求参数
      */
     @TableField("request_param")
@@ -108,6 +96,18 @@ public class LogOperation {
      */
     @TableField("cost_time")
     private Long costTime;
+
+    /**
+     * 请求方式
+     */
+    @TableField("request_method")
+    private String requestMethod;
+
+    /**
+     * 请求url
+     */
+    @TableField("request_url")
+    private String requestUrl;
 
     /**
      * 客户端IP

@@ -1,6 +1,6 @@
 package com.xiyao.log.aspect;
 
-import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import com.xiyao.log.annotation.Log;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -80,44 +79,13 @@ public class LogAspect {
             throw e;
         } finally {
             // 计算耗时
-            event.setCostTime(System.currentTimeMillis() - startTime);
+            long endTime = System.currentTimeMillis();
+            event.setCostTime(endTime - startTime);
             event.setTime(LocalDateTime.now());
 
             // 异步发布事件（由监听器异步保存日志）
             SpringUtil.publishEvent(event);
         }
-    }
-
-    /**
-     * 构建基础日志事件
-     *
-     * @param point 切点信息
-     * @param log   日志注解
-     * @return 日志事件对象
-     */
-    private LogOperationEvent buildBaseEvent(ProceedingJoinPoint point, Log log) {
-        // 获取方法签名
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        Method method = signature.getMethod();
-
-        LogOperationEvent event = new LogOperationEvent();
-
-        // 设置操作用户信息
-        event.setUserId(SecurityUtils.getUserId());
-        event.setUsername(SecurityUtils.getUsername());
-        event.setAdminType(SecurityUtils.getAdminType());
-
-        // 设置操作信息
-        event.setModule(log.module());  // 操作模块
-        event.setType(log.operationType().ordinal());  // 操作类型
-        event.setMethod(method.getDeclaringClass().getSimpleName() + "." + method.getName());  // 方法名
-
-        // 保存请求参数（根据配置）
-        if (log.isSaveRequestData()) {
-            event.setRequestParam(getRequestParams(point));
-        }
-
-        return event;
     }
 
     /**
@@ -128,10 +96,10 @@ public class LogAspect {
      * @param saveResponseData 是否保存响应数据
      */
     private void handleSuccess(LogOperationEvent event, Object result, boolean saveResponseData) {
-        event.setStatus(OperationStatus.SUCCESS.ordinal());  // 成功状态
+        event.setStatus(OperationStatus.SUCCESS.ordinal());
         event.setMessage("操作成功");
-        if (saveResponseData && result != null) {
-            event.setReturnResult(JSONUtil.toJsonStr(result));  // JSON 序列化响应结果
+        if (saveResponseData && ObjectUtil.isNotNull(result)) {
+            event.setReturnResult(JSONUtil.toJsonStr(result));
         }
     }
 
@@ -142,8 +110,39 @@ public class LogAspect {
      * @param e      异常信息
      */
     private void handleFail(LogOperationEvent event, Throwable e) {
-        event.setStatus(OperationStatus.FAIL.ordinal());  // 失败状态
-        event.setMessage(StrUtil.sub(e.getMessage(), 0, 500));  // 截取异常消息（前500字符）
+        event.setStatus(OperationStatus.FAIL.ordinal());
+        event.setMessage(e.getMessage());
+    }
+
+    /**
+     * 构建基础日志事件
+     *
+     * @param point 切点信息
+     * @param log   日志注解
+     * @return 日志事件对象
+     */
+    private LogOperationEvent buildBaseEvent(ProceedingJoinPoint point, Log log) {
+        LogOperationEvent event = new LogOperationEvent();
+
+        // 设置操作用户信息
+        event.setUserId(SecurityUtils.getUserId());
+        event.setUsername(SecurityUtils.getUsername());
+        event.setAdminType(SecurityUtils.getAdminType());
+        event.setModule(log.module());
+        event.setType(log.operationType().ordinal());
+        // 设置方法名称
+        String className = point.getTarget().getClass().getName();
+        String methodName = point.getSignature().getName();
+        event.setMethod(className + "." + methodName);
+        // MethodSignature signature = (MethodSignature) point.getSignature();
+        // Method method = signature.getMethod();
+        // event.setMethod(method.getDeclaringClass().getSimpleName() + "." + method.getName());
+
+        if (log.isSaveRequestData()) {
+            event.setRequestParam(getRequestParams(point));
+        }
+
+        return event;
     }
 
     /**
@@ -246,6 +245,7 @@ public class LogAspect {
         if (collection.isEmpty()) {
             return false;
         }
+        // 检查任意一个元素是否为 MultipartFile
         for (Object item : collection) {
             if (item instanceof MultipartFile) {
                 return true;

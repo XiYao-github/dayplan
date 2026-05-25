@@ -59,20 +59,20 @@ public class LogOperationEvent extends MyBaseEvent {
     private Integer adminType;
 
     /**
-     * 操作模块
-     * <p>
-     * 与 @Log 注解的 module() 对应，
-     * 用于日志分类和检索。
-     */
-    private String module;
-
-    /**
      * 操作方法
      * <p>
      * 格式：类名.方法名
      * 例如：UserController.addUser
      */
     private String method;
+
+    /**
+     * 操作模块
+     * <p>
+     * 与 @Log 注解的 module() 对应，
+     * 用于日志分类和检索。
+     */
+    private String module;
 
     /**
      * 操作类型

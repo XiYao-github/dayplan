@@ -5,12 +5,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -192,77 +188,6 @@ public class SpringUtils implements ApplicationContextAware {
         return getEnvironment().containsProperty(key);
     }
 
-    /**
-     * 解析占位符
-     * <p>
-     * 将文本中的 ${...} 占位符替换为实际的配置值。
-     * 例如：输入 "应用 ${app.name} 运行在 ${server.port} 端口"
-     * 输出："应用 我的应用 运行在 8080 端口"
-     *
-     * @param text 包含占位符的文本
-     * @return 解析后的文本
-     */
-    public static String resolvePlaceholders(String text) {
-        return getEnvironment().resolvePlaceholders(text);
-    }
-
-    // ==================== 资源加载 ====================
-
-    /**
-     * 获取资源对象
-     * <p>
-     * 支持多种资源前缀：classpath:（类路径）、file:（文件系统）、http:（网络资源）、
-     * 无前缀则根据当前 Spring 上下文解析。
-     *
-     * @param location 资源路径，如 "classpath:config/application.yml"
-     * @return Resource 资源对象，可用于进一步操作
-     */
-    public static Resource getResource(String location) {
-        return getApplicationContext().getResource(location);
-    }
-
-    /**
-     * 获取资源的输入流
-     * <p>
-     * 用于读取资源文件的二进制内容，使用完毕后需要手动关闭输入流。
-     * 建议使用 try-with-resources 语法自动关闭。
-     *
-     * @param location 资源路径，如 "classpath:config/logo.png"
-     * @return InputStream 输入流
-     * @throws IOException 如果资源不存在或无法读取
-     */
-    public static InputStream getResourceAsStream(String location) throws IOException {
-        return getResource(location).getInputStream();
-    }
-
-    /**
-     * 读取资源文件内容为字符串（UTF-8 编码）
-     * <p>
-     * 直接读取文本文件内容并返回字符串，内部已处理流关闭，
-     * 适用于读取配置文件、SQL 脚本等文本资源。
-     *
-     * @param location 资源路径，如 "classpath:config/init.sql"
-     * @return 文件内容字符串（UTF-8 编码）
-     * @throws IOException 如果资源不存在或无法读取
-     */
-    public static String getResourceContent(String location) throws IOException {
-        try (InputStream is = getResourceAsStream(location)) {
-            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        }
-    }
-
-    /**
-     * 判断资源是否存在
-     * <p>
-     * 在获取资源内容前可以先调用此方法进行判断，避免资源不存在时抛出异常。
-     *
-     * @param location 资源路径
-     * @return true 表示资源存在，false 表示不存在
-     */
-    public static boolean resourceExists(String location) {
-        return getResource(location).exists();
-    }
-
     // ==================== 事件发布 ====================
 
     /**
@@ -430,54 +355,5 @@ public class SpringUtils implements ApplicationContextAware {
         getApplicationContext().publishEvent(event);
     }
 
-    // ==================== 应用信息 ====================
 
-    /**
-     * 获取应用名称
-     * <p>
-     * 从配置文件中读取 spring.application.name 的值，
-     * 通常用于日志输出、服务间调用标识等场景。
-     *
-     * @return 应用名称，未配置返回 null
-     */
-    public static String getApplicationName() {
-        return getProperty("spring.application.name", String.class);
-    }
-
-    /**
-     * 获取服务器端口
-     * <p>
-     * 从配置文件中读取 server.port 的值，默认为 8080。
-     * 常用于动态获取当前服务运行的端口号。
-     *
-     * @return 服务器端口，默认 8080
-     */
-    public static Integer getServerPort() {
-        return getProperty("server.port", Integer.class);
-    }
-
-    /**
-     * 获取应用上下文路径
-     * <p>
-     * 从配置文件中读取 server.servlet.context-path 的值，
-     * 用于构建完整的请求 URL。
-     *
-     * @return 上下文路径（如 "/api"），未配置返回空字符串
-     */
-    public static String getContextPath() {
-        return getProperty("server.servlet.context-path", String.class);
-    }
-
-    /**
-     * 自动装配（对非 Spring 管理的对象进行依赖注入）
-     * <p>
-     * 对于通过 new 关键字手动创建的对象，Spring 不会自动注入依赖。
-     * 调用此方法可以手动对该对象进行依赖注入，@Autowired 等注解会生效。
-     * 适用于工具类、动态创建的对象等场景。
-     *
-     * @param bean 需要注入的对象实例
-     */
-    public static void autowireBean(Object bean) {
-        getApplicationContext().getAutowireCapableBeanFactory().autowireBean(bean);
-    }
 }
