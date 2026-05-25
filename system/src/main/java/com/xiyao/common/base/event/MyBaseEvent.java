@@ -13,7 +13,22 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 请求事件基类 自动从 HttpServletRequest 中提取常用信息
+ * 请求事件基类
+ * <p>
+ * 自动从 HttpServletRequest 中提取常用信息，
+ * 包括客户端 IP、请求行信息、请求头信息、设备信息等。
+ * 所有自定义事件类应继承此类。
+ *
+ * <p>
+ * <b>自动采集的信息：</b>
+ * <ul>
+ *     <li>网络信息：clientIp、clientPort、serverIp</li>
+ *     <li>请求行：requestMethod、requestUrl、queryString</li>
+ *     <li>请求头：userAgent、referer、origin、contentType</li>
+ *     <li>设备信息：os、browser、platform（通过 User-Agent 解析）</li>
+ * </ul>
+ *
+ * @author xiyao
  */
 @Data
 @Accessors(chain = true)
@@ -22,6 +37,12 @@ public abstract class MyBaseEvent implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 构造函数
+     * <p>
+     * 在构造时自动从当前请求上下文中提取信息。
+     * 如果不在 Web 请求上下文中，所有字段将为 null。
+     */
     public MyBaseEvent() {
         HttpServletRequest request = WebUtils.getRequest();
         if (request != null) {
@@ -59,39 +80,41 @@ public abstract class MyBaseEvent implements Serializable {
     // ==================== 网络信息 ====================
 
     /**
-     * 客户端IP
+     * 客户端 IP 地址
      */
     private String clientIp;
 
     /**
-     * 客户端端口
+     * 客户端端口号
      */
     private Integer clientPort;
 
     /**
-     * 服务器IP:端口
+     * 服务器 IP 和端口
      */
     private String serverIp;
 
     // ==================== 请求行信息 ====================
 
     /**
-     * 请求方法 GET/POST/PUT/DELETE
+     * HTTP 请求方法（GET、POST、PUT、DELETE 等）
      */
     private String requestMethod;
 
     /**
-     * 请求URL
+     * 请求 URI（不包含域名和端口）
      */
     private String requestUrl;
 
     /**
-     * 查询参数
+     * 查询参数字符串
      */
     private String queryString;
 
     /**
-     * 完整请求URL（含参数）
+     * 获取完整的请求 URL（含查询参数）
+     *
+     * @return 完整 URL，如 http://localhost:8080/api/user?id=1
      */
     public String getFullUrl() {
         if (StrUtil.isBlank(queryString)) {
@@ -108,34 +131,34 @@ public abstract class MyBaseEvent implements Serializable {
     private String userAgent;
 
     /**
-     * 来源页面
+     * 来源页面（Referer 头）
      */
     private String referer;
 
     /**
-     * 跨域来源
+     * 跨域来源（Origin 头）
      */
     private String origin;
 
     /**
-     * 内容类型
+     * 内容类型（Content-Type 头）
      */
     private String contentType;
 
-    // ==================== 设备信息（从User-Agent解析） ====================
+    // ==================== 设备信息（从 User-Agent 解析） ====================
 
     /**
-     * 操作系统
+     * 操作系统名称
      */
     private String os;
 
     /**
-     * 浏览器（含版本）
+     * 浏览器名称和版本
      */
     private String browser;
 
     /**
-     * 设备类型 PC/Mobile/Tablet
+     * 平台类型（PC/Mobile/Tablet）
      */
     private String platform;
 }

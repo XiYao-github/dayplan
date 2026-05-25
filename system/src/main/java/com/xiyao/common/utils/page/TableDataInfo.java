@@ -12,6 +12,22 @@ import java.util.List;
 
 /**
  * 表格分页数据对象
+ * <p>
+ * 前后端分页数据交互的统一格式。
+ * 通常与 Element Plus、Ant Design 等前端 UI 框架的表格组件配合使用。
+ *
+ * <p>
+ * <b>响应格式：</b>
+ * <pre>{@code
+ * {
+ *     "code": 200,
+ *     "msg": "查询成功",
+ *     "total": 100,
+ *     "rows": [...]
+ * }
+ * }</pre>
+ *
+ * @author xiyao
  */
 @Data
 @NoArgsConstructor
@@ -26,12 +42,12 @@ public class TableDataInfo<T> implements Serializable {
     private long total;
 
     /**
-     * 列表数据
+     * 当前页数据列表
      */
     private List<T> rows;
 
     /**
-     * 消息状态码
+     * 状态码（HTTP 200）
      */
     private int code;
 
@@ -41,9 +57,9 @@ public class TableDataInfo<T> implements Serializable {
     private String msg;
 
     /**
-     * 分页
+     * 构造函数
      *
-     * @param list  列表数据
+     * @param list  数据列表
      * @param total 总记录数
      */
     public TableDataInfo(List<T> list, long total) {
@@ -54,7 +70,11 @@ public class TableDataInfo<T> implements Serializable {
     }
 
     /**
-     * 根据分页对象构建表格分页数据对象
+     * 根据 MyBatis-Plus 分页对象构建
+     *
+     * @param page 分页对象
+     * @param <T>  数据类型
+     * @return 分页数据
      */
     public static <T> TableDataInfo<T> build(IPage<T> page) {
         TableDataInfo<T> rspData = new TableDataInfo<>();
@@ -66,7 +86,11 @@ public class TableDataInfo<T> implements Serializable {
     }
 
     /**
-     * 根据数据列表构建表格分页数据对象
+     * 根据数据列表构建（无分页）
+     *
+     * @param list 数据列表
+     * @param <T> 数据类型
+     * @return 分页数据
      */
     public static <T> TableDataInfo<T> build(List<T> list) {
         TableDataInfo<T> rspData = new TableDataInfo<>();
@@ -78,7 +102,10 @@ public class TableDataInfo<T> implements Serializable {
     }
 
     /**
-     * 构建表格分页数据对象
+     * 构建空的表格数据
+     *
+     * @param <T> 数据类型
+     * @return 空分页数据
      */
     public static <T> TableDataInfo<T> build() {
         TableDataInfo<T> rspData = new TableDataInfo<>();
@@ -88,11 +115,12 @@ public class TableDataInfo<T> implements Serializable {
     }
 
     /**
-     * 根据原始数据列表和分页参数，构建表格分页数据对象（用于假分页）
+     * 根据数据列表和分页参数构建（用于假分页）
      *
      * @param list 原始数据列表（全部数据）
-     * @param page 分页参数对象（包含当前页码、每页大小等）
-     * @return 构造好的分页结果 TableDataInfo<T>
+     * @param page 分页参数对象
+     * @param <T>  数据类型
+     * @return 分页数据
      */
     public static <T> TableDataInfo<T> build(List<T> list, IPage<T> page) {
         if (CollUtil.isEmpty(list)) {
@@ -101,5 +129,4 @@ public class TableDataInfo<T> implements Serializable {
         List<T> pageList = CollUtil.page((int) page.getCurrent() - 1, (int) page.getSize(), list);
         return new TableDataInfo<>(pageList, list.size());
     }
-
 }

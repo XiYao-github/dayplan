@@ -5,17 +5,45 @@ import org.springframework.http.HttpStatus;
 
 /**
  * 自定义业务异常
+ * <p>
+ * 用于在业务逻辑中抛出明确的业务错误，
+ * 如：参数校验失败、权限不足、数据不存在等。
+ *
+ * <p>
+ * <b>使用示例：</b>
+ * <pre>{@code
+ * // 简单用法
+ * if (user == null) {
+ *     throw new BusinessException("用户不存在");
+ * }
+ *
+ * // 指定错误码
+ * throw new BusinessException(400, "参数错误");
+ *
+ * // 携带原始异常
+ * try {
+ *     doSomething();
+ * } catch (IOException e) {
+ *     throw new BusinessException("操作失败", e);
+ * }
+ * }</pre>
+ *
+ * <p>
+ * 全局异常处理器 {@link GlobalExceptionHandler} 会统一捕获此异常，
+ * 并根据 errorCode 返回对应的 HTTP 状态码和响应消息。
+ *
+ * @author xiyao
  */
 @Getter
 public class BusinessException extends RuntimeException {
 
     /**
-     * 失败码
+     * 默认错误码（HTTP 500）
      */
     public static final int ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
     /**
-     * 编码
+     * 错误码
      */
     private final Integer code;
 
@@ -25,7 +53,7 @@ public class BusinessException extends RuntimeException {
     private final String message;
 
     /**
-     * 错误信息
+     * 构造函数（仅消息）
      *
      * @param message 错误信息
      */
@@ -36,9 +64,9 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
-     * 错误码,错误信息
+     * 构造函数（错误码 + 消息）
      *
-     * @param code    错误码
+     * @param code    HTTP 错误码
      * @param message 错误信息
      */
     public BusinessException(Integer code, String message) {
@@ -48,7 +76,7 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
-     * 错误信息,原始异常
+     * 构造函数（消息 + 原始异常）
      *
      * @param message 错误信息
      * @param cause   原始异常
@@ -60,9 +88,9 @@ public class BusinessException extends RuntimeException {
     }
 
     /**
-     * 错误码,错误信息,原始异常
+     * 构造函数（错误码 + 消息 + 原始异常）
      *
-     * @param code    错误码
+     * @param code    HTTP 错误码
      * @param message 错误信息
      * @param cause   原始异常
      */
@@ -71,5 +99,4 @@ public class BusinessException extends RuntimeException {
         this.code = code;
         this.message = message;
     }
-
 }

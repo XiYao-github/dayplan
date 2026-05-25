@@ -7,7 +7,23 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 分页查询实体类
+ * 分页查询参数类
+ * <p>
+ * 用于接收前端传来的分页和排序参数。
+ * 通常与 MyBatis-Plus 的 Page<T> 配合使用。
+ *
+ * <p>
+ * <b>使用示例：</b>
+ * <pre>{@code
+ * @GetMapping("/user/list")
+ * public Result&lt;TableDataInfo&lt;User&gt;&gt; list(UserQuery query) {
+ *     Page&lt;User&gt; page = query.build();
+ *     IPage&lt;User&gt; result = userService.page(page);
+ *     return Result.ok(TableDataInfo.build(result));
+ * }
+ * }</pre>
+ *
+ * @author xiyao
  */
 @Data
 public class PageQuery implements Serializable {
@@ -21,96 +37,50 @@ public class PageQuery implements Serializable {
     private Integer pageSize;
 
     /**
-     * 当前页数
+     * 当前页数（从 1 开始）
      */
     private Integer pageNum;
 
     /**
-     * 排序列
+     * 排序列（字段名，多个用逗号分隔）
      */
     private String orderByColumn;
 
     /**
-     * 排序的方向desc或者asc
+     * 排序方向（asc/desc，多个用逗号分隔）
      */
     private String isAsc;
 
     /**
-     * 当前记录起始索引 默认值
+     * 默认页码
      */
     public static final int DEFAULT_PAGE_NUM = 1;
 
     /**
-     * 每页显示记录数 默认值 默认查全部
+     * 默认每页显示记录数（默认查全部）
      */
     public static final int DEFAULT_PAGE_SIZE = Integer.MAX_VALUE;
 
     /**
-     * 构建分页对象
-     */
-    // public <T> Page<T> build() {
-    //     Integer pageNum = ObjectUtil.defaultIfNull(getPageNum(), DEFAULT_PAGE_NUM);
-    //     Integer pageSize = ObjectUtil.defaultIfNull(getPageSize(), DEFAULT_PAGE_SIZE);
-    //     if (pageNum <= 0) {
-    //         pageNum = DEFAULT_PAGE_NUM;
-    //     }
-    //     Page<T> page = new Page<>(pageNum, pageSize);
-    //     List<OrderItem> orderItems = buildOrderItem();
-    //     if (CollUtil.isNotEmpty(orderItems)) {
-    //         page.addOrder(orderItems);
-    //     }
-    //     return page;
-    // }
-
-    /**
-     * 构建排序
+     * 计算当前记录起始索引
+     * <p>
+     * 计算公式：(pageNum - 1) * pageSize
      *
-     * 支持的用法如下:
-     * {isAsc:"asc",orderByColumn:"id"} order by id asc
-     * {isAsc:"asc",orderByColumn:"id,createTime"} order by id asc,create_time asc
-     * {isAsc:"desc",orderByColumn:"id,createTime"} order by id desc,create_time desc
-     * {isAsc:"asc,desc",orderByColumn:"id,createTime"} order by id asc,create_time desc
+     * @return 起始索引，pageSize 为 null 时返回 null
      */
-    // private List<OrderItem> buildOrderItem() {
-    //     if (StringUtils.isBlank(orderByColumn) || StringUtils.isBlank(isAsc)) {
-    //         return null;
-    //     }
-    //     String orderBy = SqlUtil.escapeOrderBySql(orderByColumn);
-    //     orderBy = StringUtils.toUnderScoreCase(orderBy);
-    //
-    //     // 兼容前端排序类型
-    //     isAsc = StringUtils.replaceEach(isAsc, new String[]{"ascending", "descending"}, new String[]{"asc", "desc"});
-    //
-    //     String[] orderByArr = orderBy.split(StringUtils.SEPARATOR);
-    //     String[] isAscArr = isAsc.split(StringUtils.SEPARATOR);
-    //     if (isAscArr.length != 1 && isAscArr.length != orderByArr.length) {
-    //         throw new ServiceException("排序参数有误");
-    //     }
-    //
-    //     List<OrderItem> list = new ArrayList<>();
-    //     // 每个字段各自排序
-    //     for (int i = 0; i < orderByArr.length; i++) {
-    //         String orderByStr = orderByArr[i];
-    //         String isAscStr = isAscArr.length == 1 ? isAscArr[0] : isAscArr[i];
-    //         if ("asc".equals(isAscStr)) {
-    //             list.add(OrderItem.asc(orderByStr));
-    //         } else if ("desc".equals(isAscStr)) {
-    //             list.add(OrderItem.desc(orderByStr));
-    //         } else {
-    //             throw new ServiceException("排序参数有误");
-    //         }
-    //     }
-    //     return list;
-    // }
-
     @JsonIgnore
     public Integer getFirstNum() {
         return (pageNum - 1) * pageSize;
     }
 
+    /**
+     * 构造函数
+     *
+     * @param pageSize 每页大小
+     * @param pageNum   当前页数
+     */
     public PageQuery(Integer pageSize, Integer pageNum) {
         this.pageSize = pageSize;
         this.pageNum = pageNum;
     }
-
 }

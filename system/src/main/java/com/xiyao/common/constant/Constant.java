@@ -1,9 +1,16 @@
 package com.xiyao.common.constant;
 
 /**
- * 常量
- **/
+ * 全局常量接口
+ * <p>
+ * 定义项目中使用的通用常量，
+ * 包括日期格式、字符集、登录相关常量等。
+ *
+ * @author xiyao
+ */
 public interface Constant {
+
+    // ==================== 日期时间格式 ====================
 
     /**
      * 日期时间格式（前端常用格式）
@@ -21,10 +28,11 @@ public interface Constant {
     String PATTERN_TIME = "HH:mm:ss";
 
     /**
-     * 时区
+     * 默认时区（北京时间）
      */
     String TIME_ZONE = "GMT+8";
 
+    // ==================== 字符集 ====================
 
     /**
      * UTF-8 字符集
@@ -36,38 +44,37 @@ public interface Constant {
      */
     String GBK = "GBK";
 
+    // ==================== URL 相关 ====================
+
     /**
-     * www主域
+     * www 主域前缀
      */
     String WWW = "www.";
 
     /**
-     * http请求
+     * HTTP 协议前缀
      */
     String HTTP = "http://";
 
     /**
-     * https请求
+     * HTTPS 协议前缀
      */
     String HTTPS = "https://";
 
+    // ==================== 登录相关操作 ====================
+
     /**
-     * 登录成功
+     * 登录操作标识
      */
     String LOGIN = "login";
 
     /**
-     * 注销
+     * 注销操作标识
      */
     String LOGOUT = "logout";
 
     /**
-     * 注册
+     * 注册操作标识
      */
     String REGISTER = "register";
-
-    /**
-     * 加密头
-     */
-    String ENCRYPT_HEADER = "ENC_";
 }

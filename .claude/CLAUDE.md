@@ -2,16 +2,18 @@
 - 项目名称：dayplan（公安网高安全等级企业级全栈框架）
 - 架构模式：Spring Boot 3 单体式多模块 Maven 项目
 - 安全等级：等保合规，公安网标准
+- 项目模块：采用插件化 + 扩展包形式 结构解耦 易于扩展
 
 ## 模块结构
 
 ### system 层（基础能力）
-- framework：Spring Boot 3 基础配置
-- security+jwt：Spring Security 6 + JWT + RBAC，扩展三员管理
-- governance：Resilience4j 限流、熔断、降级、隔离、重试
-- encrypt：国密 SM2/SM3/SM4 全链路加密与脱敏
+- framework：Spring Boot 3 + Redis + Mybatis-Plus 基础配置
+- security：Spring Security 6 + JWT + RBAC，扩展三员管理
+- governance：流量治理，注解驱动，动态调整阈值(限流、熔断、降级、隔离、重试、超时、防重)
+- encrypt：国密 SM2/SM3/SM4 mybatis 拦截器加密、过滤器请求响应加解密、 jackson 序列化期间脱敏
+- dict：数据字典回显、自动映射枚举
 - log：日志审计，等保合规，防篡改
-- common：线程池、文件上传、短信、代码生成器、数据字典回显、自动映射枚举
+- common：任务调度、线程池、监控、文件、短信、代码生成器、Demo测试案例、SpringDoc、javadoc
 
 ### service 层（业务逻辑）
 - 纯业务逻辑实现，按领域划分模块
@@ -22,14 +24,18 @@
 - 小程序接口
 - 开放 API 接口
 
+
+
+
 ## 后端技术栈
-- 基础框架：Spring Boot 3.x
-- 安全框架：Spring Security 6 + JWT
-- 加密算法：国密 SM2/SM3/SM4
-- 弹性治理：Resilience4j
-- 数据库：MySQL
-- 缓存：Redis
-- 构建工具：Maven（多模块）
+- 基础框架：Spring Boot、Lombok
+- 安全框架：Spring Security、Jwt、Hutool、国密 SM2/SM3/SM4
+- 数据库：MySQL、HikariCP、Mybatis-Plus、Redis、Redisson
+- 弹性治理：、AOP、
+- 日志监控：SLF4J、Logback
+- 工具框驾：Validation、EasyExcel、Hutool、Spring-Cache
+- 消息队列：RabbitMQ
+- 构建工具：Docker、Maven
 
 ## 前端技术栈
 

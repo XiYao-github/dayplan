@@ -14,22 +14,54 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 
 /**
- * 安全相关工具类
+ * 国密加密工具类
+ * <p>
+ * 提供 SM2/SM4 国密算法的便捷加密解密方法。
+ * 基于 Hutool 底层加密库封装，提供统一的工具类入口。
+ *
+ * <p>
+ * <b>算法说明：</b>
+ * <ul>
+ *     <li>SM4：对称加密算法，密钥长度 16 位（128位），加密解密使用同一密钥</li>
+ *     <li>SM2：非对称加密算法，公钥加密、私钥解密，常用于密钥交换</li>
+ * </ul>
+ *
+ * <p>
+ * <b>使用示例：</b>
+ * <pre>{@code
+ * // SM4 加密
+ * String ciphertext = EncryptUtils.encryptBySm4Hex(plaintext, password);
+ * // SM4 解密
+ * String plaintext = EncryptUtils.decryptBySm4(ciphertext, password);
+ *
+ * // SM2 加密（公钥加密）
+ * String ciphertext = EncryptUtils.encryptBySm2Hex(plaintext, publicKey);
+ * // SM2 解密（私钥解密）
+ * String plaintext = EncryptUtils.decryptBySm2(ciphertext, privateKey);
+ * }</pre>
+ *
+ * @author xiyao
+ * @see SM4
+ * @see SM2
  */
 public class EncryptUtils {
 
     /**
-     * SM4加密
+     * SM4 加密（Base64 编码）
+     * <p>
+     * 使用 SM4 对称加密算法加密字符串。
+     * SM4 密钥长度必须为 16 字符。
      *
-     * @param data     待加密数据
-     * @param password 秘钥字符串
-     * @return 加密后字符串
+     * @param data     待加密的明文字符串
+     * @param password SM4 密钥（16 位字符串）
+     * @return Base64 编码的密文字符串
+     * @throws IllegalArgumentException 密钥为空或长度不为 16 位
      */
     public static String encryptBySm4(String data, String password) {
         if (StrUtil.isBlank(password)) {
             throw new IllegalArgumentException("SM4需要传入秘钥信息");
         }
-        // sm4算法的秘钥要求是16位长度
+        // SM4 算法的密钥要求是 16 位长度
         int sm4PasswordLength = 16;
         if (sm4PasswordLength != password.length()) {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
@@ -39,17 +71,19 @@ public class EncryptUtils {
     }
 
     /**
-     * SM4加密（Hex编码）
+     * SM4 加密（Hex 编码）
+     * <p>
+     * 使用 SM4 对称加密算法加密字符串，输出 Hex 编码。
      *
-     * @param data     待加密数据
-     * @param password 秘钥字符串
-     * @return 加密后字符串, 采用Hex编码
+     * @param data     待加密的明文字符串
+     * @param password SM4 密钥（16 位字符串）
+     * @return Hex 编码的密文字符串
+     * @throws IllegalArgumentException 密钥为空或长度不为 16 位
      */
     public static String encryptBySm4Hex(String data, String password) {
         if (StrUtil.isBlank(password)) {
             throw new IllegalArgumentException("SM4需要传入秘钥信息");
         }
-        // sm4算法的秘钥要求是16位长度
         int sm4PasswordLength = 16;
         if (sm4PasswordLength != password.length()) {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
@@ -59,17 +93,20 @@ public class EncryptUtils {
     }
 
     /**
-     * sm4解密
+     * SM4 解密
+     * <p>
+     * 使用 SM4 对称加密算法解密字符串。
+     * 支持 Base64 或 Hex 编码的密文输入。
      *
-     * @param data     待解密数据（可以是Base64或Hex编码）
-     * @param password 秘钥字符串
-     * @return 解密后字符串
+     * @param data     待解密的密文字符串（Base64 或 Hex 编码）
+     * @param password SM4 密钥（16 位字符串）
+     * @return 解密后的明文字符串
+     * @throws IllegalArgumentException 密钥为空或长度不为 16 位
      */
     public static String decryptBySm4(String data, String password) {
         if (StrUtil.isBlank(password)) {
             throw new IllegalArgumentException("SM4需要传入秘钥信息");
         }
-        // sm4算法的秘钥要求是16位长度
         int sm4PasswordLength = 16;
         if (sm4PasswordLength != password.length()) {
             throw new IllegalArgumentException("SM4秘钥长度要求为16位");
@@ -79,11 +116,14 @@ public class EncryptUtils {
     }
 
     /**
-     * sm2公钥加密
+     * SM2 公钥加密（Base64 编码）
+     * <p>
+     * 使用 SM2 非对称加密算法和公钥加密字符串。
      *
-     * @param data      待加密数据
-     * @param publicKey 公钥
-     * @return 加密后字符串
+     * @param data      待加密的明文字符串
+     * @param publicKey SM2 公钥（Hex 编码）
+     * @return Base64 编码的密文字符串
+     * @throws IllegalArgumentException 公钥为空
      */
     public static String encryptBySm2(String data, String publicKey) {
         if (StrUtil.isBlank(publicKey)) {
@@ -94,11 +134,14 @@ public class EncryptUtils {
     }
 
     /**
-     * sm2公钥加密
+     * SM2 公钥加密（Hex 编码）
+     * <p>
+     * 使用 SM2 非对称加密算法和公钥加密字符串，输出 Hex 编码。
      *
-     * @param data      待加密数据
-     * @param publicKey 公钥
-     * @return 加密后字符串, 采用Hex编码
+     * @param data      待加密的明文字符串
+     * @param publicKey SM2 公钥（Hex 编码）
+     * @return Hex 编码的密文字符串
+     * @throws IllegalArgumentException 公钥为空
      */
     public static String encryptBySm2Hex(String data, String publicKey) {
         if (StrUtil.isBlank(publicKey)) {
@@ -109,11 +152,14 @@ public class EncryptUtils {
     }
 
     /**
-     * sm2私钥解密
+     * SM2 私钥解密
+     * <p>
+     * 使用 SM2 非对称加密算法和私钥解密字符串。
      *
-     * @param data       待解密数据
-     * @param privateKey 私钥
-     * @return 解密后字符串
+     * @param data       待解密的密文字符串
+     * @param privateKey SM2 私钥（Hex 编码）
+     * @return 解密后的明文字符串
+     * @throws IllegalArgumentException 私钥为空
      */
     public static String decryptBySm2(String data, String privateKey) {
         if (StrUtil.isBlank(privateKey)) {
@@ -123,6 +169,11 @@ public class EncryptUtils {
         return sm2.decryptStr(data, KeyType.PrivateKey, StandardCharsets.UTF_8);
     }
 
+    /**
+     * 主方法 - 生成密钥对和加解密演示
+     * <p>
+     * 演示如何生成 SM2 密钥对、SM4 密钥，以及完整的加解密流程。
+     */
     public static void main(String[] args) {
         System.out.println("========== 生成 SM2 密钥对 ==========");
 
@@ -173,5 +224,4 @@ public class EncryptUtils {
         boolean dataMatch = plainText.equals(decryptText);
         System.out.println("数据完整性验证: " + (dataMatch ? "✅ 成功" : "❌ 失败"));
     }
-
 }

@@ -24,6 +24,40 @@ import java.util.Set;
 
 /**
  * 入参加密拦截器
+ * <p>
+ * 职责：
+ * <ul>
+ *     <li>拦截 MyBatis 的 ParameterHandler.setParameters() 方法</li>
+ *     <li>对带有 @EncryptField 注解的字段进行加密处理</li>
+ *     <li>支持 Map、Collection、嵌套对象等多种参数类型</li>
+ * </ul>
+ *
+ * <p>
+ * <b>工作流程：</b>
+ * <ol>
+ *     <li>MyBatis 执行 SQL 前触发拦截</li>
+ *     <li>获取待设置的参数对象</li>
+ *     <li>递归遍历对象树，找到所有带 @EncryptField 的字段</li>
+ *     <li>调用 EncryptorManager 加密字段值</li>
+ *     <li>将加密后的值重新设置到字段</li>
+ *     <li>继续执行 SQL（此时字段值已是密文）</li>
+ * </ol>
+ *
+ * <p>
+ * <b>使用示例：</b>
+ * <pre>{@code
+ * public class User {
+ *     @EncryptField
+ *     private String idCard;  // 加密存储
+ *
+ *     @EncryptField(algorithm = AlgorithmType.SM4)
+ *     private String bankCard;  // 指定 SM4 算法加密
+ * }
+ * }</pre>
+ *
+ * @author xiyao
+ * @see EncryptorManager
+ * @see EncryptField
  */
 @Slf4j
 @Intercepts({@Signature(
@@ -34,20 +68,30 @@ import java.util.Set;
 @AllArgsConstructor
 public class EncryptInterceptor implements Interceptor {
 
+    /** 加密管理器，负责执行具体的加密操作 */
     private final EncryptorManager manager;
+
+    /** 加密模块配置属性 */
     private final EncryptorData properties;
 
     /**
-     * 拦截器方法
+     * 拦截 SQL 参数设置操作
+     * <p>
+     * 在 MyBatis 执行 SQL 前，对参数对象中带 @EncryptField 注解的字段进行加密。
+     *
+     * @param invocation 调用信息，包含目标对象和方法参数
+     * @return 继续执行调用链的结果
+     * @throws Throwable 执行过程中的异常
      */
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget();
         if (target instanceof ParameterHandler parameterHandler) {
-            // 获取参数对象
+            // 获取 MyBatis 封装后的参数对象
             Object parameterObject = parameterHandler.getParameterObject();
+            // 非空、非字符串类型才进行加密处理（字符串类型不处理）
             if (ObjectUtil.isNotEmpty(parameterObject) && !(parameterObject instanceof String)) {
-                // 加密处理（核心功能）
+                // 执行加密处理
                 this.encryptHandler(parameterObject);
             }
         }
@@ -55,7 +99,12 @@ public class EncryptInterceptor implements Interceptor {
     }
 
     /**
-     * 递归加密对象
+     * 递归处理对象进行加密
+     * <p>
+     * 遍历对象树，对所有带 @EncryptField 注解的 String 类型字段进行加密。
+     * 支持递归处理 Map、Collection、嵌套对象等复杂结构。
+     *
+     * @param result 待处理的对象
      */
     private void encryptHandler(Object result) {
         if (ObjectUtil.isEmpty(result)) {
@@ -79,11 +128,14 @@ public class EncryptInterceptor implements Interceptor {
             return;
         }
         try {
-            // 遍历解密字段，加密后重新设置
+            // 遍历所有加密字段，加密后重新设置
             for (Field field : fields) {
-                String decryptField = Convert.toStr(field.get(result));
-                String encryptField = this.encryptField(decryptField, field);
-                field.set(result, encryptField);
+                // 获取字段当前值
+                String encryptField = Convert.toStr(field.get(result));
+                // 执行加密
+                String encrypted = this.encryptField(encryptField, field);
+                // 重新设置加密后的值
+                field.set(result, encrypted);
             }
         } catch (Exception e) {
             log.error("字段加密处理出错", e);
@@ -91,7 +143,14 @@ public class EncryptInterceptor implements Interceptor {
     }
 
     /**
-     * 字段值进行加密
+     * 对单个字段值进行加密
+     * <p>
+     * 从 @EncryptField 注解获取加密配置（算法、密钥等），
+     * 若注解未指定则使用全局配置作为默认值。
+     *
+     * @param value 待加密的字段值
+     * @param field 字段对象，用于获取注解配置
+     * @return 加密后的字符串（带 ENC_ 前缀）
      */
     private String encryptField(String value, Field field) {
         if (StrUtil.isBlank(value)) {
@@ -99,22 +158,47 @@ public class EncryptInterceptor implements Interceptor {
         }
         // 获取注解配置信息
         EncryptField encryptField = field.getAnnotation(EncryptField.class);
+        // 构建加密上下文，注解未配置时使用全局配置
         EncryptContext context = new EncryptContext();
-        context.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT ? properties.getAlgorithm() : encryptField.algorithm());
-        context.setEncode(encryptField.encode() == EncodeType.DEFAULT ? properties.getEncode() : encryptField.encode());
-        context.setPassword(StrUtil.isBlank(encryptField.password()) ? properties.getPassword() : encryptField.password());
-        context.setPrivateKey(StrUtil.isBlank(encryptField.privateKey()) ? properties.getPrivateKey() : encryptField.privateKey());
-        context.setPublicKey(StrUtil.isBlank(encryptField.publicKey()) ? properties.getPublicKey() : encryptField.publicKey());
+        // 算法：注解指定则用注解，否则用全局配置
+        context.setAlgorithm(encryptField.algorithm() == AlgorithmType.DEFAULT
+                ? properties.getAlgorithm() : encryptField.algorithm());
+        // 编码：注解指定则用注解，否则用全局配置
+        context.setEncode(encryptField.encode() == EncodeType.DEFAULT
+                ? properties.getEncode() : encryptField.encode());
+        // 密钥：注解指定则用注解，否则用全局配置
+        context.setPassword(StrUtil.isBlank(encryptField.password())
+                ? properties.getPassword() : encryptField.password());
+        context.setPrivateKey(StrUtil.isBlank(encryptField.privateKey())
+                ? properties.getPrivateKey() : encryptField.privateKey());
+        context.setPublicKey(StrUtil.isBlank(encryptField.publicKey())
+                ? properties.getPublicKey() : encryptField.publicKey());
+        // 执行加密并返回
         return this.manager.encrypt(value, context);
     }
 
+    /**
+     * 将拦截器包装到目标对象
+     * <p>
+     * MyBatis 插件机制的标准实现，使用 Plugin.wrap() 为目标对象创建代理。
+     *
+     * @param target 目标对象（ParameterHandler）
+     * @return 包装后的代理对象
+     */
     @Override
     public Object plugin(Object target) {
         return Plugin.wrap(target, this);
     }
 
+    /**
+     * 设置插件配置属性
+     * <p>
+     * 从配置文件读取插件初始化参数，当前实现为空。
+     *
+     * @param properties 插件配置属性
+     */
     @Override
     public void setProperties(Properties properties) {
+        // 暂不使用插件配置
     }
-
 }
