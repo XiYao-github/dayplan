@@ -78,7 +78,7 @@ public class LogListener {
     /**
      * 监听操作日志事件并保存
      * <p>
-     * 当标注 @Log 注解的方法执行后发布 LogOperationEvent 事件，此方法异步接收并保存操作日志。
+     * 当标注 @AuditLog 注解的方法执行后发布 LogOperationEvent 事件，此方法异步接收并保存操作日志。
      * <p>
      * <b>保存内容：</b>
      * <ul>

@@ -23,7 +23,7 @@ import java.lang.annotation.*;
  * @NoRepeatSubmit(key = "#user.id", expireSeconds = 5)
  * @PostMapping("/user")
  * public Result&lt;Void&gt; addUser(@CurrentUser LoginUser user, @RequestBody UserDTO dto) {
- *     return success(userService.add(dto));
+ *     return ok(userService.add(dto));
  * }
  * }</pre>
  *

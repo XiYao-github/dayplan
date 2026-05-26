@@ -22,19 +22,19 @@ import java.io.Serializable;
  * <b>使用示例：</b>
  * <pre>{@code
  * // 返回成功
- * return Result.success("操作成功", user);
+ * return <T> Result<T>.ok("操作成功", user);
  *
  * // 返回失败
- * return Result.error("用户名或密码错误");
+ * return <T> Result<T>.error("用户名或密码错误");
  *
  * // 自定义错误码
- * return Result.error(401, "未授权");
+ * return <T> Result<T>.error(401, "未授权");
  * }</pre>
  *
  * @author xiyao
  */
 @Data
-public class Result implements Serializable {
+public class Result<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -68,7 +68,12 @@ public class Result implements Serializable {
      * <p>
      * 成功时返回业务数据，失败时可能返回 null 或错误详情
      */
-    private Object data;
+    private T data;
+
+    /**
+     * 全链路追踪标识，用于串联一次请求的所有日志
+     */
+    private String traceId;
 
     // ==================== 成功响应 ====================
 
@@ -77,8 +82,8 @@ public class Result implements Serializable {
      *
      * @return 成功结果
      */
-    public static Result success() {
-        return success("请求成功");
+    public static <T> Result<T> ok() {
+        return ok("请求成功");
     }
 
     /**
@@ -87,8 +92,8 @@ public class Result implements Serializable {
      * @param msg 成功消息
      * @return 成功结果
      */
-    public static Result success(String msg) {
-        return success(msg, null);
+    public static <T> Result<T> ok(String msg) {
+        return ok(msg, null);
     }
 
     /**
@@ -97,8 +102,8 @@ public class Result implements Serializable {
      * @param data 业务数据
      * @return 成功结果
      */
-    public static Result success(Object data) {
-        return success("请求成功", data);
+    public static <T> Result<T> ok(T data) {
+        return ok("请求成功", data);
     }
 
     /**
@@ -108,8 +113,8 @@ public class Result implements Serializable {
      * @param data 业务数据
      * @return 成功结果
      */
-    public static Result success(String msg, Object data) {
-        return success(OK, msg, data);
+    public static <T> Result<T> ok(String msg, T data) {
+        return ok(OK, msg, data);
     }
 
     /**
@@ -120,7 +125,7 @@ public class Result implements Serializable {
      * @param data 业务数据
      * @return 成功结果
      */
-    public static Result success(Integer code, String msg, Object data) {
+    public static <T> Result<T> ok(Integer code, String msg, T data) {
         return result(code, msg, data);
     }
 
@@ -131,7 +136,7 @@ public class Result implements Serializable {
      *
      * @return 失败结果
      */
-    public static Result error() {
+    public static <T> Result<T> error() {
         return error("请求失败");
     }
 
@@ -141,7 +146,7 @@ public class Result implements Serializable {
      * @param msg 错误消息
      * @return 失败结果
      */
-    public static Result error(String msg) {
+    public static <T> Result<T> error(String msg) {
         return error(ERROR, msg);
     }
 
@@ -152,7 +157,7 @@ public class Result implements Serializable {
      * @param msg  错误消息
      * @return 失败结果
      */
-    public static Result error(Integer code, String msg) {
+    public static <T> Result<T> error(Integer code, String msg) {
         return result(code, msg, null);
     }
 
@@ -164,13 +169,14 @@ public class Result implements Serializable {
      * @param code 状态码
      * @param msg  消息
      * @param data 数据
-     * @return Result 实例
+     * @return Result<T> 实例
      */
-    private static Result result(Integer code, String msg, Object data) {
-        Result result = new Result();
+    private static <T> Result<T> result(Integer code, String msg, T data) {
+        Result<T> result = new <T>Result<T>();
         result.setCode(code);
         result.setData(data);
         result.setMsg(msg);
+        // result.setTraceId(MDC.get("traceId"));
         return result;
     }
 }

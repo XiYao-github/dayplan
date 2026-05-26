@@ -3,7 +3,7 @@ package com.xiyao.log.aspect;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
-import com.xiyao.log.annotation.Log;
+import com.xiyao.log.annotation.AuditLog;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.event.LogOperationEvent;
 import com.xiyao.security.utils.SecurityUtils;
@@ -28,7 +28,7 @@ import java.util.Map;
  * <p>
  * 功能：
  * <ul>
- *     <li>拦截标注 @Log 注解的方法，自动记录操作日志</li>
+ *     <li>拦截标注 @AuditLog 注解的方法，自动记录操作日志</li>
  *     <li>记录内容：操作用户、模块、类型、请求参数、返回结果、耗时等</li>
  *     <li>日志保存采用异步方式（通过 Spring Event），不影响主业务性能</li>
  * </ul>
@@ -54,23 +54,23 @@ public class LogAspect {
      * 在方法执行前后进行拦截，记录完整的操作日志。
      *
      * @param point 切点信息
-     * @param log   日志注解
+     * @param auditLog   日志注解
      * @return 方法执行结果
      * @throws Throwable 方法执行异常
      */
-    @Around("@annotation(log)")
-    public Object around(ProceedingJoinPoint point, Log log) throws Throwable {
+    @Around("@annotation(auditLog)")
+    public Object around(ProceedingJoinPoint point, AuditLog auditLog) throws Throwable {
         long startTime = System.currentTimeMillis();  // 记录开始时间
 
         // 构建基础事件（用户、模块、方法等）
-        LogOperationEvent event = buildBaseEvent(point, log);
+        LogOperationEvent event = buildBaseEvent(point, auditLog);
 
         try {
             // 执行目标方法
             Object result = point.proceed();
 
             // 记录成功日志
-            handleSuccess(event, result, log.isSaveResponseData());
+            handleSuccess(event, result, auditLog.isSaveResponseData());
 
             return result;
         } catch (Throwable e) {
@@ -118,18 +118,18 @@ public class LogAspect {
      * 构建基础日志事件
      *
      * @param point 切点信息
-     * @param log   日志注解
+     * @param auditLog   日志注解
      * @return 日志事件对象
      */
-    private LogOperationEvent buildBaseEvent(ProceedingJoinPoint point, Log log) {
+    private LogOperationEvent buildBaseEvent(ProceedingJoinPoint point, AuditLog auditLog) {
         LogOperationEvent event = new LogOperationEvent();
 
         // 设置操作用户信息
         event.setUserId(SecurityUtils.getUserId());
         event.setUsername(SecurityUtils.getUsername());
         event.setAdminType(SecurityUtils.getAdminType());
-        event.setModule(log.module());
-        event.setType(log.operationType().ordinal());
+        event.setModule(auditLog.module());
+        event.setType(auditLog.operationType().ordinal());
         // 设置方法名称
         String className = point.getTarget().getClass().getName();
         String methodName = point.getSignature().getName();
@@ -138,7 +138,7 @@ public class LogAspect {
         // Method method = signature.getMethod();
         // event.setMethod(method.getDeclaringClass().getSimpleName() + "." + method.getName());
 
-        if (log.isSaveRequestData()) {
+        if (auditLog.isSaveRequestData()) {
             event.setRequestParam(getRequestParams(point));
         }
 

@@ -1,119 +1,250 @@
-## security模块
+## auditLog 模块
 
-- RBAC 权限管理（含三员管理）模块方案
+### 模块介绍
 
-### 功能描述
+```yaml
+auditLog 模块提供符合等保合规的审计日志能力，记录用户操作和登录行为。
 
-- 操作日志：记录用户增删改查操作，含模块、操作类型、请求参数、响应结果
-- 登录日志：记录登录成功/失败、账号、IP、地点、设备
-- 防篡改：使用SM3哈希链保证日志连续性，任何篡改可检测
-- 异步记录：基于Spring Event异步处理，不阻塞业务线程
-- 查询权限：仅审计员可查看和导出审计日志
+核心功能:
+  - 操作日志：记录用户增删改查操作，含模块、类型、参数、结果、耗时
+  - 登录日志：记录登录成功/失败、账号、IP、设备、地点
+  - 防篡改：SM3 哈希链保证日志连续性，任何篡改可检测
+  - 异步记录：基于 Spring Event 异步处理，不阻塞业务线程
 
-### 哈希链防篡改机制
-
-- 每条日志记录生成一个SM3哈希值
-- 当前记录 hash = SM3(prev_hash + id + user_id + module + operation + request_param + result + timestamp)
-- 表内第一条记录的 prev_hash 设为固定种子值（如'0000...'）
-- 提供验证接口：审计员可对日志链进行完整性校验，检测是否有记录被删除或修改
-
-### 事件发布与监听流程
-
-- 方法执行前，LogAspect 获取注解信息
-- 方法执行后，构造 LogOperationEvent 或 LogLoginEvent
-- 使用 Spring ApplicationEventPublisher 发布事件
-- LogListener 使用 @Async 异步接收事件
-- 监听器中调用 Service 保存日志到数据库，保存前计算哈希值（通过获取上一条记录的hash和当前内容）
-
-### 安全合规说明
-
-- 审计日志表禁止任何用户直接修改或物理删除（仅审计员可查询）
-- 定期自动备份审计日志
-- 登录成功/失败记录IP和地点，满足等保对登录行为审计的要求
-
-### 核心组件位置
-
-- system/src/main/java/com/xiyao/system 实体类相关文件在这个包下
-
+技术特点:
+  - 插件式配置：通过 @ConditionalOnProperty 实现功能可插拔
+  - 事件驱动：登录事件订阅，与 security 模块解耦
+  - 等保合规：三员权限隔离，审计日志仅审计员可查
 ```
-system/src/main/java/com/xiyao/log/
+
+---
+
+### 技术实现方案
+
+**技术栈：**
+
+```yaml
+日志切面: Spring AOP（@Around 环绕通知）
+事件机制: Spring Event（ApplicationEventPublisher）
+异步处理: @Async + 自定义线程池
+哈希算法: SM3 国密哈希（防篡改）
+```
+
+**日志记录流程：**
+
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                          日志记录流程                                 │
+└─────────────────────────────────────────────────────────────────────┘
+
+  方法执行前 ──► LogAspect 拦截（@Log 注解）
+                        │
+                        ▼
+              构建 LogOperationEvent 事件
+                        │
+                        ▼
+              方法执行（try）- 记录结果
+              方法异常（catch）- 记录异常
+                        │
+                        ▼
+              finally - 设置耗时、发布时间
+                        │
+                        ▼
+              SpringUtil.publishEvent() 发布事件
+                        │
+                        ▼
+              LogListener @Async 异步接收
+                        │
+                        ▼
+              保存到数据库（计算哈希链）
+```
+
+**登录事件订阅流程：**
+
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                        登录事件流程                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+  LoginController.login() 认证成功
+                        │
+                        ▼
+  构建 LogLoginEvent（用户ID、状态、IP、设备）
+                        │
+                        ▼
+  SpringUtil.publishEvent() 发布事件
+                        │
+                        ▼
+  LogListener 异步接收
+                        │
+                        ▼
+  保存 sys_login_log 表
+```
+
+**哈希链防篡改机制：**
+
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                        哈希链机制                                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+  第1条记录：hash1 = SM3(seed + id + user_id + ... + timestamp)
+                 │
+                 ▼
+  第2条记录：hash2 = SM3(hash1 + id + user_id + ... + timestamp)
+                 │
+                 ▼
+  第3条记录：hash3 = SM3(hash2 + id + user_id + ... + timestamp)
+
+  验证：重新计算哈希链，对比存储的 hash 值
+  篡改检测：任意记录被修改，后续所有 hash 不匹配
+```
+
+---
+
+### 组件结构
+
+```tree
+com.xiyao.auditLog/
 ├── annotation/
-│   └── Log.java                       # 日志注解
+│   └── Log.java                       # 操作日志注解
+│                                       # - module: 操作模块
+│                                       # - operationType: 操作类型
+│                                       # - isSaveRequestData: 保存请求参数
+│                                       # - isSaveResponseData: 保存响应数据
+│
 ├── aspect/
-│   └── LogAspect.java                 # AOP切面，解析注解并发布事件
+│   └── LogAspect.java                 # AOP 切面
+│                                       # - @Around("@annotation(auditLog)")
+│                                       # - 构建事件、发布时间
+│
 ├── enums/
-│   ├── OperationStatus.java           # 操作状态（SUCCESS, FAIL）
-│   └── OperationType.java             # 操作类型（INSERT, UPDATE, DELETE, QUERY, LOGIN, EXPORT等）
+│   ├── OperationStatus.java          # 操作状态（SUCCESS=0, FAIL=1）
+│   └── OperationType.java            # 操作类型
+│                                       # 0=OTHER 1=QUERY 2=INSERT
+│                                       # 3=UPDATE 4=DELETE 5=EXPORT 6=IMPORT
+│
 ├── event/
-│   ├── LogLoginEvent.java             # 登录日志事件
+│   ├── LogLoginEvent.java            # 登录日志事件
+│   │                                   # userId/username/status/message
+│   │                                   # clientIp/os/browser/platform
+│   │
 │   └── LogOperationEvent.java        # 操作日志事件
-├── listener/
-│   └── LogListener.java              # 日志监听器，异步保存日志并计算哈希
-├── service/
-│   ├── IOperLogService.java           # 操作日志服务接口
-│   ├── ILoginLogService.java          # 登录日志服务接口
-│   └── impl/
-│       ├── OperLogServiceImpl.java
-│       └── LoginLogServiceImpl.java
-└── controller/
-    └── AuditLogController.java        # 审计日志查询（仅AUDIT_ADMIN可访问）
+│                                       # userId/username/adminType/module
+│                                       # method/type/status/message
+│                                       # requestParam/returnResult/costTime
+│
+└── listener/
+    └── LogListener.java              # 日志监听器（@Async）
+                                        # - saveLoginLog() 保存登录日志
+                                        # - saveOperationLog() 保存操作日志
 ```
 
-### 配置示例
+---
 
-- application.yml
+### API 接口清单
 
+```yaml
+# 审计日志接口（仅审计管理员可访问）
+GET /audit/oper-auditLog/list    # 操作日志列表
+GET /audit/oper-auditLog/{id}     # 操作日志详情
+GET /audit/login-auditLog/list    # 登录日志列表
+GET /audit/login-auditLog/{id}    # 登录日志详情
+POST /audit/auditLog/verify       # 哈希链完整性校验
+
+# 日志记录（通过注解自动记录，无需接口）
+@AuditLog(module = "用户管理", operationType = OperationType.INSERT)
 ```
-dayplan:
-  crypto:
-    enabled: true
-    sm2:
-      public-key: classpath:keys/sm2_public.key
-      private-key: classpath:keys/sm2_private.key
-    sm4:
-      key: classpath:keys/sm4.key
-      mode: CBC
-      padding: PKCS5Padding
+
+---
+
+### 依赖文件路径
+
+```tree
+# Base 基础类
+src/main/java/com/xiyao/common/
+├── base/event/MyBaseEvent.java    # 事件基类
+└── utils/Result.java              # 统一响应
+
+# Security 模块（获取当前用户信息）
+src/main/java/com/xiyao/security/
+├── utils/SecurityUtils.java       # getUserId/getUsername/getAdminType
+└── details/LoginUser.java        # 登录用户详情
+
+# System 模块（实体和 Mapper）
+src/main/java/com/xiyao/system/
+├── entity/LogLogin.java           # 登录日志实体
+├── entity/LogOperation.java      # 操作日志实体
+└── mapper/LogLoginMapper.java     # 登录日志 Mapper
+    └── mapper/LogOperationMapper.java # 操作日志 Mapper
 ```
+
+---
 
 ### 关键表结构
 
-- sys_oper_log：操作日志表
-- sys_login_log：登录日志表
-
-```
+```sql
 -- 操作日志表
 CREATE TABLE sys_oper_log (
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id     BIGINT COMMENT '操作用户ID',
-    username    VARCHAR(50) COMMENT '操作用户账号',
-    module      VARCHAR(100) COMMENT '操作模块',
-    operation   VARCHAR(100) COMMENT '操作类型',
-    method      VARCHAR(200) COMMENT '请求方法',
-    request_url VARCHAR(255) COMMENT '请求URL',
-    request_param TEXT COMMENT '请求参数（脱敏后）',
-    result      TEXT COMMENT '返回结果',
-    status      INT DEFAULT 0 COMMENT '操作状态 0成功 1失败',
-    error_msg   TEXT COMMENT '错误信息',
-    ip          VARCHAR(50) COMMENT '操作IP',
-    location    VARCHAR(100) COMMENT '操作地点',
-    cost_time   BIGINT DEFAULT 0 COMMENT '耗时（毫秒）',
-    trace_id    VARCHAR(64) COMMENT '链路追踪ID',
-    hash        VARCHAR(64) NOT NULL COMMENT '本记录哈希值',
-    prev_hash   VARCHAR(64) COMMENT '上一条记录哈希值',
-    create_time DATETIME COMMENT '创建时间'
-) COMMENT '操作日志表';
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id         BIGINT COMMENT '操作用户ID',
+    username        VARCHAR(50) COMMENT '操作用户账号',
+    admin_type      INT COMMENT '三员类型 0-普通用户 1-系统管理员 2-安全管理员 3-审计管理员',
+    operation_module VARCHAR(100) COMMENT '操作模块',
+    operation_type  INT COMMENT '操作类型 0-其他 1-查询 2-新增 3-更新 4-删除 5-导出 6-导入',
+    operation_method VARCHAR(200) COMMENT '操作方法',
+    request_param   TEXT COMMENT '请求参数',
+    return_result   TEXT COMMENT '返回结果',
+    status          INT DEFAULT 0 COMMENT '状态 0-失败 1-成功',
+    message         VARCHAR(500) COMMENT '提示消息',
+    cost_time       BIGINT DEFAULT 0 COMMENT '消耗时间（毫秒）',
+    operation_time  DATETIME COMMENT '操作时间',
+    hash            VARCHAR(64) NOT NULL COMMENT '本记录哈希值',
+    prev_hash       VARCHAR(64) COMMENT '上一条记录哈希值',
+    create_time     DATETIME COMMENT '创建时间'
+);
 
 -- 登录日志表
 CREATE TABLE sys_login_log (
-    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
-    username    VARCHAR(50) COMMENT '登录账号',
-    status      INT DEFAULT 0 COMMENT '登录状态 0成功 1失败',
-    fail_reason VARCHAR(255) COMMENT '失败原因',
-    ip          VARCHAR(50) COMMENT '登录IP',
-    location    VARCHAR(100) COMMENT '登录地点',
-    device      VARCHAR(100) COMMENT '设备信息',
-    create_time DATETIME COMMENT '登录时间'
-) COMMENT '登录日志表';
+    id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id         BIGINT COMMENT '用户ID',
+    username        VARCHAR(50) COMMENT '登录账号',
+    status          INT DEFAULT 0 COMMENT '状态 0-成功 1-失败',
+    message         VARCHAR(255) COMMENT '提示消息',
+    ip              VARCHAR(50) COMMENT '登录IP',
+    os              VARCHAR(100) COMMENT '操作系统',
+    browser         VARCHAR(100) COMMENT '浏览器',
+    platform        VARCHAR(50) COMMENT '平台类型',
+    login_time      DATETIME COMMENT '登录时间',
+    hash            VARCHAR(64) NOT NULL COMMENT '本记录哈希值',
+    prev_hash       VARCHAR(64) COMMENT '上一条记录哈希值',
+    create_time     DATETIME COMMENT '创建时间'
+);
+```
 
+---
+
+### 配置文件
+
+```yaml
+# application.yml
+# auditLog 模块配置（插件式，通过 @ConditionalOnProperty 控制）
+# 无需额外配置，事件由 security 模块发布后自动处理
+```
+
+---
+
+### 安全合规说明
+
+```java
+// 等保合规要求
+// 1. 审计日志禁止物理删除，仅能逻辑删除
+// 2. 审计日志禁止修改，仅审计管理员可查询
+// 3. 登录成功/失败必须记录 IP 和地点
+// 4. 哈希链机制确保日志完整性
+
+// 三员权限
+// - 操作日志查询：系统管理员、安全管理员
+// - 登录日志查询：系统管理员、安全管理员、审计管理员
+// - 哈希链校验：仅审计管理员
 ```

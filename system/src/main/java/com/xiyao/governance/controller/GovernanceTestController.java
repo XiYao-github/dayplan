@@ -60,7 +60,7 @@ public class GovernanceTestController {
     @RateLimit
     @GetMapping("/ratelimit/global")
     public Result rateLimitGlobal() {
-        return Result.success("限流测试（全局配置）成功");
+        return Result.ok("限流测试（全局配置）成功");
     }
 
     /**
@@ -73,7 +73,7 @@ public class GovernanceTestController {
     @RateLimit(permitsPerSecond = 1, maxBurstRequests = 3, message = "自定义限流：请求太频繁了")
     @GetMapping("/ratelimit/custom")
     public Result rateLimitCustom() {
-        return Result.success("限流测试（自定义配置）成功");
+        return Result.ok("限流测试（自定义配置）成功");
     }
 
     // ==================== 熔断测试接口 ====================
@@ -88,7 +88,7 @@ public class GovernanceTestController {
     @CircuitBreaker
     @GetMapping("/circuit/success")
     public Result circuitSuccess() {
-        return Result.success("熔断测试成功");
+        return Result.ok("熔断测试成功");
     }
 
     /**
@@ -108,7 +108,7 @@ public class GovernanceTestController {
         if (num < 7) {
             throw new RuntimeException("模拟业务异常");
         }
-        return Result.success("熔断测试成功");
+        return Result.ok("熔断测试成功");
     }
 
     // ==================== 降级测试接口 ====================
@@ -123,7 +123,7 @@ public class GovernanceTestController {
     @Fallback(fallbackClass = TestFallback.class, value = {RuntimeException.class})
     @GetMapping("/fallback/success")
     public Result fallbackSuccess() {
-        return Result.success("降级测试成功");
+        return Result.ok("降级测试成功");
     }
 
     /**
@@ -153,7 +153,7 @@ public class GovernanceTestController {
     @Bulkhead
     @GetMapping("/bulkhead/success")
     public Result bulkheadSuccess() {
-        return Result.success("隔离测试成功");
+        return Result.ok("隔离测试成功");
     }
 
     /**
@@ -166,7 +166,7 @@ public class GovernanceTestController {
     @Bulkhead(coreSize = 2, maxSize = 4, queueCapacity = 10, name = "test-bulkhead")
     @GetMapping("/bulkhead/custom")
     public Result bulkheadCustom() {
-        return Result.success("隔离测试（自定义配置）成功");
+        return Result.ok("隔离测试（自定义配置）成功");
     }
 
     // ==================== 重试测试接口 ====================
@@ -181,7 +181,7 @@ public class GovernanceTestController {
     @Retryable
     @GetMapping("/retry/success")
     public Result retrySuccess() {
-        return Result.success("重试测试成功");
+        return Result.ok("重试测试成功");
     }
 
     /**
@@ -201,7 +201,7 @@ public class GovernanceTestController {
         if (num < 8) {
             throw new RetryableException("模拟可重试异常");
         }
-        return Result.success("重试测试成功");
+        return Result.ok("重试测试成功");
     }
 
     /**
@@ -237,7 +237,7 @@ public class GovernanceTestController {
         if (num < 6) {
             throw new RuntimeException("模拟业务异常");
         }
-        return Result.success("熔断+降级组合测试成功");
+        return Result.ok("熔断+降级组合测试成功");
     }
 
     /**
@@ -257,7 +257,7 @@ public class GovernanceTestController {
         if (num < 7) {
             throw new RetryableException("模拟可重试异常");
         }
-        return Result.success("重试+降级组合测试成功");
+        return Result.ok("重试+降级组合测试成功");
     }
 
     // ==================== 内部类定义 ====================
@@ -291,7 +291,7 @@ public class GovernanceTestController {
          * @return 降级后的响应结果
          */
         public Result fallback(Throwable e) {
-            return Result.success("【降级响应】服务繁忙，返回降级结果，原始异常：" + e.getClass().getSimpleName());
+            return Result.ok("【降级响应】服务繁忙，返回降级结果，原始异常：" + e.getClass().getSimpleName());
         }
     }
 }

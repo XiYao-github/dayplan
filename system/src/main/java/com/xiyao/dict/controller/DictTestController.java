@@ -58,7 +58,7 @@ public class DictTestController {
     @GetMapping("/cache/dict/{code}")
     public Result getDictMap(@PathVariable String code) {
         Map<String, String> map = DictCache.getInstance().getDictMap(code);
-        return Result.success(map);
+        return Result.ok(map);
     }
 
     /**
@@ -73,7 +73,7 @@ public class DictTestController {
     @GetMapping("/cache/dict/label")
     public Result getDictLabel(@RequestParam String code, @RequestParam String value) {
         String label = DictCache.getInstance().getDictLabel(code, value);
-        return Result.success(label);
+        return Result.ok(label);
     }
 
     // ==================== 枚举缓存操作 ====================
@@ -90,7 +90,7 @@ public class DictTestController {
     @GetMapping("/cache/enum/byCode")
     public Result getEnumByCode(@RequestParam Class<DataStatus> enumType, @RequestParam String code) {
         DataStatus status = DictCache.getInstance().getEnumByCode(enumType, code);
-        return Result.success(status);
+        return Result.ok(status);
     }
 
     /**
@@ -105,7 +105,7 @@ public class DictTestController {
     @GetMapping("/cache/enum/byDesc")
     public Result getEnumByDesc(@RequestParam Class<DataStatus> enumType, @RequestParam String desc) {
         DataStatus status = DictCache.getInstance().getEnumByDesc(enumType, desc);
-        return Result.success(status);
+        return Result.ok(status);
     }
 
     /**
@@ -120,7 +120,7 @@ public class DictTestController {
     @GetMapping("/cache/enum/byName")
     public Result getEnumByName(@RequestParam Class<DataStatus> enumType, @RequestParam String name) {
         DataStatus status = DictCache.getInstance().getEnumByName(enumType, name);
-        return Result.success(status);
+        return Result.ok(status);
     }
 
     /**
@@ -132,7 +132,7 @@ public class DictTestController {
     @GetMapping("/cache/enum/codes")
     public Result getEnumCodes(@RequestParam Class<DataStatus> enumType) {
         List<String> codes = DictCache.getInstance().getEnumCodes(enumType);
-        return Result.success(codes);
+        return Result.ok(codes);
     }
 
     // ==================== 缓存刷新操作 ====================
@@ -149,7 +149,7 @@ public class DictTestController {
     @PostMapping("/cache/refresh/dict")
     public Result refreshDict(@RequestParam String code) {
         DictCache.getInstance().refreshDict(code);
-        return Result.success("字典刷新成功: " + code);
+        return Result.ok("字典刷新成功: " + code);
     }
 
     /**
@@ -163,7 +163,7 @@ public class DictTestController {
     // @PostMapping("/cache/refresh/enum")
     // public Result refreshEnum(@RequestParam Class<? extends BaseEnum> enumType) {
     //     DictCache.getInstance().refreshEnum(enumType);
-    //     return Result.success("枚举刷新成功: " + enumType.getSimpleName());
+    //     return Result.ok("枚举刷新成功: " + enumType.getSimpleName());
     // }
 
     /**
@@ -176,7 +176,7 @@ public class DictTestController {
     @PostMapping("/cache/refresh/all")
     public Result refreshAll() {
         DictCache.getInstance().refreshAll();
-        return Result.success("全量刷新成功");
+        return Result.ok("全量刷新成功");
     }
 
     // ==================== 模拟查询结果（用于测试拦截器） ====================
@@ -203,7 +203,7 @@ public class DictTestController {
         user2.setStatus(0);  // 数据库存的值为0
         // statusText 应该被拦截器填充为"暂停"
 
-        return Result.success(List.of(user1, user2));
+        return Result.ok(List.of(user1, user2));
     }
 
     /**
@@ -224,7 +224,7 @@ public class DictTestController {
         vo2.setName("李四");
         vo2.setStatus(0);
 
-        return Result.success(List.of(vo1, vo2));
+        return Result.ok(List.of(vo1, vo2));
     }
 
     // ==================== 测试 VO ====================

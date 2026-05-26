@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
  * <b>工作原理：</b>
  * <ol>
  *     <li>Jackson 序列化对象时，会调用 SensitiveSerializer 进行处理</li>
- *     <li>Serializer 根据 @Sensitive 注解的策略调用对应的脱敏方法</li>
+ *     <li>Serializer 根据 @SensitiveField 注解的策略调用对应的脱敏方法</li>
  *     <li>脱敏后的数据写入 JSON，不会影响数据库中的原始数据</li>
  * </ol>
  * <p>
@@ -66,7 +66,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @JacksonAnnotationsInside
 @JsonSerialize(using = SensitiveSerializer.class)
-public @interface Sensitive {
+public @interface SensitiveField {
 
     /**
      * 脱敏策略

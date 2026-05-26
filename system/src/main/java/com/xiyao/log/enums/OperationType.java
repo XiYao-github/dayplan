@@ -1,5 +1,7 @@
 package com.xiyao.log.enums;
 
+import com.xiyao.log.annotation.AuditLog;
+
 /**
  * 操作类型枚举
  * <p>
@@ -16,7 +18,7 @@ package com.xiyao.log.enums;
  * }</pre>
  *
  * @author xiyao
- * @see com.xiyao.log.annotation.Log
+ * @see AuditLog
  */
 public enum OperationType {
 

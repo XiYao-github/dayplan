@@ -2,6 +2,7 @@ package com.xiyao.crypto.enums;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.DesensitizedUtil;
+import com.xiyao.crypto.annotation.SensitiveField;
 import lombok.AllArgsConstructor;
 
 import java.util.function.Function;
@@ -22,11 +23,11 @@ import java.util.function.Function;
  * </table>
  * <p>
  * <b>使用方式：</b>
- * 在实体类字段上添加 @Sensitive(SensitiveStrategy.XXX) 注解，
+ * 在实体类字段上添加 @SensitiveField(SensitiveStrategy.XXX) 注解，
  * Jackson 序列化时会自动应用脱敏规则。
  *
  * @author xiyao
- * @see com.xiyao.crypto.annotation.Sensitive
+ * @see SensitiveField
  */
 @AllArgsConstructor
 public enum SensitiveStrategy {

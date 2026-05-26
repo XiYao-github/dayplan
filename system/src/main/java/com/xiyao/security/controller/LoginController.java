@@ -127,7 +127,7 @@ public class LoginController extends MyBaseController {
             SpringUtil.publishEvent(event);
 
             // 生成 JWT Token 并返回
-            return success(jwtUtils.getToken(loginUser));
+            return ok(jwtUtils.getToken(loginUser));
 
         } catch (Exception e) {
             // 认证失败，构造登录失败事件
@@ -187,7 +187,7 @@ public class LoginController extends MyBaseController {
         userRole.setRoleId(2L);  // 普通用户角色 ID
         Db.save(userRole);
 
-        return success();
+        return ok();
     }
 
     /**
@@ -208,6 +208,6 @@ public class LoginController extends MyBaseController {
 
         // 删除 Redis 中缓存的用户信息
         // 如果 Token 有效且删除成功返回 true，否则返回 false
-        return jwtUtils.removeToken(token) ? success() : error("退出失败");
+        return jwtUtils.removeToken(token) ? ok() : error("退出失败");
     }
 }

@@ -69,7 +69,7 @@ public class LogOperationEvent extends MyBaseEvent {
     /**
      * 操作模块
      * <p>
-     * 与 @Log 注解的 module() 对应，
+     * 与 @AuditLog 注解的 module() 对应，
      * 用于日志分类和检索。
      */
     private String module;
@@ -120,7 +120,7 @@ public class LogOperationEvent extends MyBaseEvent {
      * 请求参数
      * <p>
      * 序列化后的方法参数 JSON，
-     * 仅在 @Log(isSaveRequestData = true) 时填充。
+     * 仅在 @AuditLog(isSaveRequestData = true) 时填充。
      */
     private String requestParam;
 
@@ -128,7 +128,7 @@ public class LogOperationEvent extends MyBaseEvent {
      * 返回结果
      * <p>
      * 序列化后的方法返回值 JSON，
-     * 仅在 @Log(isSaveResponseData = true) 时填充。
+     * 仅在 @AuditLog(isSaveResponseData = true) 时填充。
      */
     private String returnResult;
 

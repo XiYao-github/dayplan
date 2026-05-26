@@ -18,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;
  *
  *     @GetMapping("/{id}")
  *     public Result&lt;User&gt; getUser(@PathVariable Long id) {
- *         return success(userService.getById(id));
+ *         return ok(userService.getById(id));
  *     }
  *
  *     @PostMapping
  *     public Result&lt;Void&gt; addUser(@RequestBody User user) {
  *         userService.save(user);
- *         return success();
+ *         return ok();
  *     }
  * }
  * }</pre>
@@ -40,8 +40,8 @@ public class MyBaseController {
      *
      * @return 成功结果，默认消息"请求成功"
      */
-    public Result success() {
-        return Result.success();
+    public <T> Result<T> ok() {
+        return Result.ok();
     }
 
     /**
@@ -51,8 +51,8 @@ public class MyBaseController {
      * @param <T>  数据类型
      * @return 成功结果
      */
-    public <T> Result success(T data) {
-        return Result.success(data);
+    public <T> Result<T> ok(T data) {
+        return Result.ok(data);
     }
 
     /**
@@ -63,8 +63,8 @@ public class MyBaseController {
      * @param <T>  数据类型
      * @return 成功结果
      */
-    public <T> Result success(String msg, T data) {
-        return Result.success(msg, data);
+    public <T> Result<T> ok(String msg, T data) {
+        return Result.ok(msg, data);
     }
 
     /**
@@ -72,7 +72,7 @@ public class MyBaseController {
      *
      * @return 失败结果，默认消息"请求失败"
      */
-    public Result error() {
+    public <T> Result<T> error() {
         return Result.error();
     }
 
@@ -82,7 +82,7 @@ public class MyBaseController {
      * @param message 错误消息
      * @return 失败结果
      */
-    public Result error(String message) {
+    public <T> Result<T> error(String message) {
         return Result.error(message);
     }
 
@@ -93,7 +93,7 @@ public class MyBaseController {
      * @param message 错误消息
      * @return 失败结果
      */
-    public Result error(Integer code, String message) {
+    public <T> Result<T> error(Integer code, String message) {
         return Result.error(code, message);
     }
 }

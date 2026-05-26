@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Log {
+public @interface AuditLog {
 
     /**
      * 操作模块

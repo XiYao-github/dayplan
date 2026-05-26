@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-import com.xiyao.crypto.annotation.Sensitive;
+import com.xiyao.crypto.annotation.SensitiveField;
 import com.xiyao.crypto.enums.SensitiveStrategy;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ import java.io.IOException;
  * <b>工作原理：</b>
  * <ol>
  *     <li>Jackson 在序列化前调用 createContextual() 方法获取上下文信息</li>
- *     <li>从字段注解中读取 @Sensitive 注解，获取脱敏策略</li>
+ *     <li>从字段注解中读取 @SensitiveField 注解，获取脱敏策略</li>
  *     <li>创建带有策略信息的序列化器实例</li>
  *     <li>序列化时调用 serialize() 方法，对值进行脱敏后输出</li>
  * </ol>
@@ -67,7 +67,7 @@ import java.io.IOException;
  * </ul>
  *
  * @author xiyao
- * @see Sensitive
+ * @see SensitiveField
  * @see SensitiveStrategy
  */
 @Slf4j
@@ -113,7 +113,7 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
      * <p>
      * <b>处理逻辑：</b>
      * <ol>
-     *     <li>从 BeanProperty 获取字段上的 @Sensitive 注解</li>
+     *     <li>从 BeanProperty 获取字段上的 @SensitiveField 注解</li>
      *     <li>检查字段类型是否为 String 或其子类</li>
      *     <li>如果是，读取脱敏策略，创建新的带策略序列化器</li>
      *     <li>否则，返回标准序列化器（不解密）</li>
@@ -126,8 +126,8 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
      */
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-        // 获取字段上的 @Sensitive 注解
-        Sensitive annotation = property.getAnnotation(Sensitive.class);
+        // 获取字段上的 @SensitiveField 注解
+        SensitiveField annotation = property.getAnnotation(SensitiveField.class);
 
         // 检查注解存在且字段类型为 String
         if (annotation != null && property.getType().isTypeOrSubTypeOf(String.class)) {

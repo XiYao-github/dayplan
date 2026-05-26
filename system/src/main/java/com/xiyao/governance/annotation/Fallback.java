@@ -49,7 +49,7 @@ import java.lang.annotation.*;
  * public class UserServiceFallback {
  *     public Result<User> fallback(Throwable e) {
  *         // 可以记录日志、返回缓存或默认值
- *         return Result.success(new User(-1L, "默认用户"));
+ *         return Result.ok(new User(-1L, "默认用户"));
  *     }
  * }
  * }</pre>

@@ -1,154 +1,287 @@
-## crypto模块
+## dict 模块
 
-- RBAC 权限管理（含三员管理）模块方案
+### 模块介绍
 
-### 功能描述
+```yaml
+dict 模块提供数据字典能力，支持键值对管理和自动映射回显。
 
-- 字典类型维护：支持后台配置字典类型（如性别、状态）
-- 字典数据维护：支持对字典类型下的键值对增删改查
-- 自动映射：查询返回的 VO 字段自动将值（如 0）映射为显示文本（如“正常”）
-- 枚举支持：支持使用枚举定义字典值，通过转换工厂处理请求参数
-- 缓存机制：字典数据缓存至 Redis/本地，减少数据库查询
+核心功能:
+  - 字典类型：管理和配置字典类型（如状态、性别、状态等）
+  - 字典数据：维护字典类型下的键值对（value/label）
+  - 自动映射：查询结果自动将值映射为显示文本
+  - 枚举支持：实现 BaseEnum 接口，支持多种反序列化方式
+  - 缓存机制：本地缓存减少数据库查询
 
-
-### 数据库字段加密设计
-
-- 启动时加载全量字典到 Redis（Hash 结构：dict_type -> {value: label}）
-- 配置变更时主动刷新缓存
-- 本地缓存作为二级缓存，设置合理过期时间
-- 查询字典时先从本地 -> Redis -> DB 的顺序加载
-
-
-### 枚举规范
-
-- 所有业务枚举需实现 BaseEnum 接口
-
-```
-public interface BaseEnum {
-    String getValue();   // 数据库存储的值
-    String getLabel();   // 显示文本
-}
-
-public enum DataStatus implements BaseEnum {
-    NORMAL("0", "正常"),
-    DISABLED("1", "停用");
-
-    private final String value;
-    private final String label;
-    // 构造方法、getter...
-}
+技术特点:
+  - 插件式配置：通过 @ConditionalOnProperty 实现功能可插拔
+  - 注解驱动：@DictBind 注解声明自动映射
+  - MyBatis 拦截：结果集返回时自动翻译
+  - 枚举转换：Controller 参数自动转换为枚举
 ```
 
+---
 
-### 自动映射机制
+### 技术实现方案
 
-- 在 VO 中声明映射字段，使用 @DictBind 注解：
-- DictResultInterceptor 实现 MyBatis 拦截器，查询到结果集后扫描 @DictBind 字段，根据字典类型和值从缓存中获取对应 label 并设置
+**技术栈：**
 
-```
-public class UserVO {
-    private Integer status;
-    
-    @DictBind(dictType = "sys_status", targetField = "status")
-    private String statusText;   // 拦截器自动填充为 "正常" 或 "停用"
-}
+```yaml
+字典翻译: MyBatis ResultSetInterceptor
+枚举转换: Spring ConverterFactory
+缓存: 本地缓存（可扩展 Redis）
 ```
 
-### 请求参数枚举转换
+**字典加载流程：**
 
-- Controller 接收参数时可使用枚举，通过 Spring Converter 自动转换：
-- DictEnumConverterFactory 自动将字符串/数字转换为实现了 BaseEnum 的枚举实例
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                          字典加载流程                                 │
+└─────────────────────────────────────────────────────────────────────┘
 
+  启动时 / 首次查询
+        │
+        ▼
+  加载全量字典到 DictCache
+        │
+        ▼
+  查询时直接从缓存获取
+
+  配置变更时
+        │
+        ▼
+  主动刷新缓存
 ```
-@GetMapping("/users")
-public Result<Page<UserVo>> list(@RequestParam DataStatus status) { ... }
+
+**自动映射流程：**
+
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                        自动映射流程                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+  MyBatis 查询返回结果集
+        │
+        ▼
+  DictResultInterceptor 拦截
+        │
+        ▼
+  扫描结果对象中的 @DictBind 字段
+        │
+        ▼
+  根据 code 和值从缓存获取 label
+        │
+        ▼
+  设置到 target 字段
 ```
 
+**枚举转换流程：**
 
-### 核心组件位置
+```ascii
+┌─────────────────────────────────────────────────────────────────────┐
+│                        枚举转换流程                                   │
+└─────────────────────────────────────────────────────────────────────┘
 
-- system/src/main/java/com/xiyao/system 实体类相关文件在这个包下
-
+  Controller 接收参数（如 status=1）
+        │
+        ▼
+  DictEnumConverterFactory 转换
+        │
+        ├── 按 code 匹配：1 → DataStatus.NORMAL
+        ├── 按 desc 匹配："正常" → DataStatus.NORMAL
+        └── 按 name 匹配："NORMAL" → DataStatus.NORMAL
+        │
+        ▼
+  注入到方法参数
 ```
-system/src/main/java/com/xiyao/dict/
+
+---
+
+### 组件结构
+
+```tree
+com.xiyao.dict/
 ├── annotation/
-│   └── DictBind.java                  # 字典绑定注解
+│   └── DictBind.java               # 字典绑定注解
+│                                   # - code: 字典类型编码
+│                                   # - target: 目标字段名
+│
 ├── config/
-│   ├── DictAutoConfig.java           # 字典自动配置
-│   ├── DictCache.java                # 字典缓存（Redis/本地）
-│   ├── DictManager.java              # 字典管理器（加载字典）
-│   ├── DictProperties.java           # 配置属性
-│   └── EnumScanner.java              # 枚举扫描器（扫描BaseEnum实现）
+│   ├── DictAutoConfig.java        # 自动配置
+│   ├── DictCache.java             # 字典缓存管理
+│   │                               # - 加载字典到缓存
+│   │                               # - 刷新缓存
+│   ├── DictManager.java           # 字典管理器
+│   │                               # - 获取字典值
+│   │                               # - 翻译 label
+│   ├── DictProperties.java        # 配置属性
+│   │                               # - enabled: 是否启用
+│   │                               # - cacheStrategy: 缓存策略
+│   │                               # - loadMode: eager/lazy
+│   │                               # - preloadOnStartup: 启动预加载
+│   │                               # - includeCodes/excludeCodes: 加载范围
+│   │
+│   └── EnumScanner.java           # 枚举扫描器
+│                                   # - 扫描实现 BaseEnum 的枚举
+│
 ├── controller/
-│   ├── DictTypeController.java       # 字典类型管理
-│   ├── DictDataController.java       # 字典数据管理
-│   └── DictTestController.java       # 测试
+│   ├── DictTypeController.java   # 字典类型管理
+│   ├── DictDataController.java   # 字典数据管理
+│   └── DictTestController.java   # 测试
+│
 ├── converter/
-│   ├── DictEnumConverterFactory.java  # 字符串 -> BaseEnum 转换器
-│   └── MyEnumConverterFactory.java   # 通用枚举转换工厂
+│   ├── DictEnumConverterFactory.java # 枚举转换器工厂
+│   │                               # - 实现 ConverterFactory
+│   │                               # - 将 String/Integer 转为 BaseEnum
+│   │
+│   └── MyEnumConverterFactory.java # 通用枚举转换（预留）
+│
 ├── enums/
-│   ├── BaseEnum.java                  # 基础枚举接口
-│   └── DataStatus.java               # 示例枚举
+│   ├── BaseEnum.java              # 基础枚举接口
+│   │                               # - getCode(): 获取存储值
+│   │                               # - getName(): 获取枚举名
+│   │                               # - getDesc(): 获取描述
+│   │
+│   └── DataStatus.java           # 数据状态枚举示例
+│                                   # PAUSE(0, "暂停"), NORMAL(1, "正常")
+│
 ├── interceptor/
-│   └── DictResultInterceptor.java     # MyBatis拦截器，结果集字段翻译
+│   └── DictResultInterceptor.java  # MyBatis 结果集拦截器
+│                                   # - 查询结果返回时拦截
+│                                   # - 扫描 @DictBind 字段
+│                                   # - 翻译值并设置 target 字段
+│
 └── service/
-    ├── IDictTypeService.java
-    ├── IDictDataService.java
+    ├── IDictTypeService.java    # 字典类型服务接口
+    ├── IDictDataService.java     # 字典数据服务接口
     └── impl/
         ├── DictTypeServiceImpl.java
         └── DictDataServiceImpl.java
 ```
 
-### 配置示例
+---
 
-- application.yml
+### API 接口清单
 
+```yaml
+# 字典类型管理
+GET    /dict/type/list              # 字典类型列表
+GET    /dict/type/{id}             # 字典类型详情
+POST   /dict/type                  # 创建字典类型
+PUT    /dict/type                  # 更新字典类型
+DELETE /dict/type/{id}            # 删除字典类型
+
+# 字典数据管理
+GET    /dict/data/list             # 字典数据列表
+GET    /dict/data/{id}            # 字典数据详情
+POST   /dict/data                 # 创建字典数据
+PUT    /dict/data                 # 更新字典数据
+DELETE /dict/data/{id}            # 删除字典数据
+GET    /dict/data/options         # 字典数据下拉选项
 ```
-dayplan:
-  crypto:
-    enabled: true
-    sm2:
-      public-key: classpath:keys/sm2_public.key
-      private-key: classpath:keys/sm2_private.key
-    sm4:
-      key: classpath:keys/sm4.key
-      mode: CBC
-      padding: PKCS5Padding
+
+---
+
+### 依赖文件路径
+
+```tree
+# Base 基础类
+src/main/java/com/xiyao/common/
+├── utils/Result.java               # 统一响应
+└── utils/page/PageQuery.java      # 分页查询
+
+# System 模块（字典实体和 Mapper）
+src/main/java/com/xiyao/system/
+├── entity/
+│   ├── DictType.java             # 字典类型实体
+│   └── DictData.java             # 字典数据实体
+└── mapper/
+    ├── DictTypeMapper.java
+    └── DictDataMapper.java
 ```
 
+---
 
 ### 关键表结构
 
-- sys_oper_log：操作日志表
-- sys_login_log：登录日志表
-
-```
--- 操作日志表
+```sql
+-- 字典类型表
 CREATE TABLE sys_dict_type (
-    id        BIGINT PRIMARY KEY AUTO_INCREMENT,
-    dict_name VARCHAR(100) NOT NULL COMMENT '字典名称',
-    dict_type VARCHAR(100) NOT NULL UNIQUE COMMENT '字典类型标识',
-    status    TINYINT DEFAULT 0 COMMENT '状态 0正常 1停用',
-    remark    VARCHAR(500) COMMENT '备注',
-    create_by VARCHAR(50),
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    dict_name   VARCHAR(100) NOT NULL COMMENT '字典名称',
+    dict_type   VARCHAR(100) NOT NULL UNIQUE COMMENT '字典类型标识',
+    status      TINYINT DEFAULT 0 COMMENT '状态 0-正常 1-停用',
+    remark      VARCHAR(500) COMMENT '备注',
+    create_by   VARCHAR(50),
     create_time DATETIME,
-    update_by VARCHAR(50),
+    update_by   VARCHAR(50),
     update_time DATETIME
-) COMMENT '字典类型表';
+);
 
+-- 字典数据表
 CREATE TABLE sys_dict_data (
-    id        BIGINT PRIMARY KEY AUTO_INCREMENT,
-    dict_type VARCHAR(100) NOT NULL COMMENT '字典类型标识',
-    dict_label VARCHAR(100) NOT NULL COMMENT '字典标签（显示值）',
-    dict_value VARCHAR(100) NOT NULL COMMENT '字典键值',
-    dict_sort INT DEFAULT 0 COMMENT '排序',
-    css_class VARCHAR(100) COMMENT '样式类名（前端用）',
-    status    TINYINT DEFAULT 0 COMMENT '状态',
-    remark    VARCHAR(500),
-    create_by VARCHAR(50),
+    id          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    dict_type   VARCHAR(100) NOT NULL COMMENT '字典类型标识',
+    dict_label  VARCHAR(100) NOT NULL COMMENT '字典标签（显示值）',
+    dict_value  VARCHAR(100) NOT NULL COMMENT '字典键值',
+    dict_sort   INT DEFAULT 0 COMMENT '排序',
+    css_class   VARCHAR(100) COMMENT '样式类名',
+    status      TINYINT DEFAULT 0 COMMENT '状态 0-正常 1-停用',
+    remark      VARCHAR(500) COMMENT '备注',
+    create_by   VARCHAR(50),
     create_time DATETIME,
-    update_by VARCHAR(50),
+    update_by   VARCHAR(50),
     update_time DATETIME
-) COMMENT '字典数据表';
+);
+```
 
+---
+
+### 配置文件
+
+```yaml
+# application.yml
+dict:
+  enabled: true                    # 是否启用字典功能
+  preload-on-startup: false        # 启动时预加载所有字典
+  cache-strategy: local           # 缓存策略（预留 Redis）
+  load-mode: eager                # 加载模式 eager/lazy
+  include-codes:                  # 指定加载的字典编码
+    - status
+    - gender
+  exclude-codes:                  # 排除的字典编码
+```
+
+---
+
+### 枚举规范
+
+```java
+// BaseEnum 接口
+public interface BaseEnum<T> {
+    T getCode();       // 数据库存储的值
+    String getName();  // 枚举名称
+    String getDesc();  // 显示文本
+}
+
+// 实现示例
+public enum DataStatus implements BaseEnum<Integer> {
+    PAUSE(0, "暂停"),
+    NORMAL(1, "正常");
+
+    @EnumValue
+    private final Integer code;
+    private final String desc;
+
+    @Override
+    public Integer getCode() { return code; }
+
+    @Override
+    public String getName() { return name(); }
+
+    @Override
+    public String getDesc() { return desc; }
+}
+
+// 使用 @JsonCreator 支持多种反序列化方式
+// 1=Normal, 正常=Normal, NORMAL=Normal 都能匹配
 ```
