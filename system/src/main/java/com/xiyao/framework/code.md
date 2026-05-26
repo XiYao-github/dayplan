@@ -45,7 +45,7 @@ JSON 处理: Jackson + JavaTimeModule
   HTTP 请求进入
         │
         ▼
-  Filter 过滤器链（Security、JWT、加密等）
+  Filter 过滤器链（Security、JWT、TraceId 等）
         │
         ▼
   DispatcherServlet 分发
@@ -167,7 +167,6 @@ com.xiyao.framework/
 │
 └── resolver/
     └── CurrentUserArgumentResolver.java # @CurrentUser 参数解析器
-```
 
 ---
 

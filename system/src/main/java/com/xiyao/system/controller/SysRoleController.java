@@ -2,7 +2,7 @@ package com.xiyao.system.controller;
 
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.Result;
-import com.xiyao.log.annotation.AuditLog;
+import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.system.service.ISysRoleService;
 import com.xiyao.system.entity.vo.AssignMenusVo;
@@ -46,7 +46,7 @@ public class SysRoleController extends MyBaseController {
      */
     @PostMapping
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "角色管理", operationType = OperationType.INSERT)
+    @Log(module = "角色管理", type = OperationType.INSERT)
     public Result create(@RequestBody SysRoleVo vo) {
         return ok(roleService.create(vo));
     }
@@ -56,7 +56,7 @@ public class SysRoleController extends MyBaseController {
      */
     @PutMapping
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "角色管理", operationType = OperationType.UPDATE)
+    @Log(module = "角色管理", type = OperationType.UPDATE)
     public Result update(@RequestBody SysRoleVo vo) {
         return ok(roleService.update(vo));
     }
@@ -66,7 +66,7 @@ public class SysRoleController extends MyBaseController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "角色管理", operationType = OperationType.DELETE)
+    @Log(module = "角色管理", type = OperationType.DELETE)
     public Result delete(@PathVariable Long id) {
         return ok(roleService.delete(id));
     }
@@ -85,7 +85,7 @@ public class SysRoleController extends MyBaseController {
      */
     @PutMapping("/assign-menus")
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "角色管理", operationType = OperationType.UPDATE)
+    @Log(module = "角色管理", type = OperationType.UPDATE)
     public Result assignMenus(@RequestBody AssignMenusVo vo) {
         return ok(roleService.assignMenus(vo.getRoleId(), vo.getMenuIds()));
     }

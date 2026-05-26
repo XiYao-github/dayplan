@@ -1,6 +1,7 @@
 package com.xiyao.common.utils;
 
 import lombok.Data;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 
 import java.io.Serial;
@@ -176,7 +177,7 @@ public class Result<T> implements Serializable {
         result.setCode(code);
         result.setData(data);
         result.setMsg(msg);
-        // result.setTraceId(MDC.get("traceId"));
+        result.setTraceId(MDC.get("traceId"));
         return result;
     }
 }

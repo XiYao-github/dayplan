@@ -2,7 +2,7 @@ package com.xiyao.system.controller;
 
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.Result;
-import com.xiyao.log.annotation.AuditLog;
+import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.system.service.ISysUserService;
 import com.xiyao.system.entity.vo.AssignRolesVo;
@@ -46,7 +46,7 @@ public class SysUserController extends MyBaseController {
      */
     @PostMapping
     @PreAuthorize("@ss.hasAnyAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.INSERT)
+    @Log(module = "用户管理", type = OperationType.INSERT)
     public Result create(@RequestBody SysUserVo vo) {
         return ok(userService.create(vo));
     }
@@ -56,7 +56,7 @@ public class SysUserController extends MyBaseController {
      */
     @PutMapping
     @PreAuthorize("@ss.hasAnyAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.UPDATE)
+    @Log(module = "用户管理", type = OperationType.UPDATE)
     public Result update(@RequestBody SysUserVo vo) {
         return ok(userService.update(vo));
     }
@@ -66,7 +66,7 @@ public class SysUserController extends MyBaseController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("@ss.hasAnyAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.DELETE)
+    @Log(module = "用户管理", type = OperationType.DELETE)
     public Result delete(@PathVariable Long id) {
         return ok(userService.delete(id));
     }
@@ -76,7 +76,7 @@ public class SysUserController extends MyBaseController {
      */
     @PutMapping("/assign-roles")
     @PreAuthorize("@ss.hasAnyAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.UPDATE)
+    @Log(module = "用户管理", type = OperationType.UPDATE)
     public Result assignRoles(@RequestBody AssignRolesVo vo) {
         return ok(userService.assignRoles(vo.getUserId(), vo.getRoleIds()));
     }
@@ -86,7 +86,7 @@ public class SysUserController extends MyBaseController {
      */
     @PutMapping("/reset-pwd")
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.UPDATE)
+    @Log(module = "用户管理", type = OperationType.UPDATE)
     public Result resetPassword(@RequestBody SysUserVo vo) {
         return ok(userService.resetPassword(vo.getId(), vo.getPassword()));
     }
@@ -96,7 +96,7 @@ public class SysUserController extends MyBaseController {
      */
     @PutMapping("/status")
     @PreAuthorize("@ss.hasAnyAdmin()")
-    @AuditLog(module = "用户管理", operationType = OperationType.UPDATE)
+    @Log(module = "用户管理", type = OperationType.UPDATE)
     public Result updateStatus(@RequestBody SysUserVo vo) {
         return ok(userService.updateStatus(vo.getId(), vo.getStatus()));
     }

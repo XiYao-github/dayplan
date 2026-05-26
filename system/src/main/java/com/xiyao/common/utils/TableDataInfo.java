@@ -1,4 +1,4 @@
-package com.xiyao.common.utils.page;
+package com.xiyao.common.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.http.HttpStatus;

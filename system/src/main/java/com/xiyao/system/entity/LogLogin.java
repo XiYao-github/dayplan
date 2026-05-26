@@ -10,12 +10,11 @@ import lombok.experimental.Accessors;
 import java.time.LocalDateTime;
 
 /**
+ * 认证日志（登录/登出/注册）
  * <p>
- * 登录记录
- * </p>
+ * 记录认证操作，带 SM3 哈希链防篡改。
  *
  * @author xiyao
- * @since 2026-05-20
  */
 @Data
 @TableName("log_login")
@@ -26,7 +25,7 @@ public class LogLogin {
     private Long id;
 
     /**
-     * 用户id
+     * 用户 ID
      */
     @TableField("user_id")
     private Long userId;
@@ -38,13 +37,13 @@ public class LogLogin {
     private String username;
 
     /**
-     * 登录时间
+     * 认证类型（7=登录 8=登出 9=注册）
      */
-    @TableField("login_time")
-    private LocalDateTime loginTime;
+    @TableField("auth_type")
+    private Integer authType;
 
     /**
-     * 登录状态(0.失败 1.成功)
+     * 认证状态（0=失败 1=成功）
      */
     @TableField("status")
     private Integer status;
@@ -56,25 +55,19 @@ public class LogLogin {
     private String message;
 
     /**
-     * 客户端IP
+     * 客户端 IP
      */
     @TableField("ip")
     private String ip;
 
     /**
-     * ip归属地
-     */
-    @TableField("location")
-    private String location;
-
-    /**
-     * 系统类型
+     * 操作系统
      */
     @TableField("os")
     private String os;
 
     /**
-     * 浏览器类型
+     * 浏览器
      */
     @TableField("browser")
     private String browser;
@@ -84,4 +77,28 @@ public class LogLogin {
      */
     @TableField("platform")
     private String platform;
+
+    /**
+     * 链路追踪 ID
+     */
+    @TableField("trace_id")
+    private String traceId;
+
+    /**
+     * 哈希值（SM3 防篡改）
+     */
+    @TableField("hash")
+    private String hash;
+
+    /**
+     * 上一条哈希值（哈希链）
+     */
+    @TableField("prev_hash")
+    private String prevHash;
+
+    /**
+     * 认证时间
+     */
+    @TableField("login_time")
+    private LocalDateTime loginTime;
 }

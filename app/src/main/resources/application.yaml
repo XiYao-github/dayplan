@@ -55,18 +55,6 @@ spring:
       database: 0
       timeout: 5s
 
-logging:
-  level:
-    com.example.demo.mapper: debug
-    org.springframework.web: info
-    org.springframework.data.redis: debug
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: ./logs/app.log
-
-
 # 权限过滤
 security-data:
   # 是否开启权限过滤

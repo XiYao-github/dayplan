@@ -1,4 +1,4 @@
-package com.xiyao.common.utils.page;
+package com.xiyao.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

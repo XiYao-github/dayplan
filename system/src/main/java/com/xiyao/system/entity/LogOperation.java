@@ -138,4 +138,22 @@ public class LogOperation {
      */
     @TableField("platform")
     private String platform;
+
+    /**
+     * 链路追踪 ID
+     */
+    @TableField("trace_id")
+    private String traceId;
+
+    /**
+     * 哈希值（SM3 防篡改，仅审计日志需要）
+     */
+    @TableField("hash")
+    private String hash;
+
+    /**
+     * 上一条哈希值（哈希链）
+     */
+    @TableField("prev_hash")
+    private String prevHash;
 }

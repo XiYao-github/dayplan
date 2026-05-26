@@ -6,6 +6,7 @@ import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.Result;
 import com.xiyao.framework.exception.BusinessException;
 import com.xiyao.log.enums.OperationStatus;
+import com.xiyao.log.enums.OperationType;
 import com.xiyao.log.event.LogLoginEvent;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.details.UserVo;
@@ -15,6 +16,7 @@ import com.xiyao.system.entity.SysUserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -119,9 +121,11 @@ public class LoginController extends MyBaseController {
             // 构造登录成功事件
             event.setUserId(loginUser.getUserId())
                     .setUsername(loginUser.getUsername())
+                    .setAuthType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.SUCCESS.ordinal())
                     .setMessage("登录成功")
-                    .setLoginTime(LocalDateTime.now());
+                    .setLoginTime(LocalDateTime.now())
+                    .setTraceId(MDC.get("traceId"));
 
             // 发布登录成功事件（用于日志记录等后续操作）
             SpringUtil.publishEvent(event);
@@ -132,9 +136,11 @@ public class LoginController extends MyBaseController {
         } catch (Exception e) {
             // 认证失败，构造登录失败事件
             event.setUsername(user.getUsername())
+                    .setAuthType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.FAIL.ordinal())
                     .setMessage(e.getMessage())
-                    .setLoginTime(LocalDateTime.now());
+                    .setLoginTime(LocalDateTime.now())
+                    .setTraceId(MDC.get("traceId"));
 
             // 发布登录失败事件
             SpringUtil.publishEvent(event);
@@ -187,6 +193,17 @@ public class LoginController extends MyBaseController {
         userRole.setRoleId(2L);  // 普通用户角色 ID
         Db.save(userRole);
 
+        // 构造注册成功事件并发布
+        LogLoginEvent event = new LogLoginEvent();
+        event.setUserId(newUser.getId())
+                .setUsername(newUser.getUsername())
+                .setAuthType(OperationType.REGISTER.ordinal())
+                .setStatus(OperationStatus.SUCCESS.ordinal())
+                .setMessage("注册成功")
+                .setLoginTime(LocalDateTime.now())
+                .setTraceId(MDC.get("traceId"));
+        SpringUtil.publishEvent(event);
+
         return ok();
     }
 
@@ -205,6 +222,20 @@ public class LoginController extends MyBaseController {
     public Result logout(HttpServletRequest request) {
         // 从请求 Header 中获取 JWT Token（Bearer Token 格式）
         String token = jwtUtils.getHeaderToken(request);
+
+        // 获取当前登录用户信息
+        LoginUser loginUser = jwtUtils.getLoginUser(token);
+
+        // 构造登出事件并发布
+        LogLoginEvent event = new LogLoginEvent();
+        event.setUserId(loginUser.getUserId())
+                .setUsername(loginUser.getUsername())
+                .setAuthType(OperationType.LOGOUT.ordinal())
+                .setStatus(OperationStatus.SUCCESS.ordinal())
+                .setMessage("退出成功")
+                .setLoginTime(LocalDateTime.now())
+                .setTraceId(MDC.get("traceId"));
+        SpringUtil.publishEvent(event);
 
         // 删除 Redis 中缓存的用户信息
         // 如果 Token 有效且删除成功返回 true，否则返回 false

@@ -2,7 +2,7 @@ package com.xiyao.system.controller;
 
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.Result;
-import com.xiyao.log.annotation.AuditLog;
+import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.system.service.ISysMenuService;
 import com.xiyao.system.entity.vo.SysMenuVo;
@@ -45,7 +45,7 @@ public class SysMenuController extends MyBaseController {
      */
     @PostMapping
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "菜单管理", operationType = OperationType.INSERT)
+    @Log(module = "菜单管理", type = OperationType.INSERT)
     public Result create(@RequestBody SysMenuVo vo) {
         return ok(menuService.create(vo));
     }
@@ -55,7 +55,7 @@ public class SysMenuController extends MyBaseController {
      */
     @PutMapping
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "菜单管理", operationType = OperationType.UPDATE)
+    @Log(module = "菜单管理", type = OperationType.UPDATE)
     public Result update(@RequestBody SysMenuVo vo) {
         return ok(menuService.update(vo));
     }
@@ -65,7 +65,7 @@ public class SysMenuController extends MyBaseController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("@ss.isSystemAdmin()")
-    @AuditLog(module = "菜单管理", operationType = OperationType.DELETE)
+    @Log(module = "菜单管理", type = OperationType.DELETE)
     public Result delete(@PathVariable Long id) {
         return ok(menuService.delete(id));
     }
