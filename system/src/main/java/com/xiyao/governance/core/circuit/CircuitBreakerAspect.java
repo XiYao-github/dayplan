@@ -10,7 +10,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
@@ -53,7 +52,6 @@ import java.lang.reflect.Method;
  * @see GovernanceProperties.CircuitBreakerConfig
  */
 @Aspect
-@Component
 public class CircuitBreakerAspect {
     private static final Logger log = LoggerFactory.getLogger(CircuitBreakerAspect.class);
 

@@ -9,10 +9,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * 舱壁隔离切面
@@ -50,7 +51,6 @@ import java.util.concurrent.*;
  * @see GovernanceProperties.BulkheadConfig
  */
 @Aspect
-@Component
 public class BulkheadAspect {
     private static final Logger log = LoggerFactory.getLogger(BulkheadAspect.class);
 

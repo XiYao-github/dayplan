@@ -16,7 +16,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
@@ -37,10 +36,9 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 @Aspect
-@Component
 public class NoRepeatSubmitAspect {
 
-    private  RedisUtils redisUtils;
+    private final RedisUtils redisUtils;
 
     /** 缓存键前缀 */
     private static final String CACHE_KEY_PREFIX = "nosubmit:";
@@ -50,6 +48,15 @@ public class NoRepeatSubmitAspect {
 
     /** 参数名发现器 */
     private static final ParameterNameDiscoverer NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
+
+    /**
+     * 构造函数
+     *
+     * @param redisUtils Redis 工具类
+     */
+    public NoRepeatSubmitAspect(RedisUtils redisUtils) {
+        this.redisUtils = redisUtils;
+    }
 
     /**
      * 环绕通知：拦截带 @NoRepeatSubmit 注解的方法

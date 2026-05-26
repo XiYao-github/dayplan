@@ -132,7 +132,7 @@ com.xiyao.governance/
 │                                   # - message: 提示消息
 │
 ├── config/
-│   ├── GovernanceAutoConfig.java  # 自动配置
+│   ├── GovernanceAutoConfig.java  # 自动配置（@ConditionalOnProperty）
 │   └── GovernanceProperties.java  # 全局配置属性
 │                                   # - rate-limit.*: 限流全局配置
 │                                   # - circuit-breaker.*: 熔断全局配置

@@ -1,6 +1,5 @@
 package com.xiyao.governance.core.ratelimit;
 
-import com.xiyao.common.utils.SpringUtils;
 import com.xiyao.framework.exception.BusinessException;
 import com.xiyao.governance.annotation.RateLimit;
 import com.xiyao.governance.config.GovernanceProperties;
@@ -10,7 +9,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
@@ -49,7 +47,6 @@ import java.lang.reflect.Method;
  * @see GovernanceProperties.RateLimitConfig
  */
 @Aspect
-@Component
 public class RateLimitAspect {
     private static final Logger log = LoggerFactory.getLogger(RateLimitAspect.class);
 

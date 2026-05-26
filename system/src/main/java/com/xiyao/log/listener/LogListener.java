@@ -62,6 +62,7 @@ public class LogListener {
             logOperation.setTraceId(event.getTraceId());
             logOperation.setRequestMethod(event.getRequestMethod());
             logOperation.setRequestUrl(event.getRequestUrl());
+            logOperation.setLogType(event.getLogType());
 
             // AUDIT 类型计算 SM3 哈希链
             if (event.getLogType() != null && event.getLogType() == LogType.AUDIT.ordinal()) {

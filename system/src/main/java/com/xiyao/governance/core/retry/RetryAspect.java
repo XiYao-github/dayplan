@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 
@@ -59,7 +58,6 @@ import java.lang.reflect.Method;
  * @see GovernanceProperties.RetryConfig
  */
 @Aspect
-@Component
 public class RetryAspect {
     private static final Logger log = LoggerFactory.getLogger(RetryAspect.class);
 

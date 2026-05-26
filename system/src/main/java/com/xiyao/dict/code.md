@@ -6,7 +6,7 @@
 dict 模块提供数据字典能力，支持键值对管理和自动映射回显。
 
 核心功能:
-  - 字典类型：管理和配置字典类型（如状态、性别、状态等）
+  - 字典类型：管理和配置字典类型（如状态、性别等）
   - 字典数据：维护字典类型下的键值对（value/label）
   - 自动映射：查询结果自动将值映射为显示文本
   - 枚举支持：实现 BaseEnum 接口，支持多种反序列化方式
@@ -28,7 +28,7 @@ dict 模块提供数据字典能力，支持键值对管理和自动映射回显
 ```yaml
 字典翻译: MyBatis ResultSetInterceptor
 枚举转换: Spring ConverterFactory
-缓存: 本地缓存（可扩展 Redis）
+缓存: 本地缓存（DictCache）
 ```
 
 **字典加载流程：**
@@ -106,52 +106,38 @@ com.xiyao.dict/
 │                                   # - target: 目标字段名
 │
 ├── config/
-│   ├── DictAutoConfig.java        # 自动配置
+│   ├── DictAutoConfig.java        # 自动配置（@ConditionalOnProperty）
 │   ├── DictCache.java             # 字典缓存管理
 │   │                               # - 加载字典到缓存
 │   │                               # - 刷新缓存
-│   ├── DictManager.java           # 字典管理器
-│   │                               # - 获取字典值
-│   │                               # - 翻译 label
-│   ├── DictProperties.java        # 配置属性
-│   │                               # - enabled: 是否启用
-│   │                               # - cacheStrategy: 缓存策略
-│   │                               # - loadMode: eager/lazy
-│   │                               # - preloadOnStartup: 启动预加载
-│   │                               # - includeCodes/excludeCodes: 加载范围
-│   │
-│   └── EnumScanner.java           # 枚举扫描器
-│                                   # - 扫描实现 BaseEnum 的枚举
-│
-├── controller/
-│   └── DictTestController.java   # 字典测试接口
+│   └── DictProperties.java        # 配置属性
+│                                   # - enabled: 是否启用
+│                                   # - preloadOnStartup: 启动预加载
 │
 ├── converter/
-│   ├── DictEnumConverterFactory.java # 枚举转换器工厂
-│   │                               # - 实现 ConverterFactory
-│   │                               # - 将 String/Integer 转为 BaseEnum
-│   │
-│   └── MyEnumConverterFactory.java # 通用枚举转换（预留）
+│   └── DictEnumConverterFactory.java # 枚举转换器工厂
+│                                   # - 实现 ConverterFactory
+│                                   # - 将 String/Integer 转为 BaseEnum
 │
 ├── enums/
-│   ├── BaseEnum.java              # 基础枚举接口
-│   │                               # - getCode(): 获取存储值
-│   │                               # - getName(): 获取枚举名
-│   │                               # - getDesc(): 获取描述
-│   │
-│   └── DataStatus.java           # 数据状态枚举示例
-│                                   # PAUSE(0, "暂停"), NORMAL(1, "正常")
+│   └── BaseEnum.java              # 基础枚举接口
+│                                   # - getCode(): 获取存储值
+│                                   # - getName(): 获取枚举名
+│                                   # - getDesc(): 获取描述
 │
-├── interceptor/
-│   └── DictResultInterceptor.java  # MyBatis 结果集拦截器
-│                                   # - 查询结果返回时拦截
-│                                   # - 扫描 @DictBind 字段
-│                                   # - 翻译值并设置 target 字段
-│
-└── service/
-    ├── DictService.java         # 字典服务接口（统一管理）
-    └── impl/
-        └── DictServiceImpl.java # 字典服务实现
+└── interceptor/
+    └── DictResultInterceptor.java  # MyBatis 结果集拦截器
+                                    # - 查询结果返回时拦截
+                                    # - 扫描 @DictBind 字段
+                                    # - 翻译值并设置 target 字段
+```
+
+**字典服务在 system 模块实现：**
+```tree
+com.xiyao.system.service/
+├── IDictService.java             # 字典服务接口
+└── impl/
+    └── DictServiceImpl.java     # 字典服务实现
 ```
 
 ---
@@ -159,11 +145,22 @@ com.xiyao.dict/
 ### API 接口清单
 
 ```yaml
-# Dict 模块主要通过 @DictBind 注解自动翻译，无直接管理接口
-# 字典数据管理暂未实现，缓存由 DictCache 自动维护
+# 字典类型管理
+GET    /dict/type/list              # 字典类型列表
+GET    /dict/type/{id}             # 字典类型详情
+GET    /dict/type/options          # 字典类型下拉选项
+POST   /dict/type                  # 创建字典类型
+PUT    /dict/type                  # 更新字典类型
+DELETE /dict/type/{id}            # 删除字典类型
 
-# 如需手动刷新缓存，可调用
-POST   /dict/refresh              # 刷新字典缓存
+# 字典数据管理
+GET    /dict/data/list             # 字典数据列表
+GET    /dict/data/{id}            # 字典数据详情
+GET    /dict/data/options/{dictType} # 字典数据下拉选项
+POST   /dict/data                 # 创建字典数据
+PUT    /dict/data                 # 更新字典数据
+DELETE /dict/data/{id}            # 删除字典数据
+POST   /dict/data/refresh         # 刷新字典缓存
 ```
 
 **@DictBind 注解使用示例：**
@@ -173,6 +170,16 @@ POST   /dict/refresh              # 刷新字典缓存
 @DictBind(code = "status", target = "statusDesc")
 private Integer status;
 private String statusDesc;  // 自动填充为"正常"/"停用"
+```
+
+**字典权限说明：**
+
+```java
+// 所有管理员都可以查看字典类型和字典数据
+@PreAuthorize("@ss.hasAnyAdmin()")
+
+// 只有系统管理员可以增删改字典
+@PreAuthorize("@ss.isSystemAdmin()")
 ```
 
 ---
@@ -185,14 +192,18 @@ src/main/java/com/xiyao/common/
 ├── utils/Result.java               # 统一响应
 └── utils/page/PageQuery.java      # 分页查询
 
-# System 模块（字典实体和 Mapper）
+# System 模块（字典实体、Mapper、Service）
 src/main/java/com/xiyao/system/
 ├── entity/
 │   ├── DictType.java             # 字典类型实体
 │   └── DictData.java             # 字典数据实体
-└── mapper/
-    ├── DictTypeMapper.java
-    └── DictDataMapper.java
+├── mapper/
+│   ├── DictTypeMapper.java
+│   └── DictDataMapper.java
+└── service/
+    ├── IDictService.java         # 字典服务接口
+    └── impl/
+        └── DictServiceImpl.java # 字典服务实现
 ```
 
 ---
@@ -237,14 +248,8 @@ CREATE TABLE sys_dict_data (
 ```yaml
 # application.yml
 dict:
-  enabled: true                    # 是否启用字典功能
+  enabled: true                    # 是否启用字典功能（默认true）
   preload-on-startup: false        # 启动时预加载所有字典
-  cache-strategy: local           # 缓存策略（预留 Redis）
-  load-mode: eager                # 加载模式 eager/lazy
-  include-codes:                  # 指定加载的字典编码
-    - status
-    - gender
-  exclude-codes:                  # 排除的字典编码
 ```
 
 ---
@@ -277,7 +282,4 @@ public enum DataStatus implements BaseEnum<Integer> {
     @Override
     public String getDesc() { return desc; }
 }
-
-// 使用 @JsonCreator 支持多种反序列化方式
-// 1=Normal, 正常=Normal, NORMAL=Normal 都能匹配
 ```

@@ -2,7 +2,6 @@ package com.xiyao.dict.config;
 
 import com.xiyao.common.utils.SpringUtils;
 import com.xiyao.dict.enums.BaseEnum;
-import com.xiyao.dict.service.DictService;
 import com.xiyao.system.entity.DictData;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +43,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * @author xiyao
  * @see BaseEnum
- * @see DictService
  */
 @Slf4j
 public class DictCache {
@@ -168,7 +166,7 @@ public class DictCache {
             }
             try {
                 // 从数据库加载字典数据
-                DictService dictService = SpringUtils.getBean(DictService.class);
+                com.xiyao.system.service.IDictService dictService = SpringUtils.getBean(com.xiyao.system.service.IDictService.class);
                 Map<String, String> map = dictService.getDictMap(dictCode);
                 dictCache.put(dictCode, map);
                 log.info("字典缓存加载成功: dictCode={}, count={}", dictCode, map.size());
@@ -190,12 +188,12 @@ public class DictCache {
         lock.writeLock().lock();
         try {
             try {
-                DictService dictService = SpringUtils.getBean(DictService.class);
+                com.xiyao.system.service.IDictService dictService = SpringUtils.getBean(com.xiyao.system.service.IDictService.class);
                 List<DictData> allData = dictService.getAllDictData();
-                // 按字典类型分组，构建 dictCode -> (dictValue -> dictLabel) 的映射
+                // 按字典类型分组，构建 dictType -> (dictValue -> dictLabel) 的映射
                 allData.forEach(dictData -> {
-                    String dictCode = dictData.getDictCode();
-                    dictCache.computeIfAbsent(dictCode, k -> new ConcurrentHashMap<>())
+                    String dictType = dictData.getDictType();
+                    dictCache.computeIfAbsent(dictType, k -> new ConcurrentHashMap<>())
                             .put(dictData.getDictValue(), dictData.getDictLabel());
                 });
                 log.info("字典缓存全量加载成功: dictCodeCount={}, totalCount={}", dictCache.size(), allData.size());
