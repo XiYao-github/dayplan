@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.service.ISysRoleService;
-import com.xiyao.system.entity.vo.SysRoleVo;
+import com.xiyao.system.vo.SysRoleVo;
 import com.xiyao.system.entity.SysRole;
 import com.xiyao.system.entity.SysRoleMenu;
 import lombok.RequiredArgsConstructor;

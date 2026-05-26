@@ -246,12 +246,14 @@ governance:
 ### 枚举说明
 
 ```java
-// CircuitState 熔断器状态
-CLOSED     // 0 关闭状态，正常工作，统计失败率
-OPEN       // 1 打开状态，熔断中，拒绝所有请求
-HALF_OPEN  // 2 半开状态，试探性恢复，允许部分请求
+CircuitState {           // 熔断器状态
+    CLOSED = 0,           // 关闭状态，正常工作，统计失败率
+    OPEN = 1,             // 打开状态，熔断中，拒绝所有请求
+    HALF_OPEN = 2         // 半开状态，试探性恢复，允许部分请求
+}
 
-// RetryStrategy 重试策略
-FIXED      // 0 固定间隔重试
-EXPONENTIAL // 1 指数退避重试
+RetryStrategy {           // 重试策略
+    FIXED = 0,            // 固定间隔重试
+    EXPONENTIAL = 1       // 指数退避重试
+}
 ```

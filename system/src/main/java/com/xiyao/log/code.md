@@ -275,6 +275,42 @@ com.xiyao.log/
 
 ---
 
+### API 接口清单
+
+日志模块通过 `@Log` 注解自动记录日志，无需手动调用。以下是日志查询接口：
+
+```yaml
+# System 模块（日志查询接口）
+GET    /system/log-login/list         # 认证日志列表
+GET    /system/log-operation/list     # 操作日志列表
+
+# 日志查询参数
+pageNum: int     # 页码，默认1
+pageSize: int    # 每页条数，默认10
+username: string # 用户账号（审计管理员可查任意，其他只能查自己）
+startTime: string # 开始时间
+endTime: string   # 结束时间
+
+# 操作日志额外参数
+module: string  # 操作模块
+logType: int    # 日志类型（0=操作日志 1=审计日志）
+status: int     # 操作状态
+```
+
+**日志权限说明：**
+
+```java
+// 认证日志（/system/log-login/list）
+审计管理员: 可查看所有用户的认证日志
+其他管理员: 只能查看自己的认证日志
+
+// 操作日志（/system/log-operation/list）
+审计管理员: 可查看所有日志（含AUDIT类型）
+其他管理员: 只能查看OPERATION类型且只能查看自己的
+```
+
+---
+
 ### Bean 注册方式
 
 log 模块采用插件式架构，所有组件通过 `LogAutoConfig` 集中注册：
@@ -331,23 +367,23 @@ LogOperationEvent 和 LogLoginEvent 继承 MyBaseEvent，构造函数自动从 H
 ```java
 // 网络信息
 clientIp      // 客户端 IP（自动解析 X-Forwarded-For 等）
-        clientPort    // 客户端端口
-        serverIp      // 服务器地址
+clientPort    // 客户端端口
+serverIp      // 服务器地址
 
 // 请求行信息
-        requestMethod // HTTP 方法（GET/POST/PUT/DELETE）
-        requestUrl    // 请求 URI
-        queryString   // 查询参数
+requestMethod // HTTP 方法（GET/POST/PUT/DELETE）
+requestUrl    // 请求 URI
+queryString   // 查询参数
 
 // 请求头信息
-        userAgent     // 原始 User-Agent
-        referer       // 来源页面
-        origin        // 跨域来源
+userAgent     // 原始 User-Agent
+referer       // 来源页面
+origin        // 跨域来源
 
 // 设备信息（通过 User-Agent 解析）
-        os            // 操作系统（如 Windows 10）
-        browser       // 浏览器（如 Chrome 100）
-        platform      // 平台（PC/Mobile/Tablet）
+os            // 操作系统（如 Windows 10）
+browser       // 浏览器（如 Chrome 100）
+platform      // 平台（PC/Mobile/Tablet）
 ```
 
 ---
@@ -369,25 +405,29 @@ public Result deleteRole(Long id){...}
 
 **日志类型说明：**
 
-| logType | 存储表 | SM3 哈希链 | 使用场景 |
-|---------|--------|-----------|----------|
-| OPERATION（默认） | log_operation | 无 | 普通业务操作，问题追踪 |
-| AUDIT | log_operation | 有 | 敏感操作，等保审计 |
+```java
+LogType {
+    OPERATION,  // 普通业务操作，问题追踪（无哈希链）
+    AUDIT      // 敏感操作，等保审计（有 SM3 哈希链）
+}
+```
 
 **操作类型说明：**
 
-| type | 说明 | 建议 |
-|------|------|------|
-| OTHER | 其他操作 | 默认值 |
-| QUERY | 查询操作 | 读操作 |
-| INSERT | 新增操作 | 写操作 |
-| UPDATE | 更新操作 | 写操作 |
-| DELETE | 删除操作 | 写操作 |
-| EXPORT | 导出操作 | 数据导出 |
-| IMPORT | 导入操作 | 数据导入 |
-| LOGIN | 登录 | 认证日志 |
-| LOGOUT | 登出 | 认证日志 |
-| REGISTER | 注册 | 认证日志 |
+```java
+OperationType {
+    OTHER,      // 其他操作（默认值）
+    QUERY,      // 查询操作（读操作）
+    INSERT,     // 新增操作（写操作）
+    UPDATE,     // 更新操作（写操作）
+    DELETE,     // 删除操作（写操作）
+    EXPORT,     // 导出操作（数据导出）
+    IMPORT,     // 导入操作（数据导入）
+    LOGIN,      // 登录（认证日志）
+    LOGOUT,     // 登出（认证日志）
+    REGISTER    // 注册（认证日志）
+}
+```
 
 ---
 

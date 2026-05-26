@@ -124,9 +124,7 @@ com.xiyao.dict/
 │                                   # - 扫描实现 BaseEnum 的枚举
 │
 ├── controller/
-│   ├── DictTypeController.java   # 字典类型管理
-│   ├── DictDataController.java   # 字典数据管理
-│   └── DictTestController.java   # 测试
+│   └── DictTestController.java   # 字典测试接口
 │
 ├── converter/
 │   ├── DictEnumConverterFactory.java # 枚举转换器工厂
@@ -151,11 +149,9 @@ com.xiyao.dict/
 │                                   # - 翻译值并设置 target 字段
 │
 └── service/
-    ├── IDictTypeService.java    # 字典类型服务接口
-    ├── IDictDataService.java     # 字典数据服务接口
+    ├── DictService.java         # 字典服务接口（统一管理）
     └── impl/
-        ├── DictTypeServiceImpl.java
-        └── DictDataServiceImpl.java
+        └── DictServiceImpl.java # 字典服务实现
 ```
 
 ---
@@ -163,20 +159,20 @@ com.xiyao.dict/
 ### API 接口清单
 
 ```yaml
-# 字典类型管理
-GET    /dict/type/list              # 字典类型列表
-GET    /dict/type/{id}             # 字典类型详情
-POST   /dict/type                  # 创建字典类型
-PUT    /dict/type                  # 更新字典类型
-DELETE /dict/type/{id}            # 删除字典类型
+# Dict 模块主要通过 @DictBind 注解自动翻译，无直接管理接口
+# 字典数据管理暂未实现，缓存由 DictCache 自动维护
 
-# 字典数据管理
-GET    /dict/data/list             # 字典数据列表
-GET    /dict/data/{id}            # 字典数据详情
-POST   /dict/data                 # 创建字典数据
-PUT    /dict/data                 # 更新字典数据
-DELETE /dict/data/{id}            # 删除字典数据
-GET    /dict/data/options         # 字典数据下拉选项
+# 如需手动刷新缓存，可调用
+POST   /dict/refresh              # 刷新字典缓存
+```
+
+**@DictBind 注解使用示例：**
+
+```java
+// 在 VO 字段上标注，自动翻译为 label
+@DictBind(code = "status", target = "statusDesc")
+private Integer status;
+private String statusDesc;  // 自动填充为"正常"/"停用"
 ```
 
 ---

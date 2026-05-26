@@ -1,4 +1,4 @@
-package com.xiyao.system.entity.vo;
+package com.xiyao.system.vo;
 
 import lombok.Data;
 

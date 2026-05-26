@@ -5,7 +5,7 @@ import com.xiyao.common.utils.Result;
 import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.system.service.ISysMenuService;
-import com.xiyao.system.entity.vo.SysMenuVo;
+import com.xiyao.system.vo.SysMenuVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

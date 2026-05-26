@@ -266,6 +266,14 @@ POST   /system/menu               # 创建菜单
 PUT    /system/menu               # 更新菜单
 DELETE /system/menu/{id}          # 删除菜单
 GET    /system/menu/options       # 菜单下拉选项
+
+# 日志查询接口
+GET    /system/log-login/list     # 认证日志列表
+GET    /system/log-operation/list # 操作日志列表
+
+# 日志权限说明
+# 认证日志：审计管理员查看全部，其他管理员只能查看自己的
+# 操作日志：审计管理员查看全部（含AUDIT），其他管理员只能查看OPERATION类型且只能查看自己的
 ```
 
 ---
@@ -429,29 +437,28 @@ CREATE TABLE sys_role_menu (
 ### 三员类型说明
 
 ```java
-// AdminType 枚举
-NormalUser     // 0 普通用户
-SystemAdmin    // 1 系统管理员
-SecurityAdmin  // 2 安全保密管理员
-AuditAdmin     // 3 安全审计管理员
-
-// 三员职责说明
-系统管理员（SystemAdmin）：
-  - 负责系统日常运行维护
-  - 系统配置、用户账号管理
-  - 可操作业务数据
-  - 不能查看审计日志
-
-安全保密管理员（SecurityAdmin）：
-  - 负责安全策略配置和权限管理
-  - 角色管理、权限分配
-  - 不能查看审计日志
-
-审计管理员（AuditAdmin）：
-  - 负责日志审计和操作记录查看
-  - 监督系统管理员和安全管理员操作
-  - 无任何配置权限
-
-// 等保合规要求
-三者权限互斥，相互制约，任何一人无法完成超越职责的操作
+AdminType {
+    NormalUser = 0,     // 普通用户
+    SystemAdmin = 1,    // 系统管理员
+    SecurityAdmin = 2,  // 安全保密管理员
+    AuditAdmin = 3      // 安全审计管理员
+}
 ```
+
+**三员职责说明：**
+
+```java
+// 系统管理员（SystemAdmin）
+职责：系统配置、用户账号管理
+权限：可操作业务数据，不能查看审计日志
+
+// 安全保密管理员（SecurityAdmin）
+职责：安全策略配置、权限管理
+权限：角色管理、权限分配，不能查看审计日志
+
+// 审计管理员（AuditAdmin）
+职责：日志审计、操作记录查看
+权限：监督两员操作，无配置权限
+```
+
+**等保合规要求：**三者权限互斥，相互制约，任何一人无法完成超越职责的操作。

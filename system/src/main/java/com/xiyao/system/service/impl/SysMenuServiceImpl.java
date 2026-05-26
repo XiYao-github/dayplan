@@ -3,7 +3,7 @@ package com.xiyao.system.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.service.ISysMenuService;
-import com.xiyao.system.entity.vo.SysMenuVo;
+import com.xiyao.system.vo.SysMenuVo;
 import com.xiyao.system.entity.SysMenu;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

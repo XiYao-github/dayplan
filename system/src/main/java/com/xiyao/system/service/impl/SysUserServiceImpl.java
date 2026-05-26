@@ -4,7 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.service.ISysUserService;
 import com.xiyao.security.utils.SecurityUtils;
-import com.xiyao.system.entity.vo.SysUserVo;
+import com.xiyao.system.vo.SysUserVo;
 import com.xiyao.system.entity.SysRole;
 import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;

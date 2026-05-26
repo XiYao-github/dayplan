@@ -146,17 +146,23 @@ com.xiyao.common/
 │   │
 │   ├── CodeGenerator.java          # 代码生成器
 │   │
-│   └── page/
-│       ├── PageQuery.java         # 分页查询参数
-│       │                               # - pageSize: 每页大小
-│       │                               # - pageNum: 当前页数
-│       │                               # - orderByColumn: 排序列
-│       │                               # - isAsc: 排序方向
-│       │
-│       └── TableDataInfo.java     # 分页响应数据
+│   ├── PageQuery.java             # 分页查询参数
+│   │                                   # - pageSize: 每页大小
+│   │                                   # - pageNum: 当前页数
+│   │                                   # - orderByColumn: 排序列
+│   │                                   # - isAsc: 排序方向
+│   │
+│   ├── TableDataInfo.java         # 分页响应数据（兼容旧代码）
+│   │                                   # - total: 总记录数
+│   │                                   # - rows: 当前页数据
+│   │                                   # - code/msg: 状态信息
+│   │
+│   └── PageResult.java            # 分页结果封装
+│                                       # - records: 当前页数据
 │                                       # - total: 总记录数
-│                                       # - rows: 当前页数据
-│                                       # - code/msg: 状态信息
+│                                       # - size: 每页条数
+│                                       # - current: 当前页码
+│                                       # - pages: 总页数
 │
 ├── enums/
 │   └── Status.java                 # 通用状态枚举
@@ -266,7 +272,7 @@ GET /user/list?pageNum=1&pageSize=10&orderByColumn=createTime&isAsc=desc
 system/src/main/java/com/xiyao/
 ├── system/                          # 业务实体、Mapper、Service
 ├── security/                        # 登录用户、权限
-├── auditLog/                             # 日志事件
+├── log/                               # 日志事件
 ├── governance/                      # 降级处理
 ├── dict/                            # 枚举转换
 └── crypto/                          # 加密工具

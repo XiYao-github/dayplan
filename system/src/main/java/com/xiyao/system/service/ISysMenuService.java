@@ -1,6 +1,6 @@
 package com.xiyao.system.service;
 
-import com.xiyao.system.entity.vo.SysMenuVo;
+import com.xiyao.system.vo.SysMenuVo;
 
 import java.util.List;
 

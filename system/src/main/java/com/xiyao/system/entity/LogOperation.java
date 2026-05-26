@@ -44,6 +44,12 @@ public class LogOperation {
     private Integer adminType;
 
     /**
+     * 日志类型（0=操作日志 1=审计日志）
+     */
+    @TableField("log_type")
+    private Integer logType;
+
+    /**
      * 操作方法
      */
     @TableField("operation_method")

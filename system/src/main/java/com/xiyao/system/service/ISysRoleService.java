@@ -1,6 +1,6 @@
 package com.xiyao.system.service;
 
-import com.xiyao.system.entity.vo.SysRoleVo;
+import com.xiyao.system.vo.SysRoleVo;
 
 import java.util.List;
 

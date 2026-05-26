@@ -280,5 +280,6 @@ src/main/java/com/xiyao/security/
 
 # Dict 模块（枚举转换器）
 src/main/java/com/xiyao/dict/
-└── converter/DictEnumConverterFactory.java # 枚举转换工厂
+├── converter/DictEnumConverterFactory.java # 枚举转换工厂
+└── converter/MyEnumConverterFactory.java   # 通用枚举转换（预留）
 ```
