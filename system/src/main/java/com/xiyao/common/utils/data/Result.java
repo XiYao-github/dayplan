@@ -1,4 +1,4 @@
-package com.xiyao.common.utils;
+package com.xiyao.common.utils.data;
 
 import lombok.Data;
 import org.slf4j.MDC;
@@ -115,19 +115,7 @@ public class Result<T> implements Serializable {
      * @return 成功结果
      */
     public static <T> Result<T> ok(String msg, T data) {
-        return ok(OK, msg, data);
-    }
-
-    /**
-     * 返回成功（完整参数）
-     *
-     * @param code 状态码
-     * @param msg  成功消息
-     * @param data 业务数据
-     * @return 成功结果
-     */
-    public static <T> Result<T> ok(Integer code, String msg, T data) {
-        return result(code, msg, data);
+        return result(OK, msg, data);
     }
 
     // ==================== 失败响应 ====================
@@ -148,18 +136,32 @@ public class Result<T> implements Serializable {
      * @return 失败结果
      */
     public static <T> Result<T> error(String msg) {
-        return error(ERROR, msg);
+        return result(ERROR, msg, null);
+    }
+
+    // ==================== 状态响应 ====================
+
+    /**
+     * 返回（带状态码和数据）
+     *
+     * @param code 状态码
+     * @param msg  成功消息
+     * @return 结果
+     */
+    public static <T> Result<T> result(Integer code, String msg) {
+        return result(code, msg, null);
     }
 
     /**
-     * 返回失败（带错误码和消息）
+     * 返回（完整参数）
      *
-     * @param code 错误码
-     * @param msg  错误消息
-     * @return 失败结果
+     * @param code 状态码
+     * @param msg  成功消息
+     * @param data 业务数据
+     * @return 结果
      */
-    public static <T> Result<T> error(Integer code, String msg) {
-        return result(code, msg, null);
+    public static <T> Result<T> result(Integer code, String msg, T data) {
+        return getResult(code, msg, data);
     }
 
     // ==================== 内部方法 ====================
@@ -172,7 +174,7 @@ public class Result<T> implements Serializable {
      * @param data 数据
      * @return Result<T> 实例
      */
-    private static <T> Result<T> result(Integer code, String msg, T data) {
+    private static <T> Result<T> getResult(Integer code, String msg, T data) {
         Result<T> result = new <T>Result<T>();
         result.setCode(code);
         result.setData(data);

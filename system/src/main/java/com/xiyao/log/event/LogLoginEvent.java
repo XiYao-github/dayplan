@@ -60,8 +60,4 @@ public class LogLoginEvent extends MyBaseEvent {
      */
     private LocalDateTime loginTime;
 
-    /**
-     * 链路追踪 ID
-     */
-    private String traceId;
 }

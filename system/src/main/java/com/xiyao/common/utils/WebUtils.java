@@ -1,23 +1,24 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.json.JSONUtil;
+import com.xiyao.common.utils.data.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Web 工具类（前后端分离版）
@@ -34,13 +35,10 @@ import java.util.stream.Collectors;
  *
  * @author xiyao
  */
-public final class WebUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class WebUtils {
 
-
-
-    private WebUtils() {
-        // 私有构造方法，防止实例化
-    }
+    public static final String SEPARATOR = ",";
 
     // ==================== 获取请求/响应对象 ====================
 
@@ -72,303 +70,140 @@ public final class WebUtils {
         return null;
     }
 
-    /**
-     * 判断当前线程是否处于 Web 请求上下文中
-     *
-     * @return true 表示当前处于 Web 请求上下文中
-     */
-    public static boolean isWebRequest() {
-        return RequestContextHolder.getRequestAttributes() != null;
-    }
-
-    // ==================== 请求基本信息 ====================
+    // ==================== 请求参数 ====================
 
     /**
-     * 获取请求方式（GET、POST、PUT、DELETE 等）
-     */
-    public static String getMethod() {
-        HttpServletRequest request = getRequest();
-        return request != null ? request.getMethod() : null;
-    }
-
-    /**
-     * 获取请求 URI（不包含域名和端口）
-     * <p>
-     * 例如：/api/user/1
-     */
-    public static String getRequestUri() {
-        HttpServletRequest request = getRequest();
-        return request != null ? request.getRequestURI() : null;
-    }
-
-    /**
-     * 获取完整请求 URL（包含查询参数）
-     * <p>
-     * 例如：http://localhost:8080/api/user?name=zhangsan
-     */
-    public static String getFullRequestUrl() {
-        HttpServletRequest request = getRequest();
-        if (request == null) {
-            return null;
-        }
-        StringBuffer url = request.getRequestURL();
-        String queryString = request.getQueryString();
-        if (queryString != null && !queryString.isEmpty()) {
-            url.append("?").append(queryString);
-        }
-        return url.toString();
-    }
-
-    // ==================== 获取请求头（Token 相关） ====================
-
-    /**
-     * 获取请求头信息
-     *
-     * @param name Header 名称（如 Authorization、Content-Type）
-     * @return Header 值，不存在返回 null
-     */
-    public static String getHeader(String name) {
-        HttpServletRequest request = getRequest();
-        return request != null ? request.getHeader(name) : null;
-    }
-
-    /**
-     * 获取 Authorization 头（用于 JWT Token）
-     * <p>
-     * 通常格式：Bearer xxxxx
-     *
-     * @return Authorization 头值
-     */
-    public static String getAuthorization() {
-        return getHeader("Authorization");
-    }
-
-    /**
-     * 获取 Bearer Token
-     * <p>
-     * 从 Authorization 头中提取 token，去掉 "Bearer " 前缀
-     *
-     * @return token 字符串，不存在或格式不对返回 null
-     */
-    public static String getBearerToken() {
-        String auth = getAuthorization();
-        if (auth != null && auth.startsWith("Bearer ")) {
-            return auth.substring(7);
-        }
-        return null;
-    }
-
-    /**
-     * 获取 Content-Type 请求头
-     */
-    public static String getContentType() {
-        return getHeader("Content-Type");
-    }
-
-    /**
-     * 判断是否为 JSON 请求
-     * <p>
-     * 检查 Content-Type 是否包含 application/json
-     */
-    public static boolean isJsonRequest() {
-        String contentType = getContentType();
-        return contentType != null && contentType.contains("application/json");
-    }
-
-    /**
-     * 获取所有请求头信息
-     */
-    public static Map<String, String> getHeaders() {
-        HttpServletRequest request = getRequest();
-        if (request == null) {
-            return Collections.emptyMap();
-        }
-        Map<String, String> headers = new HashMap<>();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            headers.put(name, request.getHeader(name));
-        }
-        return headers;
-    }
-
-    // ==================== 获取客户端信息 ====================
-
-    /**
-     * 获取客户端 IP 地址
-     * <p>
-     * 考虑 Nginx 反向代理，依次从以下 Header 中获取：
-     * X-Forwarded-For -> X-Real-IP -> request.getRemoteAddr()
-     *
-     * @return 客户端 IP 地址
-     */
-    public static String getClientIp() {
-        HttpServletRequest request = getRequest();
-        if (request == null) {
-            return null;
-        }
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("X-Real-IP");
-        }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        // 多级代理的情况下，取第一个真实 IP
-        if (ip != null && ip.contains(",")) {
-            ip = ip.split(",")[0].trim();
-        }
-        return ip;
-    }
-
-    /**
-     * 获取 User-Agent（客户端类型识别）
-     */
-    public static String getUserAgent() {
-        return getHeader("User-Agent");
-    }
-
-    // ==================== 获取请求参数（URL Query 参数） ====================
-
-    /**
-     * 获取请求参数值（URL 中的 Query 参数）
+     * 获取指定名称的 String 类型的请求参数
      *
      * @param name 参数名
-     * @return 参数值，不存在返回 null
+     * @return 参数值
      */
     public static String getParameter(String name) {
-        HttpServletRequest request = getRequest();
-        return request != null ? request.getParameter(name) : null;
+        return getRequest().getParameter(name);
     }
 
     /**
-     * 获取请求参数值（带默认值）
+     * 获取指定名称的 String 类型的请求参数，若参数不存在，则返回默认值
+     *
+     * @param name         参数名
+     * @param defaultValue 默认值
+     * @return 参数值或默认值
      */
     public static String getParameter(String name, String defaultValue) {
-        String value = getParameter(name);
-        return value != null && !value.isEmpty() ? value : defaultValue;
+        return Convert.toStr(getRequest().getParameter(name), defaultValue);
     }
 
     /**
-     * 获取请求参数并转换为 Integer
+     * 获取指定名称的 Integer 类型的请求参数
+     *
+     * @param name 参数名
+     * @return 参数值
      */
-    public static Integer getParameterInt(String name) {
-        String value = getParameter(name);
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    public static Integer getParameterToInt(String name) {
+        return Convert.toInt(getRequest().getParameter(name));
     }
 
     /**
-     * 获取请求参数并转换为 Long
+     * 获取指定名称的 Integer 类型的请求参数，若参数不存在，则返回默认值
+     *
+     * @param name         参数名
+     * @param defaultValue 默认值
+     * @return 参数值或默认值
      */
-    public static Long getParameterLong(String name) {
-        String value = getParameter(name);
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    public static Integer getParameterToInt(String name, Integer defaultValue) {
+        return Convert.toInt(getRequest().getParameter(name), defaultValue);
     }
 
     /**
-     * 获取所有请求参数（URL Query 参数）
+     * 获取指定名称的 Long 类型的请求参数
+     *
+     * @param name 参数名
+     * @return 参数值
      */
-    public static Map<String, String> getParameters() {
+    public static Long getParameterToLong(String name) {
+        return Convert.toLong(getRequest().getParameter(name));
+    }
+
+    /**
+     * 获取指定名称的 Long 类型的请求参数，若参数不存在，则返回默认值
+     *
+     * @param name         参数名
+     * @param defaultValue 默认值
+     * @return 参数值或默认值
+     */
+    public static Long getParameterToLong(String name, Long defaultValue) {
+        return Convert.toLong(getRequest().getParameter(name), defaultValue);
+    }
+
+    /**
+     * 获取指定名称的 Boolean 类型的请求参数
+     *
+     * @param name 参数名
+     * @return 参数值
+     */
+    public static Boolean getParameterToBool(String name) {
+        return Convert.toBool(getRequest().getParameter(name));
+    }
+
+    /**
+     * 获取指定名称的 Boolean 类型的请求参数，若参数不存在，则返回默认值
+     *
+     * @param name         参数名
+     * @param defaultValue 默认值
+     * @return 参数值或默认值
+     */
+    public static Boolean getParameterToBool(String name, Boolean defaultValue) {
+        return Convert.toBool(getRequest().getParameter(name), defaultValue);
+    }
+
+    /**
+     * 获取所有请求参数（以 Map 的形式返回，值为字符串形式的拼接）
+     *
+     * @return 请求参数的 Map，键为参数名，值为拼接后的字符串
+     */
+    public static Map<String, String> getParamMap() {
         HttpServletRequest request = getRequest();
         if (request == null) {
             return Collections.emptyMap();
         }
-        Map<String, String[]> paramMap = request.getParameterMap();
         Map<String, String> result = new HashMap<>();
+        Map<String, String[]> paramMap = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
             String[] values = entry.getValue();
-            if (values != null && values.length > 0) {
-                result.put(entry.getKey(), values[0]);
-            }
+            result.put(entry.getKey(), String.join(SEPARATOR, values));
         }
         return result;
-    }
-
-    // ==================== 获取请求体（JSON 数据） ====================
-
-    /**
-     * 获取请求体内容（适用于 POST、PUT 等请求的 JSON 数据）
-     * <p>
-     * 注意：请求体只能读取一次，如果在 Filter 或 Interceptor 中读取过，
-     * 后续 Controller 将无法读取。如需重复读取，请使用 getCachingRequestWrapper 包装。
-     *
-     * @return 请求体字符串
-     */
-    public static String getRequestBody() {
-        HttpServletRequest request = getRequest();
-        if (request == null) {
-            return null;
-        }
-        try (BufferedReader reader = request.getReader()) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    // ==================== AJAX 请求判断 ====================
-
-    /**
-     * 判断是否为 AJAX 请求
-     * <p>
-     * 前后端分离项目中，前端通常会带 X-Requested-With 头
-     */
-    public static boolean isAjaxRequest() {
-        return "XMLHttpRequest".equalsIgnoreCase(getHeader("X-Requested-With"));
     }
 
     // ==================== 响应输出 ====================
 
     /**
-     * 输出 JSON 响应
-     * <p>
-     * 在 Filter 或 Interceptor 中直接返回 JSON 数据时使用
+     * 状态码和业务消息返回
      *
-     * @param response HttpServletResponse 对象
-     * @param json     JSON 字符串
-     * @throws IOException IO 异常
+     * @param response 渲染对象
+     * @param code     状态码
+     * @param msg      业务消息
      */
-    public static void writeJson(HttpServletResponse response, String json) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter writer = response.getWriter();
-        writer.write(json);
-        writer.flush();
+    public static void print(HttpServletResponse response, Integer code, String msg) {
+        print(response, JSONUtil.toJsonStr(Result.result(code, msg)));
     }
 
+
     /**
-     * 输出 JSON 响应（使用当前线程的 Response）
+     * JSON 格式返回
+     *
+     * @param response 渲染对象
+     * @param string   待渲染的字符串
      */
-    public static void writeJson(String json) throws IOException {
-        HttpServletResponse response = getResponse();
-        if (response != null) {
-            writeJson(response, json);
+    public static void print(HttpServletResponse response, String string) {
+        try {
+            response.setStatus(cn.hutool.http.HttpStatus.HTTP_OK);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+            response.getWriter().print(string);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * 输出错误响应
-     *
-     * @param code    错误码
-     * @param message 错误信息
-     */
-    public static void writeError(int code, String message) throws IOException {
-        String json = String.format("{\"code\":%d,\"message\":\"%s\"}", code, message);
-        writeJson(json);
     }
 
     // ==================== URL 编码/解码 ====================
@@ -377,21 +212,13 @@ public final class WebUtils {
      * URL 编码（UTF-8）
      */
     public static String urlEncode(String value) {
-        try {
-            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            return value;
-        }
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     /**
      * URL 解码（UTF-8）
      */
     public static String urlDecode(String value) {
-        try {
-            return URLDecoder.decode(value, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            return value;
-        }
+        return URLDecoder.decode(value, StandardCharsets.UTF_8);
     }
 }

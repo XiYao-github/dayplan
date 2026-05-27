@@ -2,7 +2,7 @@ package com.xiyao.system.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiyao.common.base.controller.MyBaseController;
-import com.xiyao.common.utils.Result;
+import com.xiyao.common.utils.data.Result;
 import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.system.entity.DictType;

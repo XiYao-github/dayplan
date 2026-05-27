@@ -1,6 +1,6 @@
 package com.xiyao.governance.core.fallback;
 
-import com.xiyao.common.utils.Result;
+import com.xiyao.common.utils.data.Result;
 import com.xiyao.governance.annotation.Fallback;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

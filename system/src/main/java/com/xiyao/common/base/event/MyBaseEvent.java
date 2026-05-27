@@ -8,6 +8,7 @@ import com.xiyao.common.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.slf4j.MDC;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -61,6 +62,7 @@ public abstract class MyBaseEvent implements Serializable {
             this.referer = request.getHeader("Referer");
             this.origin = request.getHeader("Origin");
             this.contentType = request.getContentType();
+            this.traceId = MDC.get("traceId");
 
             // 解析 User-Agent
             if (StrUtil.isNotBlank(this.userAgent)) {
@@ -144,6 +146,11 @@ public abstract class MyBaseEvent implements Serializable {
      * 内容类型（Content-Type 头）
      */
     private String contentType;
+
+    /**
+     * 链路追踪 ID
+     */
+    private String traceId;
 
     // ==================== 设备信息（从 User-Agent 解析） ====================
 

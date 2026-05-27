@@ -85,8 +85,4 @@ public class LogOperationEvent extends MyBaseEvent {
      */
     private Long costTime;
 
-    /**
-     * 链路追踪 ID
-     */
-    private String traceId;
 }

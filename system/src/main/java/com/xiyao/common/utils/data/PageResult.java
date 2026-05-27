@@ -1,4 +1,4 @@
-package com.xiyao.common.utils;
+package com.xiyao.common.utils.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

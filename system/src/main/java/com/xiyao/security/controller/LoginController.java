@@ -3,7 +3,7 @@ package com.xiyao.security.controller;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.base.controller.MyBaseController;
-import com.xiyao.common.utils.Result;
+import com.xiyao.common.utils.data.Result;
 import com.xiyao.framework.exception.BusinessException;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.enums.OperationType;
@@ -16,13 +16,11 @@ import com.xiyao.system.entity.SysUserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -98,7 +96,7 @@ public class LoginController extends MyBaseController {
      * @see JwtUtils#getToken(LoginUser)
      */
     @PostMapping("/login")
-    public Result login(@RequestBody UserVo user) {
+    public Result<Object> login(@RequestBody UserVo user) {
         // 获取用户名和密码
         String username = user.getUsername();
         String password = user.getPassword();
@@ -124,11 +122,7 @@ public class LoginController extends MyBaseController {
                     .setAuthType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.SUCCESS.ordinal())
                     .setMessage("登录成功")
-                    .setLoginTime(LocalDateTime.now())
-                    .setTraceId(MDC.get("traceId"));
-
-            // 发布登录成功事件（用于日志记录等后续操作）
-            SpringUtil.publishEvent(event);
+                    .setLoginTime(LocalDateTime.now());
 
             // 生成 JWT Token 并返回
             return ok(jwtUtils.getToken(loginUser));
@@ -139,14 +133,13 @@ public class LoginController extends MyBaseController {
                     .setAuthType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.FAIL.ordinal())
                     .setMessage(e.getMessage())
-                    .setLoginTime(LocalDateTime.now())
-                    .setTraceId(MDC.get("traceId"));
-
-            // 发布登录失败事件
-            SpringUtil.publishEvent(event);
+                    .setLoginTime(LocalDateTime.now());
 
             // 抛出业务异常，由全局异常处理器统一处理
             throw new BusinessException(e.getMessage(), e);
+        } finally {
+            // 发布登录事件
+            SpringUtil.publishEvent(event);
         }
     }
 
@@ -161,7 +154,7 @@ public class LoginController extends MyBaseController {
      * @see PasswordEncoder#encode(CharSequence)
      */
     @PostMapping("/register")
-    public Result register(@RequestBody UserVo user) {
+    public Result<Object> register(@RequestBody UserVo user) {
         // 检查用户名是否已存在
         Long count = Db.lambdaQuery(SysUser.class)
                 .eq(SysUser::getUsername, user.getUsername())
@@ -200,8 +193,7 @@ public class LoginController extends MyBaseController {
                 .setAuthType(OperationType.REGISTER.ordinal())
                 .setStatus(OperationStatus.SUCCESS.ordinal())
                 .setMessage("注册成功")
-                .setLoginTime(LocalDateTime.now())
-                .setTraceId(MDC.get("traceId"));
+                .setLoginTime(LocalDateTime.now());
         SpringUtil.publishEvent(event);
 
         return ok();
@@ -218,8 +210,8 @@ public class LoginController extends MyBaseController {
      * @see JwtUtils#getHeaderToken(HttpServletRequest)
      * @see JwtUtils#removeToken(String)
      */
-    @DeleteMapping("/logout")
-    public Result logout(HttpServletRequest request) {
+    @PostMapping("/logout")
+    public Result<Object> logout(HttpServletRequest request) {
         // 从请求 Header 中获取 JWT Token（Bearer Token 格式）
         String token = jwtUtils.getHeaderToken(request);
 
@@ -233,8 +225,7 @@ public class LoginController extends MyBaseController {
                 .setAuthType(OperationType.LOGOUT.ordinal())
                 .setStatus(OperationStatus.SUCCESS.ordinal())
                 .setMessage("退出成功")
-                .setLoginTime(LocalDateTime.now())
-                .setTraceId(MDC.get("traceId"));
+                .setLoginTime(LocalDateTime.now());
         SpringUtil.publishEvent(event);
 
         // 删除 Redis 中缓存的用户信息

@@ -1,6 +1,6 @@
 package com.xiyao.common.base.controller;
 
-import com.xiyao.common.utils.Result;
+import com.xiyao.common.utils.data.Result;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -86,14 +86,4 @@ public class MyBaseController {
         return Result.error(message);
     }
 
-    /**
-     * 返回失败响应（带状态码和消息）
-     *
-     * @param code    HTTP 状态码
-     * @param message 错误消息
-     * @return 失败结果
-     */
-    public <T> Result<T> error(Integer code, String message) {
-        return Result.error(code, message);
-    }
 }

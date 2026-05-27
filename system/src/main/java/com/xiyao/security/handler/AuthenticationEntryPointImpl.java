@@ -1,16 +1,13 @@
 package com.xiyao.security.handler;
 
-import cn.hutool.json.JSONUtil;
-import com.xiyao.common.utils.Result;
+import com.xiyao.common.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 /**
  * 认证失败入口点处理器
@@ -53,25 +50,13 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
      * <p>
      * 当认证失败时，将异常信息包装为统一的 JSON 响应格式返回给客户端。
      *
-     * @param request          HTTP 请求对象
-     * @param response         HTTP 响应对象
-     * @param authException    认证异常（包含失败原因）
+     * @param request       HTTP 请求对象
+     * @param response      HTTP 响应对象
+     * @param authException 认证异常（包含失败原因）
      * @throws IOException 如果写入响应失败
      */
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        // 设置 HTTP 状态码为 200（业务响应码在 Result 中返回 401）
-        response.setStatus(HttpStatus.OK.value());
-
-        // 设置响应内容类型为 JSON，字符编码为 UTF-8
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
-        // 构造统一的错误响应结果
-        // HTTP 状态码 200，业务状态码 401，错误信息"认证失败,请重新登录"
-        Result error = Result.error(HttpStatus.UNAUTHORIZED.value(), "认证失败,请重新登录.");
-
-        // 将错误结果写入响应
-        response.getWriter().write(JSONUtil.toJsonStr(error));
+        WebUtils.print(response, HttpStatus.UNAUTHORIZED.value(), "认证失败,请重新登录.");
     }
 }
