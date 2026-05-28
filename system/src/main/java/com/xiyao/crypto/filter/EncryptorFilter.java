@@ -40,7 +40,7 @@ import java.util.List;
  * <b>配置项：</b>
  * <pre>{@code
  * encryptor-api:
- *   enabled: true
+ *   enable: true
  *   public-key: "公钥"
  *   private-key: "私钥"
  *   header-flag: "X-Encrypt"

@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
  * encryptor-api:
- *   enabled: true                                    # 是否开启接口加解密
+ *   enable: true                                    # 是否开启接口加解密
  *   headerFlag: "encrypt-data"                      # 请求头标识，用于传递 SM4 密钥
  *   publicKey: "sm2-public-key-for-response"       # 响应加密公钥（SM2）
  *   privateKey: "sm2-private-key-for-request"      # 请求解密私钥（SM2）
@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p>
  * <b>配置说明：</b>
  * <ul>
- *     <li>enabled：true 时启用接口加解密 Filter</li>
+ *     <li>enable：true 时启用接口加解密 Filter</li>
  *     <li>headerFlag：请求头中存放加密 SM4 密钥的字段名</li>
  *     <li>publicKey：用于加密响应中的 SM4 密钥</li>
  *     <li>privateKey：用于解密请求中的 SM4 密钥</li>
@@ -47,7 +47,7 @@ public class EncryptorApi {
      *
      * @return true 表示启用，false 表示禁用
      */
-    private Boolean enabled = false;
+    private Boolean enable = false;
 
     /**
      * 加解密请求头标识

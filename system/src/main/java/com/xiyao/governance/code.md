@@ -215,7 +215,7 @@ src/main/java/com/xiyao/common/
 ```yaml
 # application.yml
 governance:
-  enabled: true
+  enable: true
   rate-limit:
     permits-per-second: 100        # 每秒令牌数
     max-burst-requests: 50         # 突发容量

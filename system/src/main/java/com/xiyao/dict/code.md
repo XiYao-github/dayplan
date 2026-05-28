@@ -111,7 +111,7 @@ com.xiyao.dict/
 │   │                               # - 加载字典到缓存
 │   │                               # - 刷新缓存
 │   └── DictProperties.java        # 配置属性
-│                                   # - enabled: 是否启用
+│                                   # - enable: 是否启用
 │                                   # - preloadOnStartup: 启动预加载
 │
 ├── converter/
@@ -248,7 +248,7 @@ CREATE TABLE sys_dict_data (
 ```yaml
 # application.yml
 dict:
-  enabled: true                    # 是否启用字典功能（默认true）
+  enable: true                    # 是否启用字典功能（默认true）
   preload-on-startup: false        # 启动时预加载所有字典
 ```
 

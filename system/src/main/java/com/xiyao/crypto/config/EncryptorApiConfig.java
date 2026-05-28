@@ -20,7 +20,7 @@ import java.util.Objects;
  * <p>
  * <b>功能说明：</b>
  * <ul>
- *     <li>启用条件：encryptor-api.enabled=true</li>
+ *     <li>启用条件：encryptor-api.enable=true</li>
  *     <li>注册 EncryptorFilter 过滤器，对指定路径的请求进行解密、响应进行加密</li>
  *     <li>使用 SM2 + SM4 混合加密模式：SM2 加密随机 SM4 密钥，SM4 加密实际数据</li>
  * </ul>
@@ -36,7 +36,7 @@ import java.util.Objects;
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
  * encryptor-api:
- *   enabled: true
+ *   enable: true
  *   headerFlag: "encrypt-data"
  *   publicKey: "sm2-public-key-for-response"
  *   privateKey: "sm2-private-key-for-request"
@@ -52,7 +52,7 @@ import java.util.Objects;
  */
 @Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
-@ConditionalOnProperty(value = "encryptor-api.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "encryptor-api.enable", havingValue = "true")
 public class EncryptorApiConfig {
 
     /**

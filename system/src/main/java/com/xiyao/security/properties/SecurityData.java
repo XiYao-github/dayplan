@@ -16,7 +16,7 @@ import java.util.List;
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
  * security-data:
- *   enabled: true
+ *   enable: true
  *   include-paths:
  *     - /login
  *     - /register
@@ -32,7 +32,7 @@ import java.util.List;
  * <p>
  * <b>配置项说明：</b>
  * <ul>
- *     <li>enabled：是否启用安全过滤，false 时跳过所有安全配置</li>
+ *     <li>enable：是否启用安全过滤，false 时跳过所有安全配置</li>
  *     <li>include-paths：无需认证即可访问的路径列表</li>
  *     <li>static-paths：静态资源路径（CSS、JS、图片等）</li>
  *     <li>jwt.secret：JWT 签名密钥，建议使用复杂字符串</li>
@@ -51,7 +51,7 @@ public class SecurityData {
      * 设为 true 时启用 Security 安全过滤，
      * 设为 false 时跳过所有安全配置（用于测试环境）。
      */
-    private Boolean enabled = false;
+    private Boolean enable = false;
 
     /**
      * 放行路径列表

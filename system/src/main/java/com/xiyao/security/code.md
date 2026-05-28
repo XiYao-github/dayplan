@@ -191,7 +191,7 @@ com.xiyao.security/
 │   └── SecurityData.java
 │       # 安全配置属性类
 │       # @ConfigurationProperties(prefix = "security-data")
-│       # - enabled: 是否启用
+│       # - enable: 是否启用
 │       # - includePaths: 放行路径
 │       # - staticPaths: 静态资源路径
 │       # - jwt.secret: 签名密钥
@@ -291,19 +291,22 @@ GET    /system/log-operation/list # 操作日志列表
 ### 依赖文件路径
 
 ```tree
-# Base 基础类
+# Common 基础类（被其他模块继承）
 src/main/java/com/xiyao/common/
 ├── base/
-│   ├── controller/MyBaseController.java    # 控制器基类（success/error/Result）
+│   ├── controller/MyBaseController.java    # 控制器基类
 │   ├── entity/MyBaseEntity.java          # 实体基类（公共字段）
+│   ├── event/MyBaseEvent.java            # 事件基类（自动获取请求信息）
 │   ├── mapper/MyBaseMapper.java           # Mapper 基类
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
-├── utils/
-│   ├── Result.java                       # 统一响应封装
-│   ├── RedisUtils.java                   # Redis 工具类
-│   └── SpringUtils.java                  # Spring 工具类
-└── enums/Status.java                     # 通用状态枚举
+├── constant/Constant.java               # 通用常量
+├── enums/Status.java                     # 通用状态枚举
+└── utils/
+    ├── Result.java                       # 统一响应封装
+    ├── RedisUtils.java                   # Redis 工具类
+    ├── SpringUtils.java                  # Spring 工具类
+    └── WebUtils.java                     # Web 工具类
 
 # System 业务实体（security 模块查询使用）
 src/main/java/com/xiyao/system/
@@ -313,16 +316,15 @@ src/main/java/com/xiyao/system/
 │   ├── SysMenu.java          # 菜单实体
 │   ├── SysUserRole.java      # 用户角色关联
 │   └── SysRoleMenu.java      # 角色菜单关联
-├── mapper/
-│   ├── SysUserMapper.java
-│   ├── SysRoleMapper.java
-│   ├── SysMenuMapper.java
-│   ├── SysUserRoleMapper.java
-│   └── SysRoleMenuMapper.java
-└── service/                  # 业务 Service（用户角色菜单 CRUD）
+└── mapper/
+    ├── SysUserMapper.java
+    ├── SysRoleMapper.java
+    ├── SysMenuMapper.java
+    ├── SysUserRoleMapper.java
+    └── SysRoleMenuMapper.java
 
 # Log 模块（登录事件订阅）
-src/main/java/com/xiyao/auditLog/
+src/main/java/com/xiyao/log/
 ├── event/LogLoginEvent.java   # 登录事件
 ├── enums/OperationStatus.java # 操作状态枚举
 └── listener/LogListener.java # 事件监听器
@@ -351,7 +353,7 @@ src/main/java/com/xiyao/auditLog/
 ```yaml
 # application.yml
 security-data:
-  enabled: true                    # 是否启用安全过滤
+  enable: true                    # 是否启用安全过滤
   include-paths: # 无需认证的路径
     - /login
     - /register
@@ -365,7 +367,7 @@ security-data:
     expire: 7200                  # Token 过期时间（秒）
 
 # 配置说明
-# enabled: true 时启用 Security 安全过滤，false 时跳过所有安全配置
+# enable: true 时启用 Security 安全过滤，false 时跳过所有安全配置
 # include-paths: 配置无需认证即可访问的接口路径，支持 Ant 风格路径表达式
 # jwt.secret: JWT 签名密钥，建议使用复杂字符串，长度至少 32 字符
 # jwt.expire: Token 过期时间，默认 7200 秒（2 小时）

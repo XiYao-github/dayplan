@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(GovernanceProperties.class)
-@ConditionalOnProperty(value = "governance.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "governance.enable", havingValue = "true", matchIfMissing = true)
 public class GovernanceAutoConfig {
 
     // ==================== 限流组件 ====================

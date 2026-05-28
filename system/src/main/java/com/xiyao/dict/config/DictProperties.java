@@ -17,7 +17,7 @@ import java.util.List;
  * <pre>{@code
  * # application.yml
  * dict:
- *   enabled: true                    # 是否启用字典功能
+ *   enable: true                    # 是否启用字典功能
  *   preload-on-startup: false      # 启动时预加载所有字典
  *   cache-strategy: local           # 缓存策略（预留）
  *   load-mode: eager               # 加载模式：eager/lazy
@@ -40,7 +40,7 @@ public class DictProperties {
      * 设置为 false 时，字典回显和枚举转换功能将不生效。
      * 默认值：true
      */
-    private boolean enabled = true;
+    private boolean enable = true;
 
     /**
      * 缓存策略

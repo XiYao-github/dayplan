@@ -8,7 +8,7 @@ server:
     # 编码配置
     encoding:
       charset: UTF-8
-      enabled: true
+      enable: true
       force: true
   tomcat:
     # tomcat的URI编码
@@ -36,7 +36,7 @@ spring:
   # 文件上传配置
   servlet:
     multipart:
-      enabled: true
+      enable: true
       max-file-size: 10MB
       max-request-size: 50MB
 
@@ -58,7 +58,7 @@ spring:
 # 权限过滤
 security-data:
   # 是否开启权限过滤
-  enabled: false
+  enable: false
   # 过滤路径
   includePaths:
     - /login
@@ -92,7 +92,7 @@ encryptor-data:
 # 接口加密
 encryptor-api:
   # 是否开启加密
-  enabled: false
+  enable: false
   # 加密头标识
   headerFlag: headerFlag
   # 响应加密公钥(非对称加密算法)

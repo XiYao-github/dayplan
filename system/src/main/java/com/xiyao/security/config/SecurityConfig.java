@@ -49,8 +49,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *
  * <p>
  * <b>配置条件：</b>
- * 只有当 security-data.enabled=true 时才加载此配置类。
- * 可以通过设置 enabled=false 来禁用安全配置（测试环境）。
+ * 只有当 security-data.enable=true 时才加载此配置类。
+ * 可以通过设置 enable=false 来禁用安全配置（测试环境）。
  *
  * @author xiyao
  * @see JwtAuthenticationFilter
@@ -59,7 +59,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity  // 启用方法级安全注解（如 @PreAuthorize、@Secured）
 @EnableConfigurationProperties(SecurityData.class)  // 启用配置属性类，使 @ConfigurationProperties 生效
-@ConditionalOnProperty(value = "security-data.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(value = "security-data.enable", havingValue = "true", matchIfMissing = false)
 public class SecurityConfig {
 
     // ==================== Bean 定义 ====================

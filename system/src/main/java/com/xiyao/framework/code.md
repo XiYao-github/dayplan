@@ -192,21 +192,21 @@ BigDecimal → ToStringSerializer
 
 ```java
 // 分页配置
-DbType.MYSQL
-MaxLimit = 1000
+// DbType.MYSQL
+// MaxLimit = 1000
 
 // 防全表操作
-BlockAttackInnerInterceptor（禁止无 WHERE 的 UPDATE/DELETE）
+// BlockAttackInnerInterceptor（禁止无 WHERE 的 UPDATE/DELETE）
 
 // 乐观锁
-@Version 注解标注版本号字段
+// @Version 注解标注版本号字段
 
 // 自动填充字段
-insert: createBy, createTime, updateBy, updateTime
-update: updateBy, updateTime
+// insert: createBy, createTime, updateBy, updateTime
+// update: updateBy, updateTime
 
 // 逻辑删除
-deleted = 1 表示已删除
+// deleted = 1 表示已删除
 ```
 
 **RedisConfig：**
@@ -221,11 +221,11 @@ deleted = 1 表示已删除
 
 ```java
 // 日志异步线程池
-corePoolSize = 2
-maxPoolSize = 5
-queueCapacity = 100
-threadNamePrefix = "auditLog-async-"
-rejectedHandler = CallerRunsPolicy
+// corePoolSize = 2
+// maxPoolSize = 5
+// queueCapacity = 100
+// threadNamePrefix = "log-async-"
+// rejectedHandler = CallerRunsPolicy
 ```
 
 ---
@@ -261,25 +261,51 @@ src/main/java/com/xiyao/common/
 ├── base/
 │   ├── controller/MyBaseController.java    # Controller 基类
 │   ├── entity/MyBaseEntity.java          # 实体基类（审计字段）
+│   ├── event/MyBaseEvent.java            # 事件基类（自动获取请求信息）
 │   ├── mapper/MyBaseMapper.java           # Mapper 基类
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
-├── utils/
-│   ├── Result.java                       # 统一响应封装
-│   ├── RedisUtils.java                   # Redis 工具类
-│   ├── SpringUtils.java                  # Spring 工具类
-│   └── page/
-│       ├── PageQuery.java               # 分页查询参数
-│       └── TableDataInfo.java           # 分页响应数据
-└── enums/
-    └── Status.java                       # 状态枚举
+├── constant/Constant.java               # 通用常量
+├── enums/Status.java                     # 状态枚举
+└── utils/
+    ├── CodeGenerator.java               # 代码生成器
+    ├── ConvertUtils.java                 # 类型转换工具
+    ├── RedisUtils.java                   # Redis 工具类
+    ├── SpringUtils.java                  # Spring 工具类
+    ├── StreamUtils.java                   # 流式处理工具
+    ├── WebUtils.java                     # Web 工具类
+    └── data/
+        ├── PageResult.java               # 分页结果封装
+        └── Result.java                   # 统一响应封装
 
 # Security 模块（自动填充依赖）
 src/main/java/com/xiyao/security/
-└── utils/SecurityUtils.java              # 获取当前用户 ID
+├── config/SecurityConfig.java            # Spring Security 配置
+├── controller/LoginController.java        # 认证控制器（登录/注册/登出）
+├── details/
+│   ├── LoginUser.java                   # 登录用户详情
+│   └── UserVo.java                      # 用户视图对象
+├── enums/AdminType.java                 # 三员类型枚举
+├── filter/JwtAuthenticationFilter.java  # JWT 认证过滤器
+├── handler/
+│   ├── AccessDeniedHandlerImpl.java     # 权限不足处理器
+│   └── AuthenticationEntryPointImpl.java # 认证失败处理器
+├── properties/SecurityData.java        # Security 配置属性
+├── service/SecurityService.java         # 安全服务（角色权限判断）
+└── utils/
+    ├── JwtUtils.java                    # JWT 工具类
+    └── SecurityUtils.java                # 安全工具类
 
 # Dict 模块（枚举转换器）
 src/main/java/com/xiyao/dict/
+├── annotation/DictBind.java             # 字典绑定注解
+├── config/
+│   ├── DictAutoConfig.java              # 字典模块自动配置
+│   ├── DictCache.java                   # 字典缓存管理
+│   └── DictProperties.java              # 字典配置属性
 ├── converter/DictEnumConverterFactory.java # 枚举转换工厂
-└── converter/MyEnumConverterFactory.java   # 通用枚举转换（预留）
+├── enums/
+│   ├── BaseEnum.java                    # 枚举基础接口
+│   └── DataStatus.java                  # 数据状态枚举
+└── interceptor/DictResultInterceptor.java # 字典结果拦截器
 ```

@@ -185,7 +185,7 @@ com.xiyao.crypto/
 │
 ├── properties/
 │   ├── EncryptorApi.java           # API 加密属性
-│   │                                 # - enabled/publicKey/privateKey
+│   │                                 # - enable/publicKey/privateKey
 │   │                                 # - headerFlag/includePaths/excludePaths
 │   │
 │   └── EncryptorData.java         # 数据加密属性
@@ -212,7 +212,7 @@ crypto 模块采用插件式架构，两个功能独立配置：
 ```java
 @Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
-@ConditionalOnProperty(value = "encryptor-api.enabled", havingValue = "true")
+@ConditionalOnProperty(value = "encryptor-api.enable", havingValue = "true")
 public class EncryptorApiConfig {
 
     @Bean
@@ -300,21 +300,21 @@ public class UserVo {
 ### 脱敏策略枚举
 
 ```java
-SensitiveStrategy {
-    USER_ID,       // 用户ID → 10001
-    CHINESE_NAME,  // 中文姓名 → 张三 → 张*
-    ID_CARD,       // 身份证号 → 110101199001011234 → 110***********1234
-    FIXED_PHONE,   // 座机号 → 010-12345678 → 010****5678
-    MOBILE_PHONE,  // 手机号 → 13800138000 → 138****8000
-    ADDRESS,       // 地址 → 北京市朝阳区建国路... → 北京市朝阳***
-    EMAIL,         // 邮箱 → test@example.com → t**@example.com
-    PASSWORD,      // 密码 → secret123 → *********
-    CAR_LICENSE,   // 车牌号 → 京A12345 → 京A****5
-    BANK_CARD,     // 银行卡 → 6222021234567890 → 6222*****7890
-    IPV4,          // IPv4地址 → 192.168.1.100 → 192.***.***.***
-    IPV6,          // IPv6地址 → 2001:db8::1 → 2001:***::1
-    FIRST_MASK     // 首字符遮蔽 → 张三 → 张*
-}
+// SensitiveStrategy {
+//     USER_ID,       // 用户ID → 10001
+//     CHINESE_NAME,  // 中文姓名 → 张三 → 张*
+//     ID_CARD,       // 身份证号 → 110101199001011234 → 110***********1234
+//     FIXED_PHONE,   // 座机号 → 010-12345678 → 010****5678
+//     MOBILE_PHONE,  // 手机号 → 13800138000 → 138****8000
+//     ADDRESS,       // 地址 → 北京市朝阳区建国路... → 北京市朝阳***
+//     EMAIL,         // 邮箱 → test@example.com → t**@example.com
+//     PASSWORD,      // 密码 → secret123 → *********
+//     CAR_LICENSE,   // 车牌号 → 京A12345 → 京A****5
+//     BANK_CARD,     // 银行卡 → 6222021234567890 → 6222*****7890
+//     IPV4,          // IPv4地址 → 192.168.1.100 → 192.***.***.***
+//     IPV6,          // IPv6地址 → 2001:db8::1 → 2001:***::1
+//     FIRST_MASK     // 首字符遮蔽 → 张三 → 张*
+// }
 ```
 
 ---
@@ -324,7 +324,7 @@ SensitiveStrategy {
 ```yaml
 # API 加解密（请求/响应体）
 encryptor-api:
-  enabled: true
+  enable: true
   headerFlag: X-SM4-Key                    # 请求头中传递 SM4 密钥的标识
   publicKey: "SM2公钥（用于加密响应）"
   privateKey: "SM2私钥（用于解密请求）"
@@ -348,9 +348,18 @@ encryptor-data:
 ### 依赖文件路径
 
 ```tree
-# System 模块（实体字段加密）
-src/main/java/com/xiyao/system/
-└── entity/SysUser.java                    # 手机号、身份证等敏感字段
+# crypto 模块是完全独立的模块，不依赖项目内部其他模块
+# 仅依赖外部技术栈（通过 Maven 引入）
+
+# 技术依赖
+# - Hutool：国密算法实现（SM2/SM3/SM4）
+# - BouncyCastle：额外加密提供者
+# - MyBatis-Plus：拦截器机制（字段加解密）
+# - Jackson：JSON 序列化/脱敏
+
+# 配置读取（通过 @ConfigurationProperties 绑定）
+# encryptor-api：接口加解密配置
+# encryptor-data：数据加解密配置
 ```
 
 ---
