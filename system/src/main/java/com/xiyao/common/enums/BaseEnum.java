@@ -1,4 +1,5 @@
-package com.xiyao.dict.enums;
+package com.xiyao.common.enums;
+
 
 /**
  * 枚举基础接口
@@ -42,7 +43,6 @@ package com.xiyao.dict.enums;
  *
  * @param <T> code 值的类型，通常为 Integer 或 String
  * @author xiyao
- * @see com.xiyao.dict.converter.DictEnumConverterFactory
  */
 public interface BaseEnum<T> {
 

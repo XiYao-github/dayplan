@@ -1,6 +1,5 @@
-package com.xiyao.dict.enums;
+package com.xiyao.common.enums;
 
-import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
@@ -58,10 +57,7 @@ public enum DataStatus implements BaseEnum<Integer> {
 
     /**
      * 存储到数据库的值
-     * <p>
-     * 使用 @EnumValue 注解标注，MyBatis Plus 会使用此值存入数据库
      */
-    @EnumValue
     private final Integer code;
 
     /**

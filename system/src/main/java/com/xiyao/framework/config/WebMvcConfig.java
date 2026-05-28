@@ -180,7 +180,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         // 数据字典枚举转换器（将请求参数中的字典值转换为 Java 枚举）
-        registry.addConverterFactory(new com.xiyao.dict.converter.DictEnumConverterFactory());
+        // registry.addConverterFactory(new EnumConverterFactory());
     }
 
     /**

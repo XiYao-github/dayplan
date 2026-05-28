@@ -41,19 +41,9 @@ public class DictDataVo {
     private Integer status;
 
     /**
-     * 状态描述
-     */
-    private String statusDesc;
-
-    /**
      * 是否默认（0=否 1=是）
      */
     private Integer isDefault;
-
-    /**
-     * 是否默认描述
-     */
-    private String isDefaultDesc;
 
     /**
      * 备注
