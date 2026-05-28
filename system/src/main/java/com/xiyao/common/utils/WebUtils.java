@@ -17,6 +17,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +27,7 @@ import java.util.Map;
  * 针对前后端分离架构，主要提供：
  * - 请求/响应对象获取
  * - 请求参数获取
- * - 请求体 JSON 读取
- * - Token/Header 获取
+ * - 请求头获取
  * - 客户端 IP 获取
  * - JSON 响应输出
  * <p>
@@ -37,8 +37,6 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebUtils {
-
-    public static final String SEPARATOR = ",";
 
     // ==================== 获取请求/响应对象 ====================
 
@@ -70,6 +68,199 @@ public class WebUtils {
         return null;
     }
 
+    // ==================== 请求基本信息 ====================
+
+    /**
+     * 获取请求方式（GET、POST、PUT、DELETE 等）
+     */
+    public static String getMethod() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getMethod() : null;
+    }
+
+    /**
+     * 获取请求 URI（不包含域名和端口）
+     * <p>
+     * 例如：/api/user/1
+     */
+    public static String getRequestUri() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getRequestURI() : null;
+    }
+
+    /**
+     * 获取请求 URL
+     * <p>
+     * 例如：http://localhost:8080
+     */
+    public static String getRequestUrl() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getRequestURL().toString() : null;
+    }
+
+    /**
+     * 获取查询参数字符串（URL 中 ? 后面的部分）
+     */
+    public static String getQueryString() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getQueryString() : null;
+    }
+
+    /**
+     * 获取完整请求 URL（包含查询参数）
+     * <p>
+     * 例如：http://localhost:8080/api/user?name=zhangsan
+     */
+    public static String getFullRequestUrl() {
+        String requestUrl = getRequestUrl();
+        String queryString = getQueryString();
+        return requestUrl != null && queryString != null ? requestUrl + "?" + queryString : null;
+    }
+
+    // ==================== 请求头 ====================
+
+    /**
+     * 获取请求头信息
+     *
+     * @param name Header 名称（如 Authorization、Content-Type）
+     * @return Header 值，不存在返回 null
+     */
+    public static String getHeader(String name) {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getHeader(name) : null;
+    }
+
+    /**
+     * 获取所有请求头信息
+     */
+    public static Map<String, String> getHeaders() {
+        HttpServletRequest request = getRequest();
+        if (request == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> headers = new HashMap<>();
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            headers.put(name, request.getHeader(name));
+        }
+        return headers;
+    }
+
+    /**
+     * 获取 Authorization 头（用于 JWT Token）
+     * <p>
+     * 通常格式：Bearer xxxxx
+     */
+    public static String getAuthorization() {
+        String bearerToken = getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.replace("Bearer ", "");
+        }
+        return bearerToken;
+    }
+
+    /**
+     * 获取 Content-Type 请求头
+     */
+    public static String getContentType() {
+        return getHeader("Content-Type");
+    }
+
+    /**
+     * 判断是否为 JSON 请求
+     * <p>
+     * 检查 Content-Type 是否包含 application/json
+     */
+    public static boolean isJsonRequest() {
+        String contentType = getContentType();
+        return contentType != null && contentType.contains("application/json");
+    }
+
+    /**
+     * 获取 Referer 请求头（来源页面）
+     */
+    public static String getReferer() {
+        return getHeader("Referer");
+    }
+
+    /**
+     * 获取 Origin 请求头（跨域请求来源）
+     */
+    public static String getOrigin() {
+        return getHeader("Origin");
+    }
+
+    // ==================== 客户端信息 ====================
+
+    /**
+     * 获取客户端 IP 地址
+     * <p>
+     * 考虑 Nginx 反向代理，依次从以下 Header 中获取：
+     * X-Forwarded-For -> X-Real-IP -> request.getRemoteAddr()
+     */
+    public static String getClientIp() {
+        HttpServletRequest request = getRequest();
+        if (request == null) {
+            return null;
+        }
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // 多级代理的情况下，取第一个真实 IP
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        return ip;
+    }
+
+    /**
+     * 获取客户端端口号
+     */
+    public static Integer getRemotePort() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getRemotePort() : null;
+    }
+
+    /**
+     * 获取服务器名称（域名）
+     */
+    public static String getServerName() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getServerName() : null;
+    }
+
+    /**
+     * 获取服务器端口
+     */
+    public static Integer getServerPort() {
+        HttpServletRequest request = getRequest();
+        return request != null ? request.getServerPort() : null;
+    }
+
+    /**
+     * 获取服务器信息（IP:端口）
+     */
+    public static String getServerInfo() {
+        String serverName = getServerName();
+        Integer serverPort = getServerPort();
+        if (serverName == null || serverPort == null) {
+            return null;
+        }
+        return serverName + ":" + serverPort;
+    }
+
+    /**
+     * 获取 User-Agent（客户端类型识别）
+     */
+    public static String getUserAgent() {
+        return getHeader("User-Agent");
+    }
+
     // ==================== 请求参数 ====================
 
     /**
@@ -79,7 +270,8 @@ public class WebUtils {
      * @return 参数值
      */
     public static String getParameter(String name) {
-        return getRequest().getParameter(name);
+        HttpServletRequest request = getRequest();
+        return request != null ? getRequest().getParameter(name) : null;
     }
 
     /**
@@ -90,7 +282,8 @@ public class WebUtils {
      * @return 参数值或默认值
      */
     public static String getParameter(String name, String defaultValue) {
-        return Convert.toStr(getRequest().getParameter(name), defaultValue);
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toStr(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -100,7 +293,8 @@ public class WebUtils {
      * @return 参数值
      */
     public static Integer getParameterToInt(String name) {
-        return Convert.toInt(getRequest().getParameter(name));
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toInt(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -111,7 +305,8 @@ public class WebUtils {
      * @return 参数值或默认值
      */
     public static Integer getParameterToInt(String name, Integer defaultValue) {
-        return Convert.toInt(getRequest().getParameter(name), defaultValue);
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toInt(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -121,7 +316,8 @@ public class WebUtils {
      * @return 参数值
      */
     public static Long getParameterToLong(String name) {
-        return Convert.toLong(getRequest().getParameter(name));
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toLong(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -132,7 +328,8 @@ public class WebUtils {
      * @return 参数值或默认值
      */
     public static Long getParameterToLong(String name, Long defaultValue) {
-        return Convert.toLong(getRequest().getParameter(name), defaultValue);
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toLong(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -142,7 +339,8 @@ public class WebUtils {
      * @return 参数值
      */
     public static Boolean getParameterToBool(String name) {
-        return Convert.toBool(getRequest().getParameter(name));
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toBool(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -153,7 +351,8 @@ public class WebUtils {
      * @return 参数值或默认值
      */
     public static Boolean getParameterToBool(String name, Boolean defaultValue) {
-        return Convert.toBool(getRequest().getParameter(name), defaultValue);
+        HttpServletRequest request = getRequest();
+        return request != null ? Convert.toBool(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -170,7 +369,7 @@ public class WebUtils {
         Map<String, String[]> paramMap = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
             String[] values = entry.getValue();
-            result.put(entry.getKey(), String.join(SEPARATOR, values));
+            result.put(entry.getKey(), String.join(",", values));
         }
         return result;
     }
@@ -187,7 +386,6 @@ public class WebUtils {
     public static void print(HttpServletResponse response, Integer code, String msg) {
         print(response, JSONUtil.toJsonStr(Result.result(code, msg)));
     }
-
 
     /**
      * JSON 格式返回

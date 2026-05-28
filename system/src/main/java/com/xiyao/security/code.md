@@ -198,6 +198,17 @@ com.xiyao.security/
 │       # - jwt.expire: 过期时间
 │
 ├── service/
+│   ├── SecurityService.java
+│   │   # 权限服务（SpEL 表达式调用）
+│   │   # - isLogin(): 是否已登录
+│   │   # - isSystemAdmin(): 是否系统管理员
+│   │   # - isSecurityAdmin(): 是否安全管理员
+│   │   # - isAuditAdmin(): 是否审计管理员
+│   │   # - hasAnyAdmin(): 是否具有三员权限
+│   │   # - hasRole(String): 是否有指定角色
+│   │   # - hasAnyRole(String...): 是否有任一角色
+│   │   # - hasAuthority(String): 是否有指定权限
+│   │
 │   └── UserDetailsServiceImpl.java
 │       # 用户信息加载服务（实现 UserDetailsService）
 │       # - loadUserByUsername(): 核心加载方法
@@ -466,3 +477,79 @@ CREATE TABLE sys_role_menu
 ```
 
 **等保合规要求：**三者权限互斥，相互制约，任何一人无法完成超越职责的操作。
+
+---
+
+### SecurityService 使用示例
+
+SecurityService 提供 SpEL 表达式调用的权限校验方法，用于 @PreAuthorize 注解。
+
+```java
+// 在 Controller 或 Service 方法上加注解
+// @PreAuthorize("@ss.isLogin()")
+// @GetMapping("/user")
+// public Result<UserVO> getUser() {
+//     // 需要登录才能访问
+// }
+
+// @PreAuthorize("@ss.isSystemAdmin()")
+// @DeleteMapping("/user/{id}")
+// public Result<Void> deleteUser(@PathVariable Long id) {
+//     // 只有系统管理员能删除
+// }
+
+// @PreAuthorize("@ss.hasAnyRole('admin', 'user')")
+// @PostMapping("/resource")
+// public Result<Void> createResource() {
+//     // admin 或 user 角色能创建
+// }
+
+// @PreAuthorize("@ss.hasAuthority('system:user:delete')")
+// @DeleteMapping("/users")
+// public Result<Void> deleteUsers() {
+//     // 需要 system:user:delete 权限
+// }
+
+// @PreAuthorize("@ss.hasAnyAdmin()")
+// @PostMapping("/admin/action")
+// public Result<Void> adminAction() {
+//     // 系统管理员或安全管理员能访问
+// }
+```
+
+**方法说明：**
+
+```java
+// 判断是否已登录
+// @PreAuthorize("@ss.isLogin()")
+
+// 获取当前登录用户 ID（用于记录操作人）
+// Long userId = ss.getLoginUserId();
+
+// 获取当前登录用户（获取用户详细信息）
+// LoginUser user = ss.getLoginUser();
+
+// 判断是否普通用户（三员类型为 0）
+// @PreAuthorize("@ss.isNormalUser()")
+
+// 判断是否系统管理员（三员类型为 1）
+// @PreAuthorize("@ss.isSystemAdmin()")
+
+// 判断是否安全管理员（三员类型为 2）
+// @PreAuthorize("@ss.isSecurityAdmin()")
+
+// 判断是否审计管理员（三员类型为 3）
+// @PreAuthorize("@ss.isAuditAdmin()")
+
+// 判断是否三员权限（系统管理员或安全管理员）
+// @PreAuthorize("@ss.hasAnyAdmin()")
+
+// 判断是否有指定角色
+// @PreAuthorize("@ss.hasRole('admin')")
+
+// 判断是否有任一角色
+// @PreAuthorize("@ss.hasAnyRole('admin', 'user')")
+
+// 判断是否有指定权限
+// @PreAuthorize("@ss.hasAuthority('system:user:delete')")
+```

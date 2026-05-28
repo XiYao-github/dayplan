@@ -139,6 +139,17 @@ public class Result<T> implements Serializable {
         return result(ERROR, msg, null);
     }
 
+    /**
+     * 返回失败（带状态码和数据）
+     *
+     * @param code 状态码
+     * @param msg  成功消息
+     * @return 失败结果
+     */
+    public static <T> Result<T> error(Integer code, String msg) {
+        return result(code, msg, null);
+    }
+
     // ==================== 状态响应 ====================
 
     /**
