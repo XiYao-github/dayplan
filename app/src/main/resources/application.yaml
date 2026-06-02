@@ -60,7 +60,6 @@ security-data:
     - /public/**
   # 静态路径
   staticPaths:
-    - /doc.html
   jwt:
     # 密钥
     secret: secret-key
