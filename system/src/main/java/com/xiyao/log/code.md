@@ -522,7 +522,7 @@ CREATE TABLE log_login
 ```yaml
 # application.yml
 # log 模块配置（插件式，通过 @ConditionalOnProperty 控制）
-log:
+log-data:
   enable: true  # 默认 true，可不配置
 ```
 

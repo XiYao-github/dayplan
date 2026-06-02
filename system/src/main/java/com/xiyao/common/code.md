@@ -146,18 +146,8 @@ com.xiyao.common/
 │   │
 │   ├── CodeGenerator.java          # 代码生成器
 │   │
-│   ├── PageQuery.java             # 分页查询参数
-│   │                                   # - pageSize: 每页大小
-│   │                                   # - pageNum: 当前页数
-│   │                                   # - orderByColumn: 排序列
-│   │                                   # - isAsc: 排序方向
-│   │
-│   ├── TableDataInfo.java         # 分页响应数据（兼容旧代码）
-│   │                                   # - total: 总记录数
-│   │                                   # - rows: 当前页数据
-│   │                                   # - code/msg: 状态信息
-│   │
-│   └── PageResult.java            # 分页结果封装
+│   └── data/
+│       └── PageResult.java            # 分页结果封装
 │                                       # - records: 当前页数据
 │                                       # - total: 总记录数
 │                                       # - size: 每页条数

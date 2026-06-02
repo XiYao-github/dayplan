@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * dict:
+ * dict-data:
  *   enable: true  # 默认 true，可不配置
  * }</pre>
  *

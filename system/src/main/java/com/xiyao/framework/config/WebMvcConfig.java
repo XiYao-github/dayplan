@@ -111,9 +111,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         // 禁用后缀模式匹配（如 /user.do 匹配 /user），防止安全风险
-        configurer.setUseSuffixPatternMatch(false);
+        // configurer.setUseSuffixPatternMatch(false);
         // 启用尾斜杠匹配（如 /user 和 /user/ 等效）
-        configurer.setUseTrailingSlashMatch(true);
+        // configurer.setUseTrailingSlashMatch(true);
     }
 
     /**

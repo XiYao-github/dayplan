@@ -205,7 +205,7 @@ CREATE TABLE sys_dict_data (
 
 ```yaml
 # application.yml
-dict:
+dict-data:
   enable: true                    # 是否启用字典功能（默认 true）
 ```
 

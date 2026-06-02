@@ -72,6 +72,10 @@ public class WebUtils {
 
     /**
      * 获取请求方式（GET、POST、PUT、DELETE 等）
+     * <p>
+     * 返回 HTTP 请求方法，如 GET、POST、PUT、DELETE 等。
+     *
+     * @return 请求方法，未获取到返回 null
      */
     public static String getMethod() {
         HttpServletRequest request = getRequest();
@@ -377,21 +381,27 @@ public class WebUtils {
     // ==================== 响应输出 ====================
 
     /**
-     * 状态码和业务消息返回
+     * 通过响应输出状态码和业务消息
+     * <p>
+     * 将 code 和 msg 封装为 JSON 响应体并写入 HttpServletResponse。
+     * 响应内容为：{@code {"code": xxx, "msg": "xxx", "data": null}}
      *
-     * @param response 渲染对象
-     * @param code     状态码
-     * @param msg      业务消息
+     * @param response HttpServletResponse 对象，用于写入响应
+     * @param code     HTTP 状态码（如 200、500）
+     * @param msg      业务消息（如"请求成功"、"参数错误"）
      */
     public static void print(HttpServletResponse response, Integer code, String msg) {
         print(response, JSONUtil.toJsonStr(Result.result(code, msg)));
     }
 
     /**
-     * JSON 格式返回
+     * 通过响应输出 JSON 字符串
+     * <p>
+     * 设置响应编码为 UTF-8，Content-Type 为 application/json，
+     * 然后将字符串内容写入响应体。通常用于输出 JSON 序列化后的结果。
      *
-     * @param response 渲染对象
-     * @param string   待渲染的字符串
+     * @param response HttpServletResponse 对象
+     * @param string   待输出的字符串内容（通常为 JSON 格式）
      */
     public static void print(HttpServletResponse response, String string) {
         try {

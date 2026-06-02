@@ -37,6 +37,31 @@ import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
+ * <p>
+ * 统一捕获并处理 Controller 层抛出的所有异常，
+ * 转换为标准的 Result 响应格式返回给前端。
+ *
+ * <p>
+ * <b>异常分类（共8大类37个处理器）：</b>
+ * <ol>
+ *     <li>Web 参数校验异常（5个）：@Valid 校验、表单绑定、单参数校验等</li>
+ *     <li>Web 请求格式异常（5个）：JSON 解析、请求方法、媒体类型等</li>
+ *     <li>Spring Security 异常（2个）：认证失败、权限不足</li>
+ *     <li>MySQL 数据库异常（8个）：唯一键、外键、超时、语法错误等</li>
+ *     <li>Redis 异常（1个）：连接失败</li>
+ *     <li>Jackson 异常（2个）：JSON 解析、映射错误</li>
+ *     <li>业务异常（1个）：BusinessException 自定义</li>
+ *     <li>兜底异常（2个）：RuntimeException、Exception</li>
+ * </ol>
+ *
+ * <p>
+ * <b>配合说明：</b>
+ * 此处理器与 {@link Result} 统一响应配合使用，
+ * 所有异常最终都返回 {code, msg, data, traceId} 结构。
+ *
+ * @author xiyao
+ * @see Result
+ * @see BusinessException
  */
 @Slf4j
 @RestControllerAdvice

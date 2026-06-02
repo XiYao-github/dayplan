@@ -1,0 +1,145 @@
+package com.xiyao.system.service.impl;
+
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
+import com.xiyao.system.entity.SysRegions;
+import com.xiyao.system.mapper.SysRegionsMapper;
+import com.xiyao.system.service.ISysRegionsService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * 行政区划服务实现类
+ * <p>
+ * 提供行政区划数据的 CRUD 操作，支持按父级代码查询子级、按级别查询等功能。
+ * 行政区划采用物理删除，但删除时会递归删除下级子节点。
+ *
+ * @author xiyao
+ * @see ISysRegionsService
+ */
+@Slf4j
+@Service
+public class SysRegionsServiceImpl extends MyBaseServiceImpl<SysRegionsMapper, SysRegions> implements ISysRegionsService {
+
+    /**
+     * 查询行政区划列表
+     * <p>
+     * 支持按名称模糊匹配、按级别精确筛选、按父级代码筛选，
+     * 结果按排序字段升序排列。
+     *
+     * @param query 查询条件对象，包含 name（可选）、level（可选）、parentCode（可选）
+     * @return 符合条件的行政区划列表
+     */
+    @Override
+    public List<SysRegions> list(SysRegions query) {
+        return Db.lambdaQuery(SysRegions.class)
+                .like(ObjectUtil.isNotNull(query.getName()), SysRegions::getName, query.getName())
+                .eq(ObjectUtil.isNotNull(query.getLevel()), SysRegions::getLevel, query.getLevel())
+                .eq(ObjectUtil.isNotNull(query.getParentCode()), SysRegions::getParentCode, query.getParentCode())
+                .orderByAsc(SysRegions::getSort)
+                .list();
+    }
+
+    /**
+     * 根据区划代码获取行政区划详情
+     *
+     * @param code 区划代码（主键）
+     * @return 行政区划实体对象，若不存在则返回 null
+     */
+    @Override
+    public SysRegions getById(Long code) {
+        return Db.lambdaQuery(SysRegions.class)
+                .eq(SysRegions::getCode, code)
+                .one();
+    }
+
+    /**
+     * 创建行政区划
+     * <p>
+     * 将新的行政区划数据保存到数据库。
+     *
+     * @param regions 行政区划实体对象
+     * @return 保存是否成功
+     */
+    @Override
+    public boolean create(SysRegions regions) {
+        return Db.save(regions);
+    }
+
+    /**
+     * 更新行政区划信息
+     * <p>
+     * 根据传入的区划代码查找现有记录，若存在则更新 name、parentCode、sort 字段。
+     * 区划代码（code）作为主键不可修改。
+     *
+     * @param regions 行政区划实体对象，包含要更新的字段值
+     * @return 更新是否成功，若记录不存在则返回 false
+     */
+    @Override
+    public boolean update(SysRegions regions) {
+        SysRegions existing = getById(regions.getCode());
+        if (existing == null) {
+            return false;
+        }
+        existing.setName(regions.getName());
+        existing.setParentCode(regions.getParentCode());
+        existing.setSort(regions.getSort());
+        return Db.updateById(existing);
+    }
+
+    /**
+     * 删除行政区划（递归删除子级）
+     * <p>
+     * 采用物理删除方式。删除当前节点前，先递归删除其所有下级子节点。
+     * 使用深度优先遍历确保层级关系正确清理。
+     *
+     * @param code 区划代码（主键）
+     * @return 删除是否成功
+     */
+    @Override
+    public boolean delete(Long code) {
+        // 递归删除子级行政区划
+        List<SysRegions> children = Db.lambdaQuery(SysRegions.class)
+                .eq(SysRegions::getParentCode, code)
+                .list();
+        for (SysRegions child : children) {
+            delete(child.getCode()); // 递归删除子节点
+        }
+        return Db.lambdaUpdate(SysRegions.class)
+                .eq(SysRegions::getCode, code)
+                .remove();
+    }
+
+    /**
+     * 根据父级代码获取子级行政区划列表
+     *
+     * @param parentCode 父级区划代码
+     * @return 直属子级行政区划列表，按排序字段升序排列
+     */
+    @Override
+    public List<SysRegions> listByParentCode(Long parentCode) {
+        return Db.lambdaQuery(SysRegions.class)
+                .eq(SysRegions::getParentCode, parentCode)
+                .orderByAsc(SysRegions::getSort)
+                .list();
+    }
+
+    /**
+     * 根据级别获取行政区划列表
+     * <p>
+     * 级别说明：1-省/直辖市、2-市、3-区/县/县级市
+     *
+     * @param level 行政区划级别（1/2/3）
+     * @return 指定级别的行政区划列表，按排序字段升序排列
+     */
+    @Override
+    public List<SysRegions> listByLevel(Integer level) {
+        return Db.lambdaQuery(SysRegions.class)
+                .eq(SysRegions::getLevel, level)
+                .orderByAsc(SysRegions::getSort)
+                .list();
+    }
+}

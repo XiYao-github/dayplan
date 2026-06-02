@@ -383,4 +383,5 @@ public class LoginController extends MyBaseController {
             SpringUtil.publishEvent(event);
         }
     }
+
 }

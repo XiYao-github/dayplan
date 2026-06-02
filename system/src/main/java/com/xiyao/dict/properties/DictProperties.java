@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <b>配置示例：</b>
  * <pre>{@code
  * # application.yml
- * dict:
+ * dict-data:
  *   enable: true                    # 是否启用字典功能
  * }</pre>
  *
