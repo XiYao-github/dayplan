@@ -8,7 +8,6 @@ server:
     # 编码配置
     encoding:
       charset: UTF-8
-      enable: true
       force: true
   tomcat:
     # tomcat的URI编码
@@ -33,12 +32,6 @@ spring:
       date-time: yyyy-MM-dd HH:mm:ss
       date: yyyy-MM-dd
       time: HH:mm:ss
-  # 文件上传配置
-  servlet:
-    multipart:
-      enable: true
-      max-file-size: 10MB
-      max-request-size: 50MB
 
   # mysql配置
   datasource:
@@ -74,8 +67,16 @@ security-data:
     # 过期时间(秒) 60*60*10
     expire: 36000
 
+# 日志记录
+log-data:
+  enable: true
+
+# 字典转换
+dict-data:
+  enable: true
+
 # 数据加密
-encryptor-data:
+crypto-data:
   # 是否开启加密
   enable: false
   # 加密算法
@@ -90,7 +91,7 @@ encryptor-data:
   privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
 
 # 接口加密
-encryptor-api:
+crypto-api:
   # 是否开启加密
   enable: false
   # 加密头标识

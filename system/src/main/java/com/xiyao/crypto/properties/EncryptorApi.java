@@ -37,7 +37,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @see EncodeType
  */
 @Data
-@ConfigurationProperties(prefix = "encryptor-api")
+@ConfigurationProperties(prefix = "crypto-api")
 public class EncryptorApi {
 
     /**

@@ -28,7 +28,6 @@
 - security：集成 Spring Security 6 + JWT，实现细粒度 RBAC 权限控制，并扩展支持等保要求的三员管理
 - crypto：国密算法支持模块，全面适配等保密码要求
 - dict：数据字典回显、自动映射枚举
-- governance：基于 Resilience4j + AOP，通过注解声明方式提供限流、熔断、降级、隔离、重试、超时、防重（幂等）等流量治理能力
 - log：满足等保合规的审计日志模块，支持操作日志防篡改（签名哈希链）和全链路追踪（traceId）
 - common：通用工具集
   - 包含动态线程池管理
@@ -61,9 +60,9 @@
 
 基础包名：com.xiyao.app
 将 service 层的业务能力以不同接口形式暴露给外部消费者。按消费端划分子包：
-- com.xiyao.app.admin：管理后台接口，供 Vue3 管理端消费
-- com.xiyao.app.app：小程序接口，供 UniApp 小程序端消费
-- com.xiyao.app.api：开放 API 接口，供第三方系统对接，采用 SM3 签名保障安全
+- admin：管理后台接口，供 Vue3 管理端消费
+- app：小程序接口，供 UniApp 小程序端消费
+- api：开放 API 接口，供第三方系统对接，采用 SM3 签名保障安全
 
 Controller 只能放在 app 层，不能在 service 层或 system 层定义 Controller。
 Controller 的职责仅限于：接收请求参数、调用 Service 方法、包装 Result 响应。复杂业务逻辑必须下沉到 service 层。
@@ -101,11 +100,11 @@ Controller 的职责仅限于：接收请求参数、调用 Service 方法、包
 
 ```java
 // 实体类中敏感字段的标准写法
-@CryptoField
-private String phoneNumber;
+// @CryptoField
+// private String phoneNumber;
 
-@CryptoField
-private String idCard;
+// @CryptoField
+// private String idCard;
 ```
 
 ### 全链路加密流程
@@ -140,59 +139,33 @@ private String idCard;
 
 ```java
 // 返回体中敏感字段的标准写法
-@SensitiveField(type = SensitiveType.PHONE)
-private String phoneNumber;
+// @SensitiveField(type = SensitiveType.PHONE)
+// private String phoneNumber;
 
-@SensitiveField(type = SensitiveType.ID_CARD)
-private String idCard;
+// @SensitiveField(type = SensitiveType.ID_CARD)
+// private String idCard;
 ```
 
-### governance 模块详解
-基于 Resilience4j + AOP 实现，通过注解声明方式提供流量治理能力，业务代码无需耦合治理逻辑。
-可用注解及对应的完整类路径：
-@RateLimiter：限流，控制单位时间内最大访问次数。完整类路径 com.xiyao.system.governance.annotation.RateLimiter
-@CircuitBreaker：熔断，下游不可用时快速失败。完整类路径 com.xiyao.system.governance.annotation.CircuitBreaker
-@Fallback：降级，熔断或限流触发时返回兜底响应。完整类路径 com.xiyao.system.governance.annotation.Fallback
-@Bulkhead：隔离，信号量或线程池方式隔离资源。完整类路径 com.xiyao.system.governance.annotation.Bulkhead
-@Retry：重试，失败后自动有限次重试。完整类路径 com.xiyao.system.governance.annotation.Retry
-@TimeLimiter：超时控制，超过阈值自动中断。完整类路径 com.xiyao.system.governance.annotation.TimeLimiter
-@Idempotent：防重（幂等），确保同一请求不被重复处理。完整类路径 com.xiyao.system.governance.annotation.Idempotent
-
-使用方式：在 Service 方法上添加对应注解即可，例如：
-
-```java
-// Service 层方法使用治理注解的写法
-@RateLimiter(name = "userQuery", fallbackMethod = "userQueryFallback")
-public List<UserVO> queryUsers(UserQueryDTO dto) {
-// 业务逻辑
-}
-
-// 降级方法签名必须与原方法一致，并额外接收异常参数
-public List<UserVO> userQueryFallback(UserQueryDTO dto, Exception e) {
-return Collections.emptyList();
-}
-```
-### auditLog 模块详解
+### log 模块详解
 满足等保合规的审计日志模块。
 操作日志防篡改机制：每条日志写入时计算自身内容的哈希值，并将上一条日志的哈希值作为输入之一。
 任意一条日志被篡改会导致后续所有日志哈希验证失败。审计人员通过校验哈希链完整性判断日志是否被非法修改。
 全链路追踪：通过 traceId 将一次请求从进入系统到返回响应的所有日志串联起来，便于问题排查和操作回溯。
-审计日志通过注解声明记录。在需要审计的方法上添加 @AuditLog 注解，框架自动记录操作人、操作时间、操作内容、操作结果等信息。
+审计日志通过注解声明记录。在需要审计的方法上添加 @Log 注解，框架自动记录操作人、操作时间、操作内容、操作结果等信息。
 使用方式：
 
 ```java
 // Service 层方法添加审计日志注解
-@AuditLog(module = "用户管理", operation = "新增用户", detail = "新增系统用户")
-public UserVO createUser(UserCreateDTO dto) {
+// @AuditLog(module = "用户管理", operation = "新增用户", detail = "新增系统用户")
+// public UserVO createUser(UserCreateDTO dto) {
 // 业务逻辑
-}
+// }
 ```
 ### 后端技术栈
 基础框架：Spring Boot 3、Lombok
 安全框架：Spring Security 6、JWT、国密
 数据库：MySQL、HikariCP、MyBatis-Plus
 缓存框架：Redis、Spring-Cache、Redisson
-弹性治理：Resilience4j、AOP
 文档生成：Smart-Doc
 工具库：Validation、EasyExcel、Hutool
 构建工具：Maven、Docker、Shell
@@ -217,32 +190,32 @@ traceId：String 类型，全链路追踪标识
 
 ```java
 // 成功，带数据
-Result.ok(data);
+// Result.ok(data);
 
 // 成功，无数据
-Result.ok();
+// Result.ok();
 
 // 失败，自定义提示信息
-Result.error("提示信息");
+// Result.error("提示信息");
 
 // 失败，自定义状态码和提示信息
-Result.error(500, "提示信息");
+// Result.error(500, "提示信息");
 ```
 Controller 中使用范例：
 
 ```java
 // 标准 Controller 方法写法
-@GetMapping("/users")
-public Result<PageResult<UserVO>> queryUsers(UserQueryDTO dto) {
-PageResult<UserVO> result = userService.queryUsers(dto);
-return Result.ok(result);
-}
+// @GetMapping("/users")
+// public Result<Object> queryUsers(UserQueryDTO dto) {
+// PageResult<UserVO> result = userService.queryUsers(dto);
+// return Result.ok(result);
+// }
 
-@PostMapping("/users")
-public Result<Void> createUser(@RequestBody @Valid UserCreateDTO dto) {
-userService.createUser(dto);
-return Result.ok();
-}
+// @PostMapping("/users")
+// public Result<Object> createUser(@RequestBody @Valid UserCreateDTO dto) {
+// userService.createUser(dto);
+// return Result.ok();
+// }
 ```
 
 
@@ -252,7 +225,7 @@ return Result.ok();
 禁止在 Controller 中各自 try-catch 处理异常。
 ```java
 // 业务代码中抛出业务异常
-throw new BusinessException(401, "用户名已存在");
+// throw new BusinessException(401, "用户名已存在");
 
 ```
 
@@ -263,11 +236,11 @@ throw new BusinessException(401, "用户名已存在");
 
 ```java
 // crypto 模块的条件装配配置类
-@Configuration
-@ConditionalOnProperty(name = "xiyao.crypto.enabled", havingValue = "true", matchIfMissing = true)
-public class CryptoAutoConfiguration {
+// @Configuration
+// @ConditionalOnProperty(name = "crypto-data.enable", havingValue = "true", matchIfMissing = true)
+// public class CryptoAutoConfiguration {
 // 配置内容
-}
+// }
 ```
 application.yml 中的对应配置：
 

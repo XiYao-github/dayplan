@@ -52,7 +52,7 @@ import java.util.Objects;
  */
 @Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
-@ConditionalOnProperty(value = "encryptor-api.enable", havingValue = "true")
+@ConditionalOnProperty(value = "crypto-api.enable", havingValue = "true")
 public class EncryptorApiConfig {
 
     /**

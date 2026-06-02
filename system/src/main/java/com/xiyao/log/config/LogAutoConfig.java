@@ -3,7 +3,9 @@ package com.xiyao.log.config;
 import com.xiyao.log.aspect.LogAspect;
 import com.xiyao.log.filter.TraceFilter;
 import com.xiyao.log.listener.LogListener;
+import com.xiyao.log.properties.LogProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,7 +44,8 @@ import org.springframework.core.Ordered;
  * @see LogListener
  */
 @Configuration
-@ConditionalOnProperty(value = "log.enable", havingValue = "true", matchIfMissing = true)
+@EnableConfigurationProperties(LogProperties.class)
+@ConditionalOnProperty(value = "log-data.enable", havingValue = "true", matchIfMissing = true)
 public class LogAutoConfig {
 
     /**

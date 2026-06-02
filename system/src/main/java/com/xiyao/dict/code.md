@@ -199,15 +199,6 @@ CREATE TABLE sys_dict_data (
 );
 ```
 
-**字典数据示例：**
-
-| dict_code | dict_value | dict_label |
-|-----------|------------|------------|
-| status    | 0          | 停用       |
-| status    | 1          | 正常       |
-| yes_no    | 0          | 否         |
-| yes_no    | 1          | 是         |
-
 ---
 
 ### 配置文件
