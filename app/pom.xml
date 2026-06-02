@@ -30,9 +30,10 @@
         </dependency>
     </dependencies>
 
-
     <build>
+        <finalName>dayplan-app</finalName>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -43,6 +44,31 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- Docker Maven Plugin -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.14</version>
+                <configuration>
+                    <!-- 镜像名称 -->
+                    <imageName>${project.artifactId}</imageName>
+                    <!-- Dockerfile 路径（相对于项目根目录） -->
+                    <dockerDirectory>${project.basedir}/docker</dockerDirectory>
+                    <!-- 资源文件（JAR 包）复制到 docker 目录 -->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <!-- 构建参数（可传入环境变量文件） -->
+                    <buildArgs>
+                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                    </buildArgs>
                 </configuration>
             </plugin>
         </plugins>

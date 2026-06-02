@@ -200,6 +200,7 @@ public class LogListener {
         try {
             // 查询最新一条操作日志的哈希值
             LogOperation last = Db.lambdaQuery(LogOperation.class)
+                    .eq(LogOperation::getLogType,LogType.AUDIT.ordinal())
                     .orderByDesc(LogOperation::getId)              // 按 ID 降序
                     .select(LogOperation::getHash)                // 只查询 hash 字段
                     .last("LIMIT 1").one();                        // 取最新一条
