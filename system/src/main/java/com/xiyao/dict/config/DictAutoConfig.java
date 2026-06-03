@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.xiyao.dict.interceptor.DictInterceptor;
 import com.xiyao.dict.properties.DictProperties;
 import com.xiyao.dict.utils.DictUtils;
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -53,10 +52,22 @@ public class DictAutoConfig {
      * <p>
      * 在应用启动时执行，加载所有字典数据到 DictUtils 缓存中。
      */
-    @PostConstruct
-    public void initDictCache() {
-        // 启动时全量加载字典数据到缓存
-        DictUtils.getInstance().loadDictAll();
+    // @PostConstruct
+    // public void initDictCache() {
+    //     // 启动时全量加载字典数据到缓存
+    //     DictUtils.getInstance().loadDictAll();
+    // }
+
+    /**
+     * 注册 DictUtils 为 Spring Bean
+     * <p>
+     * 使得其他服务可以通过依赖注入使用 DictUtils
+     *
+     * @return DictUtils 单例实例
+     */
+    @Bean
+    public DictUtils dictUtils() {
+        return DictUtils.getInstance();
     }
 
     /**

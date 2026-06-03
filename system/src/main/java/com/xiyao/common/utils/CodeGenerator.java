@@ -43,22 +43,38 @@ import java.util.List;
  */
 public class CodeGenerator {
 
-    /** 数据库 URL */
+    /**
+     * 数据库 URL
+     */
     public static final String URL = "jdbc:mysql://115.159.42.54:3306/dayplan?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&cachePrepStmts=true&rewriteBatchedStatements=true";
-    /** 数据库用户名 */
+    /**
+     * 数据库用户名
+     */
     public static final String USERNAME = "root";
-    /** 数据库密码（请修改为实际密码） */
+    /**
+     * 数据库密码（请修改为实际密码）
+     */
     public static final String PASSWORD = "tR5sW8yB3eH6qM9c";
-    /** 作者名 */
+    /**
+     * 作者名
+     */
     public static final String AUTHOR = "xiyao";
-    /** 日期格式 */
+    /**
+     * 日期格式
+     */
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
-    /** 项目根路径 */
+    /**
+     * 项目根路径
+     */
     private final static String PROJECT_PATH = System.getProperty("user.dir");
-    /** 代码输出路径 */
+    /**
+     * 代码输出路径
+     */
     public static final String FILE_PATH = "/system/src/main/java";
-    /** 包名 */
+    /**
+     * 包名
+     */
     public static final String PACKAGE = "com.xiyao.system";
 
     /**
@@ -94,7 +110,7 @@ public class CodeGenerator {
                         .enableTableFieldAnnotation().versionColumnName("version").logicDeleteColumnName("deleted").columnNaming(NamingStrategy.underline_to_camel)
                         .addTableFills(new Column("create_time", FieldFill.INSERT), new Column("update_time", FieldFill.INSERT_UPDATE))
                         .idType(IdType.AUTO).enableFileOverride().fieldUseJavaDoc(true)
-                        .mapperBuilder().superClass(MyBaseMapper.class).enableMapperAnnotation()
+                        .mapperBuilder().superClass(MyBaseMapper.class).mapperAnnotation(org.apache.ibatis.annotations.Mapper.class)
                         .formatMapperFileName("%sMapper").formatXmlFileName("%sMapper").enableFileOverride()
                         .serviceBuilder().superServiceClass(MyBaseService.class).superServiceImplClass(MyBaseServiceImpl.class)
                         .formatServiceFileName("%sService").formatServiceImplFileName("%sServiceImpl").enableFileOverride()
