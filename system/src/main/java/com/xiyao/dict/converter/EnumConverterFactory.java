@@ -28,11 +28,8 @@ import org.springframework.core.convert.converter.ConverterFactory;
  * }
  * }</pre>
  *
- * @param <S> 源类型，当前固定为 String
- * @param <T> 目标枚举类型，必须实现 BaseEnum
  * @author xiyao
  * @see BaseEnum
- * @see com.xiyao.dict.utils.EnumUtils
  */
 public class EnumConverterFactory implements ConverterFactory<String, BaseEnum<?>> {
 

@@ -45,7 +45,6 @@ import java.sql.SQLException;
  * @param <E> 枚举类型，必须实现 BaseEnum 接口
  * @author xiyao
  * @see BaseEnum
- * @see com.xiyao.dict.utils.EnumUtils
  */
 public class EnumTypeHandler<E extends BaseEnum<?>> extends BaseTypeHandler<E> {
 

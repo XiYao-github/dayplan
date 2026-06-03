@@ -7,6 +7,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -49,6 +50,23 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 // 预检请求（OPTIONS）的缓存时间（秒），减少预检请求次数
                 .maxAge(3600);
+    }
+
+    /**
+     * 配置拦截器
+     * <p>
+     * 用于在 Controller 方法执行前后的通用处理，
+     * 如登录校验、权限校验、接口耗时统计等。
+     *
+     * @param registry 拦截器注册表
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 示例：登录拦截器
+        // registry.addInterceptor(new LoginInterceptor())
+        //         .addPathPatterns("/api/**")  // 拦截路径
+        //         .excludePathPatterns("/api/login", "/api/public/**")  // 排除路径
+        //         .order(1);  // 执行顺序，数字越小优先级越高
     }
 
     /**
