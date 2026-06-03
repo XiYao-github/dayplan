@@ -1,7 +1,9 @@
 package com.xiyao.framework.config;
 
+import com.xiyao.dict.converter.EnumConverterFactory;
 import com.xiyao.framework.resolver.CurrentUserArgumentResolver;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -61,6 +63,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         // 后台用户参数解析器（@CurrentUser 注解）
         resolvers.add(new CurrentUserArgumentResolver());
+    }
+
+    /**
+     * 添加格式化器和转换器
+     * <p>
+     * 注册 Spring Converter，用于类型转换和格式化。
+     *
+     * @param registry 格式化器注册表
+     */
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        // 枚举转换器（将请求参数中的枚举值转换为 Java 枚举）
+        registry.addConverterFactory(new EnumConverterFactory());
     }
 
 }

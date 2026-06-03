@@ -94,7 +94,7 @@ public class GlobalExceptionHandler {
      * }</pre>
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Result handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public Result<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("; "));
@@ -120,7 +120,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(BindException.class)
-    public Result handleBindException(BindException e) {
+    public Result<Object> handleBindException(BindException e) {
         String message = e.getFieldErrors().stream()
                 .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
                 .collect(Collectors.joining("; "));
@@ -145,7 +145,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public Result handleConstraintViolationException(ConstraintViolationException e) {
+    public Result<Object> handleConstraintViolationException(ConstraintViolationException e) {
         String message = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining("; "));
@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public Result handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+    public Result<Object> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
         log.warn("缺少必填参数: {}", e.getParameterName());
         return Result.error(HttpStatus.BAD_REQUEST.value(), "缺少必填参数: " + e.getParameterName());
     }
@@ -192,7 +192,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public Result handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public Result<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String message = String.format("参数 '%s' 类型错误，期望类型: %s",
                 e.getName(), e.getRequiredType().getSimpleName());
         log.warn("参数类型不匹配: {}", message);
@@ -219,7 +219,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public Result handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+    public Result<Object> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.warn("请求体格式错误: {}", e.getMessage());
 
         Throwable cause = e.getMostSpecificCause();
@@ -256,7 +256,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public Result handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+    public Result<Object> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         log.warn("请求方法不支持: {}", e.getMessage());
         return Result.error(HttpStatus.METHOD_NOT_ALLOWED.value(),
                 String.format("请求方法 '%s' 不支持", e.getMethod()));
@@ -279,7 +279,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public Result handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+    public Result<Object> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         log.warn("媒体类型不支持: {}", e.getMessage());
         return Result.error(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),
                 "不支持的媒体类型，请使用 application/json");
@@ -302,7 +302,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(NoHandlerFoundException.class)
-    public Result handleNoHandlerFoundException(NoHandlerFoundException e) {
+    public Result<Object> handleNoHandlerFoundException(NoHandlerFoundException e) {
         log.warn("接口不存在: {}", e.getRequestURL());
         return Result.error(HttpStatus.NOT_FOUND.value(), "接口不存在: " + e.getRequestURL());
     }
@@ -341,7 +341,7 @@ public class GlobalExceptionHandler {
      * }</pre>
      */
     @ExceptionHandler(AuthenticationException.class)
-    public Result handleAuthenticationException(AuthenticationException e) {
+    public Result<Object> handleAuthenticationException(AuthenticationException e) {
         log.warn("认证失败: {}", e.getClass().getSimpleName());
 
         if (e instanceof AuthenticationCredentialsNotFoundException) {
@@ -394,7 +394,7 @@ public class GlobalExceptionHandler {
      * }</pre>
      */
     @ExceptionHandler(AccessDeniedException.class)
-    public Result handleAccessDeniedException(AccessDeniedException e) {
+    public Result<Object> handleAccessDeniedException(AccessDeniedException e) {
         log.warn("权限不足: {}", e.getMessage());
         return Result.error(HttpStatus.FORBIDDEN.value(), "权限不足，拒绝访问");
     }
@@ -424,7 +424,7 @@ public class GlobalExceptionHandler {
      * }</pre>
      */
     @ExceptionHandler(DuplicateKeyException.class)
-    public Result handleDuplicateKeyException(DuplicateKeyException e) {
+    public Result<Object> handleDuplicateKeyException(DuplicateKeyException e) {
         log.warn("数据重复: {}", e.getMessage());
         return Result.error(HttpStatus.CONFLICT.value(), "数据已存在，请勿重复提交");
     }
@@ -456,7 +456,7 @@ public class GlobalExceptionHandler {
      * }</pre>
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public Result handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+    public Result<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.warn("数据完整性异常: {}", e.getMessage());
 
         Throwable cause = e.getMostSpecificCause();
@@ -494,7 +494,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(QueryTimeoutException.class)
-    public Result handleQueryTimeoutException(QueryTimeoutException e) {
+    public Result<Object> handleQueryTimeoutException(QueryTimeoutException e) {
         log.error("查询超时: {}", e.getMessage(), e);
         return Result.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "查询超时，请稍后再试");
     }
@@ -518,7 +518,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(SQLSyntaxErrorException.class)
-    public Result handleSQLSyntaxErrorException(SQLSyntaxErrorException e) {
+    public Result<Object> handleSQLSyntaxErrorException(SQLSyntaxErrorException e) {
         log.error("SQL语法错误: {}", e.getMessage(), e);
         return Result.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "系统配置错误，请联系管理员");
     }
@@ -542,7 +542,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(SQLNonTransientConnectionException.class)
-    public Result handleSQLNonTransientConnectionException(SQLNonTransientConnectionException e) {
+    public Result<Object> handleSQLNonTransientConnectionException(SQLNonTransientConnectionException e) {
         log.error("数据库连接失败: {}", e.getMessage(), e);
         return Result.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "数据库服务不可用，请稍后再试");
     }
@@ -563,7 +563,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public Result handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
+    public Result<Object> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException e) {
         log.warn("SQL约束违反: {}", e.getMessage());
 
         String message = e.getMessage();
@@ -592,7 +592,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(SQLException.class)
-    public Result handleSQLException(SQLException e) {
+    public Result<Object> handleSQLException(SQLException e) {
         log.error("SQL异常: errorCode={}, sqlState={}, message={}",
                 e.getErrorCode(), e.getSQLState(), e.getMessage(), e);
 
@@ -629,7 +629,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(DataAccessException.class)
-    public Result handleDataAccessException(DataAccessException e) {
+    public Result<Object> handleDataAccessException(DataAccessException e) {
         log.error("数据访问异常: {}", e.getMessage(), e);
         return Result.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "数据库服务异常，请稍后再试");
     }
@@ -655,7 +655,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(RedisConnectionFailureException.class)
-    public Result handleRedisConnectionFailureException(RedisConnectionFailureException e) {
+    public Result<Object> handleRedisConnectionFailureException(RedisConnectionFailureException e) {
         log.error("Redis连接失败: {}", e.getMessage(), e);
         return Result.error(HttpStatus.SERVICE_UNAVAILABLE.value(), "缓存服务暂时不可用");
     }
@@ -680,7 +680,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(JsonParseException.class)
-    public Result handleJsonParseException(JsonParseException e) {
+    public Result<Object> handleJsonParseException(JsonParseException e) {
         log.warn("JSON解析错误: {}", e.getMessage());
         return Result.error(HttpStatus.BAD_REQUEST.value(), "JSON格式错误，请检查语法");
     }
@@ -702,7 +702,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(JsonMappingException.class)
-    public Result handleJsonMappingException(JsonMappingException e) {
+    public Result<Object> handleJsonMappingException(JsonMappingException e) {
         log.warn("JSON映射错误: {}", e.getMessage());
         return Result.error(HttpStatus.BAD_REQUEST.value(), "JSON字段类型不匹配");
     }
@@ -727,7 +727,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(BusinessException.class)
-    public Result handleBusinessException(BusinessException e) {
+    public Result<Object> handleBusinessException(BusinessException e) {
         log.warn("业务异常: code={}, message={}", e.getCode(), e.getMessage());
         return Result.error(e.getCode(), e.getMessage());
     }
@@ -755,7 +755,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(RuntimeException.class)
-    public Result handleRuntimeException(RuntimeException e, HttpServletRequest request) {
+    public Result<Object> handleRuntimeException(RuntimeException e, HttpServletRequest request) {
         log.error("运行时异常: url={}, class={}, message={}",
                 request.getRequestURI(), e.getClass().getName(), e.getMessage(), e);
 
@@ -780,7 +780,7 @@ public class GlobalExceptionHandler {
      * </ul>
      */
     @ExceptionHandler(Exception.class)
-    public Result handleException(Exception e, HttpServletRequest request) {
+    public Result<Object> handleException(Exception e, HttpServletRequest request) {
         log.error("系统异常: url={}, class={}, message={}",
                 request.getRequestURI(), e.getClass().getName(), e.getMessage(), e);
 
