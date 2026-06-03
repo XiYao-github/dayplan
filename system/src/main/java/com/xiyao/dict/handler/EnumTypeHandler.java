@@ -1,6 +1,8 @@
 package com.xiyao.dict.handler;
 
 import com.xiyao.dict.enums.BaseEnum;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 
@@ -46,12 +48,14 @@ import java.sql.SQLException;
  * @author xiyao
  * @see BaseEnum
  */
+@NoArgsConstructor
+@AllArgsConstructor
 public class EnumTypeHandler<E extends BaseEnum<?>> extends BaseTypeHandler<E> {
 
     /**
      * 目标枚举类的 Class 对象
      */
-    private final Class<E> type;
+    private Class<E> type;
 
     /**
      * 构造函数
@@ -59,12 +63,12 @@ public class EnumTypeHandler<E extends BaseEnum<?>> extends BaseTypeHandler<E> {
      * @param type 枚举类型 Class
      * @throws IllegalArgumentException type 为 null 时抛出
      */
-    public EnumTypeHandler(Class<E> type) {
-        if (type == null) {
-            throw new IllegalArgumentException("Type argument cannot be null");
-        }
-        this.type = type;
-    }
+    // public EnumTypeHandler(Class<E> type) {
+    //     if (type == null) {
+    //         throw new IllegalArgumentException("Type argument cannot be null");
+    //     }
+    //     this.type = type;
+    // }
 
     /**
      * 设置非 null 参数到 PreparedStatement

@@ -165,7 +165,7 @@ public class MybatisPlusConfig {
             // 类型别名扫描包（实体类的简短类名）
             properties.setTypeAliasesPackage("com.xiyao.**.entity");
             // 类型处理器扫描包（用于自动转换 Java 类型和数据库类型）
-            // properties.setTypeHandlersPackage("com.xiyao.**.handler");
+            properties.setTypeHandlersPackage("com.xiyao.**.handler");
             // 默认执行器类型（SIMPLE：简单执行器，逐条执行）
             properties.setExecutorType(ExecutorType.SIMPLE);
         };

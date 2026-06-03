@@ -51,7 +51,7 @@ spring:
 # 权限过滤
 security-data:
   # 是否开启权限过滤
-  enable: false
+  enable: true
   # 过滤路径
   includePaths:
     - /login
@@ -77,7 +77,7 @@ dict-data:
 # 数据加密
 crypto-data:
   # 是否开启加密
-  enable: false
+  enable: true
   # 加密算法
   algorithm: SM4
   # 编码方式
@@ -92,7 +92,7 @@ crypto-data:
 # 接口加密
 crypto-api:
   # 是否开启加密
-  enable: false
+  enable: true
   # 加密头标识
   headerFlag: headerFlag
   # 响应加密公钥(非对称加密算法)
