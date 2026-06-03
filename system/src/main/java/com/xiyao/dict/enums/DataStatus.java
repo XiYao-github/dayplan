@@ -1,4 +1,4 @@
-package com.xiyao.common.enums;
+package com.xiyao.dict.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -112,15 +112,4 @@ public enum DataStatus implements BaseEnum<Integer> {
         return code;
     }
 
-    /**
-     * 获取枚举名称
-     * <p>
-     * 返回枚举常量的名字，如 NORMAL、PAUSE
-     *
-     * @return 枚举名称
-     */
-    @Override
-    public String getName() {
-        return this.name();
-    }
 }

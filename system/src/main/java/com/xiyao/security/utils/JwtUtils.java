@@ -4,7 +4,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
-import com.xiyao.common.utils.RedisUtils;
+import com.xiyao.framework.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.properties.SecurityData;
 import jakarta.servlet.http.HttpServletRequest;

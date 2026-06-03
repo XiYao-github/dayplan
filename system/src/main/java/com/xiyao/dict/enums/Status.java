@@ -1,4 +1,4 @@
-package com.xiyao.common.enums;
+package com.xiyao.dict.enums;
 
 /**
  * 通用状态枚举

@@ -1,4 +1,4 @@
-package com.xiyao.common.utils;
+package com.xiyao.framework.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

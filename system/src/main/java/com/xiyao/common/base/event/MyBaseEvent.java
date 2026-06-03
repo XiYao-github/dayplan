@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
-import com.xiyao.common.utils.WebUtils;
+import com.xiyao.framework.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.experimental.Accessors;

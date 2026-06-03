@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xiyao.common.base.service.impl.MyBaseServiceImpl;
-import com.xiyao.dict.utils.DictCache;
+import com.xiyao.dict.utils.DictUtils;
 import com.xiyao.system.entity.DictData;
 import com.xiyao.system.mapper.DictDataMapper;
 import com.xiyao.system.service.IDictDataService;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DictDataServiceImpl extends MyBaseServiceImpl<DictDataMapper, DictData> implements IDictDataService {
 
-    private final DictCache dictCache;
+    private final DictUtils dictUtils;
 
     @Override
     public Page<DictDataVo> pageDictData(Page<DictDataVo> page, String dictType, String dictLabel, Integer status) {
@@ -58,26 +58,26 @@ public class DictDataServiceImpl extends MyBaseServiceImpl<DictDataMapper, DictD
     @Transactional(rollbackFor = Exception.class)
     public void createDictData(DictData dictData) {
         save(dictData);
-        dictCache.refreshAll();
+        dictUtils.refreshAll();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateDictData(DictData dictData) {
         updateById(dictData);
-        dictCache.refreshAll();
+        dictUtils.refreshAll();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteDictData(Long id) {
         removeById(id);
-        dictCache.refreshAll();
+        dictUtils.refreshAll();
     }
 
     @Override
     public void refreshCache() {
-        dictCache.refreshAll();
+        dictUtils.refreshAll();
     }
 
     private DictDataVo convertToVo(DictData entity) {

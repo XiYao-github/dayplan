@@ -3,7 +3,7 @@ package com.xiyao.dict.config;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.xiyao.dict.interceptor.DictInterceptor;
 import com.xiyao.dict.properties.DictProperties;
-import com.xiyao.dict.utils.DictCache;
+import com.xiyao.dict.utils.DictUtils;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>
  * <b>自动装配的组件：</b>
  * <ul>
- *     <li>DictCache：字典缓存管理器（启动时全量加载）</li>
+ *     <li>DictUtils：字典缓存管理器（启动时全量加载）</li>
  *     <li>DictInterceptor：MyBatis 拦截器（查询结果自动字典回显）</li>
  * </ul>
  *
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author xiyao
  * @see DictProperties
- * @see DictCache
+ * @see DictUtils
  * @see DictInterceptor
  */
 @Configuration
@@ -51,12 +51,12 @@ public class DictAutoConfig {
     /**
      * 初始化字典缓存
      * <p>
-     * 在应用启动时执行，加载所有字典数据到 DictCache 缓存中。
+     * 在应用启动时执行，加载所有字典数据到 DictUtils 缓存中。
      */
     @PostConstruct
     public void initDictCache() {
         // 启动时全量加载字典数据到缓存
-        DictCache.getInstance().loadDictAll();
+        DictUtils.getInstance().loadDictAll();
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.xiyao.security.handler;
 
-import com.xiyao.common.utils.WebUtils;
+import com.xiyao.framework.utils.WebUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

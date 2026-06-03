@@ -31,30 +31,30 @@ import java.util.stream.Collectors;
  * <b>使用示例：</b>
  * <pre>{@code
  * // 获取字典标签
- * String label = DictCache.getInstance().getDictLabel("status", "1");
+ * String label = DictUtils.getInstance().getDictLabel("status", "1");
  *
  * // 刷新字典缓存
- * DictCache.getInstance().loadDictAll();
+ * DictUtils.getInstance().loadDictAll();
  * }</pre>
  *
  * @author xiyao
  */
 @Slf4j
-public class DictCache {
+public class DictUtils {
 
     /**
      * 单例实例
      * <p>
      * 使用饿汉模式，确保全局唯一实例
      */
-    private static final DictCache INSTANCE = new DictCache();
+    private static final DictUtils INSTANCE = new DictUtils();
 
     /**
      * 获取单例实例
      *
-     * @return DictCache 实例
+     * @return DictUtils 实例
      */
-    public static DictCache getInstance() {
+    public static DictUtils getInstance() {
         return INSTANCE;
     }
 

@@ -1,4 +1,4 @@
-package com.xiyao.common.utils;
+package com.xiyao.framework.utils;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.json.JSONUtil;

@@ -2,7 +2,7 @@ package com.xiyao.dict.interceptor;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.xiyao.dict.annotation.DictBind;
-import com.xiyao.dict.utils.DictCache;
+import com.xiyao.dict.utils.DictUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.plugin.*;
@@ -26,7 +26,7 @@ import java.util.Properties;
  *     <li>MyBatis 执行 SQL 查询，返回结果集</li>
  *     <li>拦截器截获查询结果，遍历结果对象</li>
  *     <li>对每个对象获取所有带 @DictBind 注解的字段</li>
- *     <li>根据字典编码和字段值从 DictCache 获取字典标签</li>
+ *     <li>根据字典编码和字段值从 DictUtils 获取字典标签</li>
  *     <li>将标签文本填充到 target 字段</li>
  * </ol>
  *
@@ -50,7 +50,7 @@ import java.util.Properties;
  *
  * @author xiyao
  * @see DictBind
- * @see DictCache
+ * @see DictUtils
  */
 @Slf4j
 @Intercepts({@Signature(
@@ -165,7 +165,7 @@ public class DictInterceptor implements Interceptor {
         }
 
         // 从字典缓存获取标签文本
-        String label = DictCache.getInstance().getDictLabel(code, value.toString());
+        String label = DictUtils.getInstance().getDictLabel(code, value.toString());
         if (label == null || label.isEmpty()) {
             return;
         }

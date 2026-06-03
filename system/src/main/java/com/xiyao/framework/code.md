@@ -151,7 +151,6 @@ com.xiyao.framework/
 │                                   # - 拦截器配置
 │                                   # - 参数解析器（@CurrentUser）
 │                                   # - 消息转换器
-│                                   # - 格式化器（DictEnumConverterFactory）
 │
 ├── exception/
 │   ├── BusinessException.java    # 业务异常
@@ -167,6 +166,11 @@ com.xiyao.framework/
 │
 └── resolver/
     └── CurrentUserArgumentResolver.java # @CurrentUser 参数解析器
+
+└── utils/                         # 工具类（从 common 迁移）
+    ├── RedisUtils.java           # Redis 工具类
+    ├── SpringUtils.java          # Spring 容器工具类
+    └── WebUtils.java             # Web 工具类
 
 ---
 
@@ -266,14 +270,13 @@ src/main/java/com/xiyao/common/
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
 ├── constant/Constant.java               # 通用常量
-├── enums/Status.java                     # 状态枚举
+├── enums/Status.java                     # 状态枚举（从 dict 迁移）
 └── utils/
     ├── CodeGenerator.java               # 代码生成器
-    ├── ConvertUtils.java                 # 类型转换工具
-    ├── RedisUtils.java                   # Redis 工具类
-    ├── SpringUtils.java                  # Spring 工具类
+    ├── ExcelUtils.java                   # Excel 工具
+    ├── FileUtils.java                    # 文件工具
+    ├── SmsUtils.java                     # 短信工具
     ├── StreamUtils.java                   # 流式处理工具
-    ├── WebUtils.java                     # Web 工具类
     └── data/
         ├── PageResult.java               # 分页结果封装
         └── Result.java                   # 统一响应封装
@@ -296,16 +299,15 @@ src/main/java/com/xiyao/security/
     ├── JwtUtils.java                    # JWT 工具类
     └── SecurityUtils.java                # 安全工具类
 
-# Dict 模块（枚举转换器）
+# Dict 模块（枚举和字典）
 src/main/java/com/xiyao/dict/
 ├── annotation/DictBind.java             # 字典绑定注解
 ├── config/
 │   ├── DictAutoConfig.java              # 字典模块自动配置
-│   ├── DictCache.java                   # 字典缓存管理
-│   └── DictProperties.java              # 字典配置属性
-├── converter/DictEnumConverterFactory.java # 枚举转换工厂
+│   └── EnumAutoConfig.java              # 枚举自动配置
 ├── enums/
 │   ├── BaseEnum.java                    # 枚举基础接口
 │   └── DataStatus.java                  # 数据状态枚举
-└── interceptor/DictResultInterceptor.java # 字典结果拦截器
+├── interceptor/DictInterceptor.java   # 字典结果拦截器
+└── utils/DictUtils.java                # 字典缓存工具（从 DictCache 重命名）
 ```

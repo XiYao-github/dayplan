@@ -1,4 +1,4 @@
-package com.xiyao.common.enums;
+package com.xiyao.dict.enums;
 
 
 /**
@@ -17,24 +17,20 @@ package com.xiyao.common.enums;
  * <b>使用示例：</b>
  * <pre>{@code
  * public enum DataStatus implements BaseEnum<Integer> {
- *     NORMAL(1, "NORMAL", "正常"),
- *     DISABLED(2, "DISABLED", "禁用");
+ *     NORMAL(1, "正常"),
+ *     DISABLED(2,  "禁用");
  *
  *     private final Integer code;
- *     private final String name;
  *     private final String desc;
  *
- *     DataStatus(Integer code, String name, String desc) {
+ *     DataStatus(Integer code, String desc) {
  *         this.code = code;
- *         this.name = name;
  *         this.desc = desc;
  *     }
  *
  *     @Override
  *     public Integer getCode() { return code; }
  *
- *     @Override
- *     public String getName() { return name; }
  *
  *     @Override
  *     public String getDesc() { return desc; }
@@ -55,16 +51,6 @@ public interface BaseEnum<T> {
      * @return 字典值或枚举存储值
      */
     T getCode();
-
-    /**
-     * 获取枚举名称
-     * <p>
-     * 返回枚举常量的名字，用于代码标识。
-     * 例如：DataStatus.NORMAL.getName() 返回 "NORMAL"
-     *
-     * @return 枚举名称字符串
-     */
-    String getName();
 
     /**
      * 获取枚举描述

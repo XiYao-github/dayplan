@@ -25,7 +25,7 @@ dict 模块提供数据字典能力，支持键值对管理和自动映射回显
 
 ```yaml
 字典翻译: MyBatis ResultSetInterceptor（DictInterceptor）
-缓存: 本地缓存（DictCache）
+缓存: 本地缓存（DictUtils）
 数据访问: MyBatis-Plus Db.lambdaQuery（跳过 Service 层）
 ```
 
@@ -42,7 +42,7 @@ dict 模块提供数据字典能力，支持键值对管理和自动映射回显
   DictAutoConfig.initDictCache()
         │
         ▼
-  DictCache.loadDictAll()
+  DictUtils.loadDictAll()
         │
         ▼
   Db.lambdaQuery() 查询所有正常状态的字典数据
@@ -55,7 +55,7 @@ dict 模块提供数据字典能力，支持键值对管理和自动映射回显
   配置变更时
         │
         ▼
-  DictDataServiceImpl 调用 dictCache.refreshAll()
+  DictDataServiceImpl 调用 dictUtils.refreshAll()
         │
         ▼
   重新加载所有字典数据
@@ -103,10 +103,12 @@ com.xiyao.dict/
 │   │                               # - initDictCache() 启动时加载缓存
 │   │                               # - 注册 DictInterceptor 到 MyBatis
 │   │
-│   └── DictCache.java             # 字典缓存管理器（单例）
-│                                   # - loadDictAll(): 全量加载
-│                                   # - refreshAll(): 刷新缓存
-│                                   # - getDictLabel(): 获取标签
+│   └── EnumAutoConfig.java        # 枚举自动配置
+│
+├── enums/                          # 通用枚举（从 common 迁移）
+│   ├── BaseEnum.java              # 枚举基础接口
+│   ├── DataStatus.java            # 数据状态枚举
+│   └── Status.java                # 通用状态枚举
 │
 ├── interceptor/
 │   └── DictInterceptor.java       # MyBatis 结果集拦截器
@@ -114,9 +116,15 @@ com.xiyao.dict/
 │                                   # - 递归处理 Map/Collection/Object
 │                                   # - 使用 MetaObject 安全访问字段
 │
-└── properties/
-    └── DictProperties.java        # 配置属性
-                                    # - enable: 是否启用
+├── properties/
+│   ├── DictProperties.java        # 字典配置属性
+│   └── EnumProperties.java       # 枚举配置属性
+│
+└── utils/
+    └── DictUtils.java             # 字典工具类（从 DictCache 重命名）
+                                    # - loadDictAll(): 全量加载
+                                    # - refreshAll(): 刷新缓存
+                                    # - getDictLabel(): 获取标签
 ```
 
 **System 模块（字典业务）：**
@@ -127,7 +135,7 @@ com.xiyao.system/
 ├── service/
 │   ├── IDictDataService.java      # 字典数据服务接口
 │   └── impl/DictDataServiceImpl.java # 字典数据服务实现
-│                                   # - 增删改后调用 dictCache.refreshAll()
+│                                   # - 增删改后调用 dictUtils.refreshAll()
 ├── service/IDictService.java      # （空接口，暂未使用）
 └── service/impl/DictServiceImpl.java # （空实现，暂未使用）
 ```

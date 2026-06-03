@@ -1,6 +1,6 @@
 package com.xiyao.security.config;
 
-import com.xiyao.common.utils.RedisUtils;
+import com.xiyao.framework.utils.RedisUtils;
 import com.xiyao.security.filter.JwtAuthenticationFilter;
 import com.xiyao.security.handler.AccessDeniedHandlerImpl;
 import com.xiyao.security.handler.AuthenticationEntryPointImpl;
