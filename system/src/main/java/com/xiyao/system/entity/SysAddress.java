@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * <p>
@@ -86,4 +89,7 @@ public class SysAddress {
      */
     @TableField("level")
     private Integer level;
+
+    @TableField(exist = false)
+    private List<SysAddress> children = new ArrayList<>();
 }

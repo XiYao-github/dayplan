@@ -133,7 +133,7 @@ public class DictUtils {
                     .list();
             // 转换为 Map 并缓存
             Map<String, String> map = list.stream()
-                    .collect(Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (v1, v2) -> v1));
+                    .collect(Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a));
             dictCache.put(dictCode, map);
         } finally {
             lock.writeLock().unlock();
@@ -160,7 +160,7 @@ public class DictUtils {
             // 按字典编码分组，每组内按 dictValue -> dictLabel 映射
             Map<String, Map<String, String>> map = list.stream()
                     .collect(Collectors.groupingBy(DictData::getDictCode,
-                                    Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (v1, v2) -> v1)
+                                    Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a)
                             )
                     );
             dictCache.putAll(map);
