@@ -8,7 +8,7 @@ import com.xiyao.crypto.properties.EncryptorApi;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.AntPathMatcher;
 
@@ -52,7 +52,7 @@ import java.util.List;
  *
  * @author xiyao
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EncryptorFilter implements Filter {
 
     /**

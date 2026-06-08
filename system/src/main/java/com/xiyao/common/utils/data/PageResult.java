@@ -1,9 +1,9 @@
 package com.xiyao.common.utils.data;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -34,8 +34,6 @@ import java.util.List;
  * @author xiyao
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class PageResult<T> implements Serializable {
 
     @Serial
@@ -54,17 +52,17 @@ public class PageResult<T> implements Serializable {
     /**
      * 每页显示条数，即前端传入的 pageSize
      */
-    private int size;
+    private long size;
 
     /**
      * 当前页码，即前端传入的 current
      */
-    private int current;
+    private long current;
 
     /**
      * 总页数，由 total 和 size 计算得出
      */
-    private int pages;
+    private long pages;
 
     /**
      * 构建空的分页结果
@@ -73,7 +71,13 @@ public class PageResult<T> implements Serializable {
      * @return 空的分页结果，records 为空列表，各项数值均为 0
      */
     public static <T> PageResult<T> empty() {
-        return new PageResult<>(Collections.emptyList(), 0L, 0, 0, 0);
+        PageResult<T> pageResult = new PageResult<>();
+        pageResult.setRecords(Collections.emptyList());
+        pageResult.setTotal(0);
+        pageResult.setSize(0);
+        pageResult.setCurrent(0);
+        pageResult.setPages(0);
+        return pageResult;
     }
 
     /**
@@ -82,18 +86,24 @@ public class PageResult<T> implements Serializable {
      * <p>此方法为便捷工具，自动提取 IPage 中的各字段并构建 PageResult。
      * 传入的 records 需要提前转换为 VO 对象。
      *
-     * @param page     MyBatis-Plus 分页查询结果
-     * @param voList   转换后的 VO 对象列表
-     * @param <T>      数据类型
+     * @param page   MyBatis-Plus 分页查询结果
+     * @param voList 转换后的 VO 对象列表
+     * @param <T>    数据类型
      * @return PageResult 实例
      */
-    public static <T> PageResult<T> from(IPage<?> page, List<T> voList) {
-        return new PageResult<>(
-                voList,
-                page.getTotal(),
-                (int) page.getSize(),
-                (int) page.getCurrent(),
-                (int) page.getPages()
-        );
+    public static <T> PageResult<T> page(IPage<?> page, List<T> voList) {
+        if (ObjectUtil.isNull(page)) {
+            return empty();
+        }
+        if (CollUtil.isEmpty(voList)) {
+            return empty();
+        }
+        PageResult<T> pageResult = new PageResult<>();
+        pageResult.setRecords(voList);
+        pageResult.setTotal(page.getTotal());
+        pageResult.setSize(page.getSize());
+        pageResult.setCurrent(page.getCurrent());
+        pageResult.setPages(page.getPages());
+        return pageResult;
     }
 }

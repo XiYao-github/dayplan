@@ -1,12 +1,10 @@
 package com.xiyao.crypto.core;
 
-import cn.hutool.core.util.ObjectUtil;
-
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.xiyao.crypto.annotation.CryptoField;
 import com.xiyao.crypto.core.encryptor.AbstractEncryptor;
-import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -37,7 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author xiyao
  */
-@NoArgsConstructor
 public class EncryptorManager {
 
     /**

@@ -3,7 +3,7 @@ package com.xiyao.crypto.enums;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.DesensitizedUtil;
 import com.xiyao.crypto.annotation.SensitiveField;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.util.function.Function;
 
@@ -29,7 +29,7 @@ import java.util.function.Function;
  * @author xiyao
  * @see SensitiveField
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum SensitiveStrategy {
 
     /**

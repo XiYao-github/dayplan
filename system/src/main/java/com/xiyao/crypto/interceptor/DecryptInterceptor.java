@@ -6,11 +6,11 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xiyao.crypto.annotation.CryptoField;
 import com.xiyao.crypto.core.EncryptContext;
+import com.xiyao.crypto.core.EncryptorManager;
 import com.xiyao.crypto.enums.AlgorithmType;
 import com.xiyao.crypto.enums.EncodeType;
 import com.xiyao.crypto.properties.EncryptorData;
-import com.xiyao.crypto.core.EncryptorManager;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.plugin.*;
@@ -63,7 +63,7 @@ import java.util.Set;
         method = "handleResultSets",
         args = {Statement.class})
 })
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class DecryptInterceptor implements Interceptor {
 
     /**

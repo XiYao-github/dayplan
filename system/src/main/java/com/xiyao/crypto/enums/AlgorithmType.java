@@ -3,8 +3,8 @@ package com.xiyao.crypto.enums;
 import com.xiyao.crypto.core.encryptor.AbstractEncryptor;
 import com.xiyao.crypto.core.encryptor.Sm2Encryptor;
 import com.xiyao.crypto.core.encryptor.Sm4Encryptor;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 加密算法类型枚举
@@ -31,7 +31,7 @@ import lombok.Getter;
  * @see Sm4Encryptor
  */
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum AlgorithmType {
 
     /**

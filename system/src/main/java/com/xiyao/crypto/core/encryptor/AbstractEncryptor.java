@@ -2,7 +2,7 @@ package com.xiyao.crypto.core.encryptor;
 
 import com.xiyao.crypto.core.EncryptContext;
 import com.xiyao.crypto.core.IEncryptor;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 加密执行器基类
@@ -33,7 +33,7 @@ import lombok.AllArgsConstructor;
  * @see Sm2Encryptor
  * @see Sm4Encryptor
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public abstract class AbstractEncryptor implements IEncryptor {
 
     /**

@@ -6,11 +6,11 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.xiyao.crypto.annotation.CryptoField;
 import com.xiyao.crypto.core.EncryptContext;
+import com.xiyao.crypto.core.EncryptorManager;
 import com.xiyao.crypto.enums.AlgorithmType;
 import com.xiyao.crypto.enums.EncodeType;
 import com.xiyao.crypto.properties.EncryptorData;
-import com.xiyao.crypto.core.EncryptorManager;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.plugin.*;
@@ -65,7 +65,7 @@ import java.util.Set;
         method = "setParameters",
         args = {PreparedStatement.class})
 })
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EncryptInterceptor implements Interceptor {
 
     /** 加密管理器，负责执行具体的加密操作 */

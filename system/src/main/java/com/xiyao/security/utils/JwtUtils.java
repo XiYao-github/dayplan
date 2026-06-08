@@ -8,7 +8,7 @@ import com.xiyao.framework.utils.RedisUtils;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.properties.SecurityData;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -50,7 +50,7 @@ import java.util.Map;
  * @see LoginUser
  * @see SecurityData
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JwtUtils {
 
     /**

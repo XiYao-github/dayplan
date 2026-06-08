@@ -8,7 +8,6 @@ import com.xiyao.log.event.LogLoginEvent;
 import com.xiyao.log.event.LogOperationEvent;
 import com.xiyao.system.entity.LogLogin;
 import com.xiyao.system.entity.LogOperation;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -44,7 +43,6 @@ import org.springframework.scheduling.annotation.Async;
  * @see LogLoginEvent
  */
 @Slf4j
-@RequiredArgsConstructor
 public class LogListener {
 
     /**
