@@ -203,6 +203,7 @@ public class DictUtils {
                             )
                     );
             dictCache.putAll(map);
+            log.info("字典缓存加载完成，共 {} 条", list.size());
         } finally {
             lock.writeLock().unlock();
         }

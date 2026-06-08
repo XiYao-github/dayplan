@@ -3,12 +3,15 @@ package com.xiyao.dict.config;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import com.xiyao.dict.interceptor.DictInterceptor;
 import com.xiyao.dict.properties.DictProperties;
+import com.xiyao.dict.utils.AddressUtils;
 import com.xiyao.dict.utils.DictUtils;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 
 /**
  * 字典模块自动配置类
@@ -46,6 +49,28 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(DictProperties.class)
 @ConditionalOnProperty(value = "dict-data.enable", havingValue = "true", matchIfMissing = true)
 public class DictAutoConfig {
+
+    /**
+     * 初始化字典缓存
+     * <p>
+     * 在应用启动时执行，加载所有字典数据到 DictCache 缓存中。
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void initDictCache() {
+        // 启动时全量加载字典数据到缓存
+        DictUtils.loadAll();
+    }
+
+    /**
+     * 初始化地址缓存
+     * <p>
+     * 在应用启动时执行，加载所有地址数据到 DictCache 缓存中。
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void initAddressCache() {
+        // 启动时全量加载地址数据到缓存
+        AddressUtils.loadAll();
+    }
 
     /**
      * 注册字典拦截器
