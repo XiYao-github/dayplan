@@ -1,6 +1,8 @@
 package com.xiyao.security.details;
 
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.xiyao.system.entity.SysUser;
@@ -91,7 +93,7 @@ public class LoginUser implements UserDetails {
     @Override
     @JsonIgnore  // 序列化时忽略，避免权限列表暴露给前端
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (permissions == null || permissions.isEmpty()) {
+        if (CollUtil.isEmpty(permissions)) {
             return Collections.emptySet();
         }
         // 将权限标识集合转换为 GrantedAuthority 集合，供 Security 权限判断使用
@@ -108,7 +110,7 @@ public class LoginUser implements UserDetails {
     @Override
     @JsonIgnore  // 序列化时忽略
     public String getPassword() {
-        return sysUser.getPassword();
+        return ObjectUtil.isNotNull(sysUser) ? sysUser.getPassword() : null;
     }
 
     /**
@@ -121,6 +123,6 @@ public class LoginUser implements UserDetails {
     @Override
     @JsonIgnore  // 序列化时忽略
     public String getUsername() {
-        return sysUser.getUsername();
+        return ObjectUtil.isNotNull(sysUser) ? sysUser.getUsername() : null;
     }
 }

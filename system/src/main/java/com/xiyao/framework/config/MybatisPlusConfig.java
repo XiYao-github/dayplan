@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInt
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.xiyao.common.base.entity.MyBaseEntity;
 import com.xiyao.security.utils.SecurityUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.ExecutorType;
@@ -45,7 +44,6 @@ import java.time.LocalDateTime;
  *
  * @author xiyao
  */
-@Slf4j
 @Configuration
 @EnableTransactionManagement
 @MapperScan({"com.xiyao.**.mapper"})
@@ -118,7 +116,6 @@ public class MybatisPlusConfig {
              */
             @Override
             public void insertFill(MetaObject metaObject) {
-                log.info("开始插入填充...");
 
                 Long userId = getUserId();  // 获取当前用户ID
                 LocalDateTime now = LocalDateTime.now();  // 获取当前时间
@@ -139,7 +136,6 @@ public class MybatisPlusConfig {
              */
             @Override
             public void updateFill(MetaObject metaObject) {
-                log.info("开始更新填充...");
 
                 Long userId = getUserId();
                 LocalDateTime now = LocalDateTime.now();

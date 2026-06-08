@@ -32,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author xiyao
  * @see Result
  */
-@Slf4j
 public class MyBaseController {
 
     /**

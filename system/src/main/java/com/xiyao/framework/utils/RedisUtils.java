@@ -1,5 +1,7 @@
 package com.xiyao.framework.utils;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -52,6 +54,9 @@ public class RedisUtils {
      * @param value 缓存值
      */
     public void set(final String key, final Object value) {
+        if (StrUtil.isBlank(key)) {
+            return;
+        }
         redisTemplate.opsForValue().set(key, value);
     }
 
@@ -63,6 +68,9 @@ public class RedisUtils {
      * @param timeout  过期时间（秒）
      */
     public void set(final String key, final Object value, final long timeout) {
+        if (StrUtil.isBlank(key)) {
+            return;
+        }
         redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS);
     }
 
@@ -73,6 +81,9 @@ public class RedisUtils {
      * @return 缓存值，找不到返回 null
      */
     public Object get(String key) {
+        if (StrUtil.isBlank(key)) {
+            return null;
+        }
         return redisTemplate.opsForValue().get(key);
     }
 
@@ -85,8 +96,11 @@ public class RedisUtils {
      * @return 转换后的缓存值，找不到返回 null
      */
     public <T> T get(String key, Class<T> clazz) {
+        if (StrUtil.isBlank(key) || ObjectUtil.isNull(clazz)) {
+            return null;
+        }
         Object value = get(key);
-        if (value == null) {
+        if (ObjectUtil.isNull(value)) {
             return null;
         } else {
             return clazz.cast(value);
@@ -102,6 +116,9 @@ public class RedisUtils {
      * @return true 删除成功，false 删除失败
      */
     public boolean delete(final String key) {
+        if (StrUtil.isBlank(key)) {
+            return false;
+        }
         return redisTemplate.delete(key);
     }
 
@@ -113,6 +130,9 @@ public class RedisUtils {
      * @return true 设置成功，false 设置失败
      */
     public boolean expire(final String key, final long time) {
+        if (StrUtil.isBlank(key)) {
+            return false;
+        }
         return redisTemplate.expire(key, time, TimeUnit.SECONDS);
     }
 }

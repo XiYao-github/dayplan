@@ -1,5 +1,6 @@
 package com.xiyao.security.service;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.utils.SecurityUtils;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class SecurityService {
      */
     public boolean isLogin() {
         // 从 SecurityContext 获取登录用户，为空则未登录
-        return SecurityUtils.getLoginUser() != null;
+        return ObjectUtil.isNotNull(SecurityUtils.getLoginUser());
     }
 
     /**
@@ -166,7 +167,7 @@ public class SecurityService {
         // 获取当前登录用户
         LoginUser user = SecurityUtils.getLoginUser();
         // 用户未登录，直接返回 false
-        if (user == null) {
+        if (ObjectUtil.isNull(user)) {
             return false;
         }
         // 遍历用户权限列表，检查是否包含指定角色
@@ -195,7 +196,7 @@ public class SecurityService {
         // 获取当前登录用户
         LoginUser user = SecurityUtils.getLoginUser();
         // 用户未登录，直接返回 false
-        if (user == null) {
+        if (ObjectUtil.isNull(user)) {
             return false;
         }
         // 将角色名称数组转换为带 ROLE_ 前缀的格式
@@ -228,7 +229,7 @@ public class SecurityService {
         // 获取当前登录用户
         LoginUser user = SecurityUtils.getLoginUser();
         // 用户未登录，直接返回 false
-        if (user == null) {
+        if (ObjectUtil.isNull(user)) {
             return false;
         }
         // 遍历用户权限列表，检查是否包含指定权限标识

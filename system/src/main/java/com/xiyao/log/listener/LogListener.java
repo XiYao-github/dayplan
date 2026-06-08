@@ -1,5 +1,6 @@
 package com.xiyao.log.listener;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.SmUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.log.enums.LogType;
@@ -101,7 +102,7 @@ public class LogListener {
 
             // ========== AUDIT 类型计算哈希链 ==========
             // OPERATION 类型日志不做哈希链，AUDIT 类型需要防篡改
-            if (event.getLogType() != null && event.getLogType() == LogType.AUDIT.ordinal()) {
+            if (ObjectUtil.isNotNull(event.getLogType()) && event.getLogType() == LogType.AUDIT.ordinal()) {
                 // 计算当前记录的哈希值
                 String hash = computeOperationHash(logOperation);
                 logOperation.setHash(hash);
@@ -181,7 +182,7 @@ public class LogListener {
                     .orderByDesc(LogLogin::getId)                 // 按 ID 降序
                     .select(LogLogin::getHash)                     // 只查询 hash 字段
                     .last("LIMIT 1").one();                        // 取最新一条
-            return last != null ? last.getHash() : null;
+            return ObjectUtil.isNotNull(last) ? last.getHash() : null;
         } catch (Exception e) {
             // 查询失败返回 null，第一条记录没有 prevHash
             return null;
@@ -204,7 +205,7 @@ public class LogListener {
                     .orderByDesc(LogOperation::getId)              // 按 ID 降序
                     .select(LogOperation::getHash)                // 只查询 hash 字段
                     .last("LIMIT 1").one();                        // 取最新一条
-            return last != null ? last.getHash() : null;
+            return ObjectUtil.isNotNull(last) ? last.getHash() : null;
         } catch (Exception e) {
             // 查询失败返回 null，第一条记录没有 prevHash
             return null;
@@ -236,14 +237,14 @@ public class LogListener {
         String data = String.join("|",
                 HASH_SEED,                                              // 哈希种子
                 String.valueOf(logLogin.getUserId()),                  // 用户 ID
-                logLogin.getUsername() != null ? logLogin.getUsername() : "",  // 用户名
+                ObjectUtil.isNotNull(logLogin.getUsername()) ? logLogin.getUsername() : "",  // 用户名
                 String.valueOf(logLogin.getAuthType()),               // 认证类型
                 String.valueOf(logLogin.getStatus()),                 // 认证状态
-                logLogin.getMessage() != null ? logLogin.getMessage() : "",    // 消息
-                logLogin.getIp() != null ? logLogin.getIp() : "",      // IP
-                logLogin.getTraceId() != null ? logLogin.getTraceId() : "",    // traceId
-                String.valueOf(logLogin.getLoginTime() != null ? logLogin.getLoginTime().toString() : ""),  // 认证时间
-                getLastLoginHash() != null ? getLastLoginHash() : ""   // 上一条哈希
+                ObjectUtil.isNotNull(logLogin.getMessage()) ? logLogin.getMessage() : "",    // 消息
+                ObjectUtil.isNotNull(logLogin.getIp()) ? logLogin.getIp() : "",      // IP
+                ObjectUtil.isNotNull(logLogin.getTraceId()) ? logLogin.getTraceId() : "",    // traceId
+                String.valueOf(ObjectUtil.isNotNull(logLogin.getLoginTime()) ? logLogin.getLoginTime().toString() : ""),  // 认证时间
+                ObjectUtil.isNotNull(getLastLoginHash()) ? getLastLoginHash() : ""   // 上一条哈希
         );
         // 使用国密 SM3 算法计算哈希
         return SmUtil.sm3(data);
@@ -277,17 +278,17 @@ public class LogListener {
         String data = String.join("|",
                 HASH_SEED,                                              // 哈希种子
                 String.valueOf(logOperation.getUserId()),             // 用户 ID
-                logOperation.getUsername() != null ? logOperation.getUsername() : "",  // 用户名
+                ObjectUtil.isNotNull(logOperation.getUsername()) ? logOperation.getUsername() : "",  // 用户名
                 String.valueOf(logOperation.getAdminType()),          // 三员类型
-                logOperation.getOperationModule() != null ? logOperation.getOperationModule() : "",  // 操作模块
-                logOperation.getOperationMethod() != null ? logOperation.getOperationMethod() : "",  // 操作方法
+                ObjectUtil.isNotNull(logOperation.getOperationModule()) ? logOperation.getOperationModule() : "",  // 操作模块
+                ObjectUtil.isNotNull(logOperation.getOperationMethod()) ? logOperation.getOperationMethod() : "",  // 操作方法
                 String.valueOf(logOperation.getOperationType()),      // 操作类型
                 String.valueOf(logOperation.getStatus()),            // 状态
-                logOperation.getMessage() != null ? logOperation.getMessage() : "",  // 消息
+                ObjectUtil.isNotNull(logOperation.getMessage()) ? logOperation.getMessage() : "",  // 消息
                 String.valueOf(logOperation.getCostTime()),           // 消耗时间
-                logOperation.getTraceId() != null ? logOperation.getTraceId() : "",  // traceId
-                String.valueOf(logOperation.getOperationTime() != null ? logOperation.getOperationTime().toString() : ""),  // 操作时间
-                getLastOperationHash() != null ? getLastOperationHash() : ""  // 上一条哈希
+                ObjectUtil.isNotNull(logOperation.getTraceId()) ? logOperation.getTraceId() : "",  // traceId
+                String.valueOf(ObjectUtil.isNotNull(logOperation.getOperationTime()) ? logOperation.getOperationTime().toString() : ""),  // 操作时间
+                ObjectUtil.isNotNull(getLastOperationHash()) ? getLastOperationHash() : ""  // 上一条哈希
         );
         // 使用国密 SM3 算法计算哈希
         return SmUtil.sm3(data);

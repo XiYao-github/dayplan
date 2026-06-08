@@ -1,8 +1,9 @@
 package com.xiyao.log.aspect;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
+import com.xiyao.framework.utils.SpringUtils;
 import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.event.LogOperationEvent;
@@ -110,7 +111,7 @@ public class LogAspect {
             // 设置操作时间
             event.setTime(LocalDateTime.now());
             // 异步发布事件，由 LogListener 处理保存逻辑
-            SpringUtil.publishEvent(event);
+            SpringUtils.publishEvent(event);
         }
     }
 
@@ -203,7 +204,7 @@ public class LogAspect {
         try {
             // 获取方法参数值数组
             Object[] args = point.getArgs();
-            if (args == null || args.length == 0) {
+            if (ArrayUtil.isEmpty(args)) {
                 return "";
             }
 
@@ -221,7 +222,7 @@ public class LogAspect {
                 }
                 // 获取参数名
                 String paramName;
-                if (parameterNames != null && i < parameterNames.length) {
+                if (ObjectUtil.isNotNull(parameterNames) && i < parameterNames.length) {
                     paramName = parameterNames[i];
                 } else {
                     paramName = "arg" + i;
@@ -248,7 +249,7 @@ public class LogAspect {
      * @return true 需要排除，false 需要记录
      */
     private boolean isExcludedObject(Object obj) {
-        if (obj == null) {
+        if (ObjectUtil.isNull(obj)) {
             return true;
         }
 

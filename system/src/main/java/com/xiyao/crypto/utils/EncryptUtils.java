@@ -9,6 +9,8 @@ import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
 import cn.hutool.crypto.symmetric.SM4;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
@@ -44,6 +46,7 @@ import java.security.KeyPair;
  * @see SM4
  * @see SM2
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EncryptUtils {
 
     /**

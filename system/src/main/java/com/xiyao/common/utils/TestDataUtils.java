@@ -1,5 +1,7 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -192,7 +194,7 @@ public class TestDataUtils {
      */
     @SafeVarargs
     public static <T> T randomOne(T... array) {
-        if (array == null || array.length == 0) {
+        if (ArrayUtil.isEmpty(array)) {
             return null;
         }
         return array[RANDOM.nextInt(array.length)];
@@ -275,7 +277,7 @@ public class TestDataUtils {
      * @return 邮箱地址
      */
     public static String randomEmail(String prefix) {
-        if (prefix == null || prefix.isEmpty()) {
+        if (StrUtil.isBlank(prefix)) {
             prefix = randomString(randomInt(4, 10));
         }
 

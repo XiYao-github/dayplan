@@ -1,5 +1,6 @@
 package com.xiyao.common.base.event;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import cn.hutool.http.useragent.UserAgent;
@@ -46,7 +47,7 @@ public abstract class MyBaseEvent implements Serializable {
      */
     public MyBaseEvent() {
         HttpServletRequest request = WebUtils.getRequest();
-        if (request != null) {
+        if (ObjectUtil.isNotNull(request)) {
             // 网络信息
             this.clientIp = JakartaServletUtil.getClientIP(request);
             this.clientPort = request.getRemotePort();
@@ -68,13 +69,13 @@ public abstract class MyBaseEvent implements Serializable {
             if (StrUtil.isNotBlank(this.userAgent)) {
                 UserAgent ua = UserAgentUtil.parse(this.userAgent);
                 // 操作系统
-                this.os = ua.getOs() != null ? ua.getOs().getName() : "未知";
+                this.os = ObjectUtil.isNotNull(ua.getOs()) ? ua.getOs().getName() : "未知";
                 // 浏览器 + 版本
-                String browserName = ua.getBrowser() != null ? ua.getBrowser().getName() : "未知";
-                String browserVersion = ua.getVersion() != null ? " " + ua.getVersion() : "";
+                String browserName = ObjectUtil.isNotNull(ua.getBrowser()) ? ua.getBrowser().getName() : "未知";
+                String browserVersion = ObjectUtil.isNotNull(ua.getVersion()) ? " " + ua.getVersion() : "";
                 this.browser = browserName + browserVersion;
                 // 平台
-                this.platform = ua.getPlatform() != null ? ua.getPlatform().getName() : "PC";
+                this.platform = ObjectUtil.isNotNull(ua.getPlatform()) ? ua.getPlatform().getName() : "PC";
             }
         }
     }

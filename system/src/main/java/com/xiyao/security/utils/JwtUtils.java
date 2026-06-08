@@ -9,7 +9,6 @@ import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.properties.SecurityData;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -51,7 +50,6 @@ import java.util.Map;
  * @see LoginUser
  * @see SecurityData
  */
-@Slf4j
 @AllArgsConstructor
 public class JwtUtils {
 
@@ -239,6 +237,9 @@ public class JwtUtils {
      * @return true 验证通过，false 验证失败（签名错误或已过期）
      */
     public boolean validateToken(String token) {
+        if (StrUtil.isBlank(token)) {
+            return false;
+        }
         try {
             // 解析 Token
             JWT jwt = JWT.of(token).setKey(getSecret());
@@ -247,8 +248,7 @@ public class JwtUtils {
             // jwt.validate(0) 验证过期时间，0 表示允许 0 秒的误差
             return jwt.verify() && jwt.validate(0);
         } catch (Exception e) {
-            // 验证失败记录日志并返回 false
-            log.debug("Token 验证失败: {}", e.getMessage());
+            // 验证失败返回 false
             return false;
         }
     }
@@ -262,6 +262,9 @@ public class JwtUtils {
      * @return 登录用户标识（UUID）
      */
     public String getLoginUserKey(String token) {
+        if (StrUtil.isBlank(token)) {
+            return null;
+        }
         // 解析 Token 获取 Payload
         JWT jwt = JWTUtil.parseToken(token);
         // 从 Payload 中获取 login_token 键的值
@@ -285,6 +288,9 @@ public class JwtUtils {
      * @return LoginUser 对象，不存在返回 null
      */
     public LoginUser getLoginUser(String token) {
+        if (StrUtil.isBlank(token)) {
+            return null;
+        }
         // 从 Token 中获取登录用户标识
         String loginUserKey = getLoginUserKey(token);
         // 拼接完整 Redis Key 并查询

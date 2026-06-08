@@ -1,6 +1,7 @@
 package com.xiyao.log.filter;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -82,7 +83,7 @@ public class TraceFilter implements Filter {
 
         // 从请求头获取 traceId，为空则生成新的 UUID
         String traceId = httpRequest.getHeader(TRACE_ID_HEADER);
-        if (traceId == null || traceId.isEmpty()) {
+        if (StrUtil.isBlank(traceId)) {
             // 生成唯一的跟踪 ID
             traceId = IdUtil.fastSimpleUUID();
         }

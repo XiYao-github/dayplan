@@ -1,7 +1,12 @@
 package com.xiyao.dict.utils;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.entity.SysAddress;
+import com.xiyao.system.vo.AddressVo;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -16,7 +21,7 @@ import java.util.stream.Collectors;
  * 地区信息缓存管理器
  * <p>
  * 负责管理地址数据缓存，提供地区名称查询、层级结构获取等功能。
- * 使用单例模式实现，确保全局唯一的缓存实例。
+ * 使用静态方法实现，直接通过类名调用。
  *
  * <p>
  * <b>核心功能：</b>
@@ -32,56 +37,43 @@ import java.util.stream.Collectors;
  * <b>使用示例：</b>
  * <pre>{@code
  * // 获取单个地址名称
- * String name = AddressUtils.getInstance().getName(440305);
+ * String name = AddressUtils.getName(440305);
  *
  * // 批量获取名称映射
  * List<Long> codes = Arrays.asList(440305, 440100, 110000);
- * Map<Long, String> nameMap = AddressUtils.getInstance().getNameMap(codes);
+ * Map<Long, String> nameMap = AddressUtils.getNameMap(codes);
  *
  * // 批量填充到对象（常用于 VO 回显）
  * List<UserVO> users = userService.list();
- * AddressUtils.getInstance().fillName(users, UserVO::getRegionCode, UserVO::setRegionName);
+ * AddressUtils.fillName(users, UserVO::getRegionCode, UserVO::setRegionName);
  * }</pre>
  *
  * @author xiyao
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddressUtils {
-
-    /**
-     * 单例实例，使用饿汉模式确保全局唯一
-     */
-    private static final AddressUtils INSTANCE = new AddressUtils();
-
-    /**
-     * 获取单例实例
-     *
-     * @return AddressUtils 实例
-     */
-    public static AddressUtils getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * 地址缓存：code -> SysAddress
      * <p>
      * 使用 ConcurrentHashMap 保证线程安全，支持高并发读取
      */
-    private final Map<Long, SysAddress> addressCache = new ConcurrentHashMap<>();
+    private static final Map<Long, SysAddress> addressCache = new ConcurrentHashMap<>();
 
     /**
      * 子地区缓存：parentCode -> 子地区列表
      * <p>
      * 用于快速查询某地区的下级地区列表
      */
-    private final Map<Long, List<SysAddress>> childrenCache = new ConcurrentHashMap<>();
+    private static final Map<Long, List<SysAddress>> childrenCache = new ConcurrentHashMap<>();
 
     /**
      * 读写锁，保证缓存更新时的线程安全
      * <p>
      * 读操作可并发执行，写操作独占
      */
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     // ==================== 基础查询 ====================
 
@@ -91,8 +83,18 @@ public class AddressUtils {
      * @param code 区划代码
      * @return 地址对象，找不到返回 null
      */
-    public SysAddress getAddress(Long code) {
-        return addressCache.getOrDefault(code, null);
+    public static AddressVo getAddress(Long code) {
+        if (ObjectUtil.isNull(code)) {
+            return null;
+        }
+
+        lock.readLock().lock();
+        try {
+            SysAddress address = addressCache.get(code);
+            return ObjectUtil.isNotNull(address) ? toVo(address) : null;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -101,9 +103,17 @@ public class AddressUtils {
      * @param code 区划代码
      * @return 地区名称，找不到返回空字符串
      */
-    public String getName(Long code) {
-        SysAddress address = getAddress(code);
-        return address != null ? address.getName() : "";
+    public static String getName(Long code) {
+        if (ObjectUtil.isNull(code)) {
+            return "";
+        }
+        lock.readLock().lock();
+        try {
+            SysAddress address = addressCache.get(code);
+            return ObjectUtil.isNotNull(address) ? address.getName() : "";
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     // ==================== 批量查询 ====================
@@ -116,14 +126,14 @@ public class AddressUtils {
      * @param codes 地址编码列表
      * @return 地址编码到名称的映射Map，key为code，value为name
      */
-    public Map<Long, String> getNameMap(Collection<Long> codes) {
-        if (codes.isEmpty()) {
+    public static Map<Long, String> getNameMap(Collection<Long> codes) {
+        if (CollUtil.isEmpty(codes)) {
             return Collections.emptyMap();
         }
         return codes.stream()
                 .filter(Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(Function.identity(), this::getName, (a, b) -> a));
+                .collect(Collectors.toMap(Function.identity(), AddressUtils::getName, (a, b) -> a));
     }
 
     /**
@@ -132,14 +142,14 @@ public class AddressUtils {
      * @param codes 地址编码列表
      * @return 地址编码到地址对象的映射Map
      */
-    public Map<Long, SysAddress> getAddressMap(Collection<Long> codes) {
-        if (codes.isEmpty()) {
+    public static Map<Long, AddressVo> getAddressMap(Collection<Long> codes) {
+        if (CollUtil.isEmpty(codes)) {
             return Collections.emptyMap();
         }
         return codes.stream()
                 .filter(Objects::nonNull)
                 .distinct()
-                .collect(Collectors.toMap(Function.identity(), this::getAddress, (a, b) -> a));
+                .collect(Collectors.toMap(Function.identity(), AddressUtils::getAddress, (a, b) -> a));
     }
 
     // ==================== 批量填充 ====================
@@ -155,7 +165,7 @@ public class AddressUtils {
      * <pre>{@code
      * // 假设 UserVO 有 regionCode 和 regionName 两个字段
      * List<UserVO> users = userService.list();
-     * addressUtils.fillName(users, UserVO::getRegionCode, UserVO::setRegionName);
+     * AddressUtils.fillName(users, UserVO::getRegionCode, UserVO::setRegionName);
      * }</pre>
      *
      * @param list       待填充的对象列表
@@ -163,8 +173,8 @@ public class AddressUtils {
      * @param nameSetter 将地址名称设置到对象中的函数
      * @param <T>        对象类型
      */
-    public <T> void fillName(Collection<T> list, Function<T, Long> codeGetter, BiConsumer<T, String> nameSetter) {
-        if (list.isEmpty()) {
+    public static <T> void fillName(Collection<T> list, Function<T, Long> codeGetter, BiConsumer<T, String> nameSetter) {
+        if (CollUtil.isEmpty(list) || ObjectUtil.isNull(codeGetter) || ObjectUtil.isNull(nameSetter)) {
             return;
         }
         // 收集去重后的所有编码
@@ -177,7 +187,7 @@ public class AddressUtils {
         // 回填到每个对象
         list.forEach(item -> {
             Long code = codeGetter.apply(item);
-            if (code != null) {
+            if (ObjectUtil.isNotNull(code)) {
                 nameSetter.accept(item, nameMap.getOrDefault(code, ""));
             }
         });
@@ -191,50 +201,91 @@ public class AddressUtils {
      * @param parentCode 父级区划代码
      * @return 子地区列表，如果无子地区返回空列表
      */
-    public List<SysAddress> getChildren(Long parentCode) {
-        if (childrenCache.containsKey(parentCode)) {
-            return Collections.unmodifiableList(childrenCache.get(parentCode));
-        } else {
+    public static List<AddressVo> getChildren(Long parentCode) {
+        if (ObjectUtil.isNull(parentCode)) {
             return Collections.emptyList();
+        }
+        lock.readLock().lock();
+        try {
+            List<SysAddress> children = childrenCache.get(parentCode);
+            if (CollUtil.isEmpty(children)) {
+                return Collections.emptyList();
+            }
+            return children.stream()
+                    .map(AddressUtils::toVo)
+                    .collect(Collectors.toList());
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
-    public List<SysAddress> getAllChildren(Long parentCode) {
-        List<SysAddress> result = new ArrayList<>();
-        List<SysAddress> children = getChildren(parentCode);
-        for (SysAddress child : children) {
-            result.add(child);
-            result.addAll(getAllChildren(child.getCode()));
+    /**
+     * 获取所有后代地区列表（递归）
+     *
+     * @param parentCode 父级区划代码
+     * @return 所有后代地区列表，包含直接子级和间接子级
+     */
+    public static List<AddressVo> getAllChildren(Long parentCode) {
+        return getAllChildren(parentCode, new HashSet<>());
+    }
+
+    /**
+     * 递归获取所有后代地区列表
+     *
+     * @param parentCode 父级区划代码
+     * @param visited    已访问的编码集合，用于防止循环引用
+     * @return 所有后代地区列表
+     */
+    private static List<AddressVo> getAllChildren(Long parentCode, Set<Long> visited) {
+        List<AddressVo> result = new ArrayList<>();
+        if (visited.add(parentCode)) {
+            List<AddressVo> children = getChildren(parentCode);
+            for (AddressVo child : children) {
+                result.add(child);
+                result.addAll(getAllChildren(child.getCode(), visited));
+            }
         }
         return result;
     }
 
-    public List<SysAddress> getTree(Long code) {
-        List<SysAddress> list = new ArrayList<>();
+    /**
+     * 获取指定地区的树形结构
+     * <p>
+     * 返回指定 code 下的所有直接子级构成的树形结构，每个节点包含其子节点列表。
+     *
+     * @param code 区划代码
+     * @return 子地区树形列表，如果无子地区返回空列表
+     */
+    public static List<AddressVo> getTree(Long code) {
+        lock.readLock().lock();
+        try {
+            List<AddressVo> childrenList = getAllChildren(code);
+            if (CollUtil.isEmpty(childrenList)) {
+                return Collections.emptyList();
+            }
 
-        // 获取所有后代节点
-        List<SysAddress> childrenList = getAllChildren(code);
+            // 建立 code -> AddressVo 的映射，用于快速查找父节点
+            Map<Long, AddressVo> childrenMap = childrenList.stream()
+                    .collect(Collectors.toMap(AddressVo::getCode, Function.identity(), (a, b) -> a));
 
-        // 创建映射
-        Map<Long, SysAddress> childrenMap = childrenList.stream().collect(Collectors.toMap(SysAddress::getCode, Function.identity()));
-
-        // 构建父子关系
-        for (SysAddress children : childrenList) {
-            Long parentCode = children.getParentCode();
-            if (Objects.equals(parentCode, code)) {
-                list.add(children);
-            } else {
-                SysAddress parent = childrenMap.get(parentCode);
-                if (parent != null) {
-                    if (parent.getChildren() == null) {
-                        parent.setChildren(new ArrayList<>());
+            List<AddressVo> roots = new ArrayList<>();
+            for (AddressVo child : childrenList) {
+                Long parentCode = child.getParentCode();
+                if (Objects.equals(parentCode, code)) {
+                    // 顶层节点，直接子级
+                    roots.add(child);
+                } else {
+                    // 非顶层节点，挂到父节点下
+                    AddressVo parent = childrenMap.get(parentCode);
+                    if (ObjectUtil.isNotNull(parent)) {
+                        parent.addChild(child);
                     }
-                    parent.getChildren().add(children);
                 }
             }
+            return roots;
+        } finally {
+            lock.readLock().unlock();
         }
-
-        return list;
     }
 
     // ==================== 缓存管理 ====================
@@ -245,7 +296,7 @@ public class AddressUtils {
      * 在应用启动时执行，将数据库中的地址数据全部加载到内存缓存。
      * 使用写锁保证线程安全，加载完成后输出日志。
      */
-    public void loadAll() {
+    public static void loadAll() {
         lock.writeLock().lock();
         try {
             addressCache.clear();
@@ -254,13 +305,9 @@ public class AddressUtils {
             List<SysAddress> list = Db.lambdaQuery(SysAddress.class).list();
 
             for (SysAddress address : list) {
-                // 构建地址主缓存
                 addressCache.put(address.getCode(), address);
-
-                // 构建子地区缓存
-                List<SysAddress> childList = childrenCache.computeIfAbsent(address.getParentCode(), k -> Collections.synchronizedList(new ArrayList<>()));
-                childList.add(address);
-
+                childrenCache.computeIfAbsent(address.getParentCode(), k -> Collections.synchronizedList(new ArrayList<>()))
+                        .add(address);
             }
 
             log.info("地区缓存加载完成，共 {} 条", list.size());
@@ -274,7 +321,31 @@ public class AddressUtils {
      * <p>
      * 等同于清空后重新加载所有地址数据。
      */
-    public void refreshAll() {
+    public static void refreshAll() {
         loadAll();
+    }
+
+    /**
+     * 将 SysAddress 实体转换为 AddressVo 视图对象
+     *
+     * @param source 实体对象
+     * @return 视图对象，如果实体为 null 则返回 null
+     */
+    private static AddressVo toVo(SysAddress source) {
+        if (ObjectUtil.isNull(source)) {
+            return null;
+        }
+        return new AddressVo()
+                .setCode(source.getCode())
+                .setParentCode(source.getParentCode())
+                .setName(source.getName())
+                .setProvinceCode(source.getProvinceCode())
+                .setProvinceName(source.getProvinceName())
+                .setCityCode(source.getCityCode())
+                .setCityName(source.getCityName())
+                .setAreaCode(source.getAreaCode())
+                .setAreaName(source.getAreaName())
+                .setSort(source.getSort())
+                .setLevel(source.getLevel());
     }
 }

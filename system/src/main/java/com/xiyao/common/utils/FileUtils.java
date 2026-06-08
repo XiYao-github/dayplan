@@ -1,5 +1,8 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -137,7 +140,7 @@ public class FileUtils {
         // 生成文件名
         String originalFilename = file.getOriginalFilename();
         String extension = getExtension(originalFilename);
-        if (fileName == null) {
+        if (ObjectUtil.isNull(fileName)) {
             fileName = generateFileName(extension);
         } else {
             fileName = fileName + extension;
@@ -170,7 +173,7 @@ public class FileUtils {
      * @throws IOException IO 异常
      */
     public static String upload(byte[] data, String fileName, String basePath) throws IOException {
-        if (data == null || data.length == 0) {
+        if (ArrayUtil.isEmpty(data)) {
             throw new IllegalArgumentException("数据不能为空");
         }
 
@@ -265,7 +268,7 @@ public class FileUtils {
      * @throws IOException IO 异常
      */
     public static byte[] download(String url) throws IOException {
-        if (url == null || url.isEmpty()) {
+        if (StrUtil.isBlank(url)) {
             throw new IllegalArgumentException("文件路径不能为空");
         }
 
@@ -334,7 +337,7 @@ public class FileUtils {
      * @return 是否删除成功
      */
     public static boolean delete(String url) {
-        if (url == null || url.isEmpty()) {
+        if (StrUtil.isBlank(url)) {
             return false;
         }
 
@@ -402,7 +405,7 @@ public class FileUtils {
      * @return 是否存在
      */
     public static boolean exists(String url) {
-        if (url == null || url.isEmpty()) {
+        if (StrUtil.isBlank(url)) {
             return false;
         }
 
@@ -463,7 +466,7 @@ public class FileUtils {
      */
     private static String buildUrl(String relativePath) {
         String domain = LOCAL_CONFIG.getDomain();
-        if (domain == null || domain.isEmpty()) {
+        if (StrUtil.isBlank(domain)) {
             return relativePath;
         }
         // 移除开头的斜杠
@@ -480,6 +483,9 @@ public class FileUtils {
      * @return 相对路径
      */
     private static String extractPath(String url) {
+        if (StrUtil.isBlank(url)) {
+            return "";
+        }
         if (url.startsWith("http://") || url.startsWith("https://")) {
             // 提取域名后面的路径
             int idx = url.indexOf("/", 8);
@@ -495,7 +501,7 @@ public class FileUtils {
      * @return 扩展名（含点），如 ".jpg"
      */
     private static String getExtension(String filename) {
-        if (filename == null || filename.isEmpty()) {
+        if (StrUtil.isBlank(filename)) {
             return "";
         }
         int lastDot = filename.lastIndexOf('.');

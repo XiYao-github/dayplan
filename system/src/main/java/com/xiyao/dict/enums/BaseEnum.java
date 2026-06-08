@@ -1,5 +1,7 @@
 package com.xiyao.dict.enums;
 
+import cn.hutool.core.util.ObjectUtil;
+
 /**
  * 枚举基础接口
  * <p>
@@ -77,7 +79,7 @@ public interface BaseEnum<T> {
      */
     static <T extends BaseEnum<?>> T fromValue(Class<T> enumClass, Object value) {
         // 空值检查，避免后续处理空指针
-        if (value == null) {
+        if (ObjectUtil.isNull(value)) {
             return null;
         }
 

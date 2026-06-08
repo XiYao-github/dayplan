@@ -1,5 +1,6 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -119,12 +120,12 @@ public class SmsUtils {
      * @return 是否发送成功
      */
     public static boolean send(String phoneNumber, String templateCode, Map<String, String> params) {
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
+        if (StrUtil.isBlank(phoneNumber)) {
             log.error("手机号不能为空");
             return false;
         }
 
-        if (templateCode == null || templateCode.isEmpty()) {
+        if (StrUtil.isBlank(templateCode)) {
             log.error("模板编码不能为空");
             return false;
         }
@@ -148,9 +149,14 @@ public class SmsUtils {
      * @return 是否发送成功
      */
     public static boolean sendVerifyCode(String phoneNumber, String code) {
+        // 参数校验
+        if (StrUtil.isBlank(code)) {
+            log.error("发送验证码失败：验证码不能为空");
+            return false;
+        }
         // 使用配置的验证码模板
         String templateCode = ALIYUN_CONFIG.getTemplateCode();
-        if (templateCode == null || templateCode.isEmpty()) {
+        if (StrUtil.isBlank(templateCode)) {
             // 使用腾讯云模板
             templateCode = TENCENT_CONFIG.getTemplateCode();
         }
@@ -187,7 +193,7 @@ public class SmsUtils {
     public static boolean sendMarketing(String phoneNumber, String content) {
         // 营销短信通常使用不同的模板
         String templateCode = ALIYUN_CONFIG.getMarketingTemplateCode();
-        if (templateCode == null || templateCode.isEmpty()) {
+        if (StrUtil.isBlank(templateCode)) {
             log.error("营销短信模板未配置");
             return false;
         }

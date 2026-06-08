@@ -1,5 +1,6 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.util.ObjectUtil;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -56,7 +57,7 @@ public class ConvertUtils {
      * @throws NullPointerException source 为 null 时
      */
     public <T> T sourceToTarget(Object source, Class<T> target, String... ignoreProperties) {
-        if (source == null) {
+        if (ObjectUtil.isNull(source)) {
             return null;
         }
         T targetObject = null;
@@ -84,7 +85,7 @@ public class ConvertUtils {
      * @return 目标类型集合，源集合为空时返回空列表，转换失败返回空列表
      */
     public <T> List<T> sourceToTarget(Collection<?> sourceList, Class<T> target, String... ignoreProperties) {
-        if (sourceList == null) {
+        if (ObjectUtil.isNull(sourceList)) {
             return null;
         }
         List<T> targetList = new ArrayList<>(sourceList.size());

@@ -1,5 +1,7 @@
 package com.xiyao.crypto.filter.wrapper;
 
+import cn.hutool.core.util.ObjectUtil;
+
 import cn.hutool.core.util.RandomUtil;
 import com.xiyao.crypto.utils.EncryptUtils;
 import jakarta.servlet.ServletOutputStream;
@@ -123,11 +125,11 @@ public class EncryptResponseWrapper extends HttpServletResponseWrapper {
     @Override
     public void flushBuffer() throws IOException {
         // 刷新字节流代理
-        if (servletOutputStream != null) {
+        if (ObjectUtil.isNotNull(servletOutputStream)) {
             servletOutputStream.flush();
         }
         // 刷新字符流代理
-        if (printWriter != null) {
+        if (ObjectUtil.isNotNull(printWriter)) {
             printWriter.flush();
         }
     }

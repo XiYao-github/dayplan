@@ -1,6 +1,7 @@
 package com.xiyao.dict.interceptor;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.xiyao.dict.annotation.DictBind;
 import com.xiyao.dict.utils.DictUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -142,7 +143,7 @@ public class DictInterceptor implements Interceptor {
     private void processDictField(Field field, Object result) {
         // 获取字段上的 @DictBind 注解
         DictBind dictBind = field.getAnnotation(DictBind.class);
-        if (dictBind == null) {
+        if (ObjectUtil.isNull(dictBind)) {
             return;
         }
 
@@ -151,7 +152,7 @@ public class DictInterceptor implements Interceptor {
 
         // target 必须显式指定，否则跳过处理
         String target = dictBind.target();
-        if (target == null || target.isEmpty()) {
+        if (StrUtil.isBlank(target)) {
             return;
         }
 
@@ -160,13 +161,13 @@ public class DictInterceptor implements Interceptor {
 
         // 获取字段值
         Object value = metaObject.getValue(field.getName());
-        if (value == null || value.toString().isEmpty()) {
+        if (ObjectUtil.isNull(value) || StrUtil.isBlank(value.toString())) {
             return;
         }
 
         // 从字典缓存获取标签文本
-        String label = DictUtils.getInstance().getDictLabel(code, value.toString());
-        if (label == null || label.isEmpty()) {
+        String label = DictUtils.getDictLabel(code, value.toString());
+        if (StrUtil.isBlank(label)) {
             return;
         }
 

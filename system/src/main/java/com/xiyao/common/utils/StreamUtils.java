@@ -1,7 +1,6 @@
 package com.xiyao.common.utils;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapUtil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -235,7 +234,7 @@ public class StreamUtils {
      */
     public static <V, K> Map<K, V> toIdentityMap(Collection<V> collection, Function<V, K> key) {
         if (CollUtil.isEmpty(collection)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -260,7 +259,7 @@ public class StreamUtils {
      */
     public static <E, K, V> Map<K, V> toMap(Collection<E> collection, Function<E, K> key, Function<E, V> value) {
         if (CollUtil.isEmpty(collection)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -282,7 +281,7 @@ public class StreamUtils {
      */
     public static <K, E, V> Map<K, V> toMap(Map<K, E> map, BiFunction<K, E, V> take) {
         if (CollUtil.isEmpty(map)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return toMap(map.entrySet(), Map.Entry::getKey, entry -> take.apply(entry.getKey(), entry.getValue()));
     }
@@ -302,7 +301,7 @@ public class StreamUtils {
      */
     public static <E, K> Map<K, List<E>> groupByKey(Collection<E> collection, Function<E, K> key) {
         if (CollUtil.isEmpty(collection)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -326,7 +325,7 @@ public class StreamUtils {
      */
     public static <E, K, U> Map<K, Map<U, List<E>>> groupBy2Key(Collection<E> collection, Function<E, K> key1, Function<E, U> key2) {
         if (CollUtil.isEmpty(collection)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -350,7 +349,7 @@ public class StreamUtils {
      */
     public static <E, T, U> Map<T, Map<U, E>> group2Map(Collection<E> collection, Function<E, T> key1, Function<E, U> key2) {
         if (CollUtil.isEmpty(collection)) {
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         }
         return collection.stream()
             .filter(Objects::nonNull)
@@ -424,7 +423,7 @@ public class StreamUtils {
     public static <K, X, Y, V> Map<K, V> merge(Map<K, X> map1, Map<K, Y> map2, BiFunction<X, Y, V> merge) {
         if (CollUtil.isEmpty(map1) && CollUtil.isEmpty(map2)) {
             // 如果两个 map 都为空，则直接返回空的 map
-            return MapUtil.newHashMap();
+            return Collections.emptyMap();
         } else if (CollUtil.isEmpty(map1)) {
             // 如果 map1 为空，则直接处理返回 map2（value2 传入 null）
             return toMap(map2.entrySet(), Map.Entry::getKey, entry -> merge.apply(null, entry.getValue()));

@@ -48,29 +48,6 @@ import org.springframework.context.annotation.Configuration;
 public class DictAutoConfig {
 
     /**
-     * 初始化字典缓存
-     * <p>
-     * 在应用启动时执行，加载所有字典数据到 DictUtils 缓存中。
-     */
-    // @PostConstruct
-    // public void initDictCache() {
-    //     // 启动时全量加载字典数据到缓存
-    //     DictUtils.getInstance().loadDictAll();
-    // }
-
-    /**
-     * 注册 DictUtils 为 Spring Bean
-     * <p>
-     * 使得其他服务可以通过依赖注入使用 DictUtils
-     *
-     * @return DictUtils 单例实例
-     */
-    @Bean
-    public DictUtils dictUtils() {
-        return DictUtils.getInstance();
-    }
-
-    /**
      * 注册字典拦截器
      * <p>
      * 将 DictInterceptor 注册到 MyBatis 拦截器链，执行字典回显处理。

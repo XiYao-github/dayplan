@@ -1,5 +1,6 @@
 package com.xiyao.crypto.serialize;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -10,7 +11,6 @@ import com.xiyao.crypto.annotation.SensitiveField;
 import com.xiyao.crypto.enums.SensitiveStrategy;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
@@ -70,7 +70,6 @@ import java.io.IOException;
  * @see SensitiveField
  * @see SensitiveStrategy
  */
-@Slf4j
 @AllArgsConstructor
 @NoArgsConstructor
 public class SensitiveSerializer extends JsonSerializer<String> implements ContextualSerializer {
@@ -95,7 +94,7 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         // 判断是否需要进行脱敏
-        if (strategy != null && value != null) {
+        if (ObjectUtil.isNotNull(strategy) && ObjectUtil.isNotNull(value)) {
             // 调用策略的 apply 方法进行脱敏
             String desensitized = strategy.apply(value);
             // 将脱敏后的值写入 JSON
@@ -130,7 +129,7 @@ public class SensitiveSerializer extends JsonSerializer<String> implements Conte
         SensitiveField annotation = property.getAnnotation(SensitiveField.class);
 
         // 检查注解存在且字段类型为 String
-        if (annotation != null && property.getType().isTypeOrSubTypeOf(String.class)) {
+        if (ObjectUtil.isNotNull(annotation) && property.getType().isTypeOrSubTypeOf(String.class)) {
             // 读取注解配置的脱敏策略
             SensitiveStrategy strategy = annotation.value();
             // 创建带有策略的序列化器

@@ -1,5 +1,6 @@
 package com.xiyao.dict.handler;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.xiyao.dict.enums.BaseEnum;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -154,7 +155,7 @@ public class EnumTypeHandler<E extends BaseEnum<?>> extends BaseTypeHandler<E> {
      */
     private E convert(Object value) {
         // null 值直接返回 null
-        if (value == null) {
+        if (ObjectUtil.isNull(value)) {
             return null;
         }
         // 委托给 BaseEnum.fromValue 进行转换

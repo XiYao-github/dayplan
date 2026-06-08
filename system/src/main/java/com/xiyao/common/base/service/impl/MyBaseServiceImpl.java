@@ -1,12 +1,7 @@
 package com.xiyao.common.base.service.impl;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiyao.common.base.mapper.MyBaseMapper;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Service 实现基类
@@ -41,22 +36,4 @@ import java.util.stream.Collectors;
  */
 public abstract class MyBaseServiceImpl<M extends MyBaseMapper<T>, T> extends ServiceImpl<M, T> {
 
-    /**
-     * 分页对象转换为 VO 分页
-     *
-     * @param page      实体分页
-     * @param voClass   VO 类型
-     * @param converter 转换函数
-     * @param <R>       VO 类型
-     * @return VO 分页
-     */
-    protected <R> Page<R> convertToVoPage(Page<T> page, Class<R> voClass, Function<T, R> converter) {
-        List<R> records = page.getRecords().stream()
-                .map(converter)
-                .collect(Collectors.toList());
-
-        Page<R> result = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
-        result.setRecords(records);
-        return result;
-    }
 }

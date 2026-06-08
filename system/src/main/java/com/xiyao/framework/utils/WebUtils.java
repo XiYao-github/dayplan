@@ -1,12 +1,15 @@
 package com.xiyao.framework.utils;
 
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.xiyao.common.utils.data.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -79,7 +82,7 @@ public class WebUtils {
      */
     public static String getMethod() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getMethod() : null;
+        return ObjectUtil.isNotNull(request) ? request.getMethod() : null;
     }
 
     /**
@@ -89,7 +92,7 @@ public class WebUtils {
      */
     public static String getRequestUri() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getRequestURI() : null;
+        return ObjectUtil.isNotNull(request) ? request.getRequestURI() : null;
     }
 
     /**
@@ -99,7 +102,7 @@ public class WebUtils {
      */
     public static String getRequestUrl() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getRequestURL().toString() : null;
+        return ObjectUtil.isNotNull(request) ? request.getRequestURL().toString() : null;
     }
 
     /**
@@ -107,7 +110,7 @@ public class WebUtils {
      */
     public static String getQueryString() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getQueryString() : null;
+        return ObjectUtil.isNotNull(request) ? request.getQueryString() : null;
     }
 
     /**
@@ -118,7 +121,7 @@ public class WebUtils {
     public static String getFullRequestUrl() {
         String requestUrl = getRequestUrl();
         String queryString = getQueryString();
-        return requestUrl != null && queryString != null ? requestUrl + "?" + queryString : null;
+        return ObjectUtil.isNotNull(requestUrl) && ObjectUtil.isNotNull(queryString) ? requestUrl + "?" + queryString : null;
     }
 
     // ==================== 请求头 ====================
@@ -131,7 +134,7 @@ public class WebUtils {
      */
     public static String getHeader(String name) {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getHeader(name) : null;
+        return ObjectUtil.isNotNull(request) ? request.getHeader(name) : null;
     }
 
     /**
@@ -139,7 +142,7 @@ public class WebUtils {
      */
     public static Map<String, String> getHeaders() {
         HttpServletRequest request = getRequest();
-        if (request == null) {
+        if (ObjectUtil.isNull(request)) {
             return Collections.emptyMap();
         }
         Map<String, String> headers = new HashMap<>();
@@ -158,7 +161,7 @@ public class WebUtils {
      */
     public static String getAuthorization() {
         String bearerToken = getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        if (ObjectUtil.isNotNull(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.replace("Bearer ", "");
         }
         return bearerToken;
@@ -178,7 +181,7 @@ public class WebUtils {
      */
     public static boolean isJsonRequest() {
         String contentType = getContentType();
-        return contentType != null && contentType.contains("application/json");
+        return ObjectUtil.isNotNull(contentType) && contentType.contains("application/json");
     }
 
     /**
@@ -205,18 +208,18 @@ public class WebUtils {
      */
     public static String getClientIp() {
         HttpServletRequest request = getRequest();
-        if (request == null) {
+        if (ObjectUtil.isNull(request)) {
             return null;
         }
         String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Real-IP");
         }
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+        if (StrUtil.isBlank(ip) || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
         // 多级代理的情况下，取第一个真实 IP
-        if (ip != null && ip.contains(",")) {
+        if (ObjectUtil.isNotNull(ip) && ip.contains(",")) {
             ip = ip.split(",")[0].trim();
         }
         return ip;
@@ -227,7 +230,7 @@ public class WebUtils {
      */
     public static Integer getRemotePort() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getRemotePort() : null;
+        return ObjectUtil.isNotNull(request) ? request.getRemotePort() : null;
     }
 
     /**
@@ -235,7 +238,7 @@ public class WebUtils {
      */
     public static String getServerName() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getServerName() : null;
+        return ObjectUtil.isNotNull(request) ? request.getServerName() : null;
     }
 
     /**
@@ -243,7 +246,7 @@ public class WebUtils {
      */
     public static Integer getServerPort() {
         HttpServletRequest request = getRequest();
-        return request != null ? request.getServerPort() : null;
+        return ObjectUtil.isNotNull(request) ? request.getServerPort() : null;
     }
 
     /**
@@ -252,7 +255,7 @@ public class WebUtils {
     public static String getServerInfo() {
         String serverName = getServerName();
         Integer serverPort = getServerPort();
-        if (serverName == null || serverPort == null) {
+        if (ObjectUtil.isNull(serverName) || ObjectUtil.isNull(serverPort)) {
             return null;
         }
         return serverName + ":" + serverPort;
@@ -275,7 +278,7 @@ public class WebUtils {
      */
     public static String getParameter(String name) {
         HttpServletRequest request = getRequest();
-        return request != null ? getRequest().getParameter(name) : null;
+        return ObjectUtil.isNotNull(request) ? getRequest().getParameter(name) : null;
     }
 
     /**
@@ -287,7 +290,7 @@ public class WebUtils {
      */
     public static String getParameter(String name, String defaultValue) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toStr(getRequest().getParameter(name), defaultValue) : defaultValue;
+        return ObjectUtil.isNotNull(request) ? Convert.toStr(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -298,7 +301,7 @@ public class WebUtils {
      */
     public static Integer getParameterToInt(String name) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toInt(getRequest().getParameter(name)) : null;
+        return ObjectUtil.isNotNull(request) ? Convert.toInt(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -310,7 +313,7 @@ public class WebUtils {
      */
     public static Integer getParameterToInt(String name, Integer defaultValue) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toInt(getRequest().getParameter(name), defaultValue) : defaultValue;
+        return ObjectUtil.isNotNull(request) ? Convert.toInt(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -321,7 +324,7 @@ public class WebUtils {
      */
     public static Long getParameterToLong(String name) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toLong(getRequest().getParameter(name)) : null;
+        return ObjectUtil.isNotNull(request) ? Convert.toLong(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -333,7 +336,7 @@ public class WebUtils {
      */
     public static Long getParameterToLong(String name, Long defaultValue) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toLong(getRequest().getParameter(name), defaultValue) : defaultValue;
+        return ObjectUtil.isNotNull(request) ? Convert.toLong(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -344,7 +347,7 @@ public class WebUtils {
      */
     public static Boolean getParameterToBool(String name) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toBool(getRequest().getParameter(name)) : null;
+        return ObjectUtil.isNotNull(request) ? Convert.toBool(getRequest().getParameter(name)) : null;
     }
 
     /**
@@ -356,7 +359,7 @@ public class WebUtils {
      */
     public static Boolean getParameterToBool(String name, Boolean defaultValue) {
         HttpServletRequest request = getRequest();
-        return request != null ? Convert.toBool(getRequest().getParameter(name), defaultValue) : defaultValue;
+        return ObjectUtil.isNotNull(request) ? Convert.toBool(getRequest().getParameter(name), defaultValue) : defaultValue;
     }
 
     /**
@@ -366,7 +369,7 @@ public class WebUtils {
      */
     public static Map<String, String> getParamMap() {
         HttpServletRequest request = getRequest();
-        if (request == null) {
+        if (ObjectUtil.isNull(request)) {
             return Collections.emptyMap();
         }
         Map<String, String> result = new HashMap<>();
@@ -405,7 +408,7 @@ public class WebUtils {
      */
     public static void print(HttpServletResponse response, String string) {
         try {
-            response.setStatus(cn.hutool.http.HttpStatus.HTTP_OK);
+            response.setStatus(HttpStatus.OK.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             response.getWriter().print(string);

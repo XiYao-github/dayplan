@@ -1,5 +1,8 @@
 package com.xiyao.common.utils;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
@@ -67,6 +70,9 @@ public class ExcelUtils {
      * @param <T>      数据类型
      */
     public static <T> void export(List<T> data, Class<T> clazz, String fileName, HttpServletResponse response) {
+        if (CollUtil.isEmpty(data)) {
+            throw new IllegalArgumentException("导出数据不能为空");
+        }
         export(data, clazz, fileName, DEFAULT_SHEET_NAME, response);
     }
 
@@ -81,6 +87,9 @@ public class ExcelUtils {
      * @param <T>       数据类型
      */
     public static <T> void export(List<T> data, Class<T> clazz, String fileName, String sheetName, HttpServletResponse response) {
+        if (CollUtil.isEmpty(data)) {
+            throw new IllegalArgumentException("导出数据不能为空");
+        }
         try {
             setExcelResponse(response, fileName);
             EasyExcel.write(response.getOutputStream(), clazz)
@@ -101,6 +110,9 @@ public class ExcelUtils {
      * @param <T>      数据类型
      */
     public static <T> void exportToFile(List<T> data, Class<T> clazz, String filePath) {
+        if (CollUtil.isEmpty(data)) {
+            throw new IllegalArgumentException("导出数据不能为空");
+        }
         try {
             EasyExcel.write(filePath, clazz)
                     .sheet(DEFAULT_SHEET_NAME)
@@ -120,6 +132,9 @@ public class ExcelUtils {
      * @return 数据列表
      */
     public static <T> List<T> importExcel(InputStream inputStream, Class<T> clazz) {
+        if (ObjectUtil.isNull(inputStream)) {
+            throw new IllegalArgumentException("输入流不能为空");
+        }
         try {
             return EasyExcel.read(inputStream, clazz, null)
                     .sheet()
@@ -140,6 +155,9 @@ public class ExcelUtils {
      * @param <T>          数据类型
      */
     public static <T> void importExcel(InputStream inputStream, Class<T> clazz, int pageSize, PageReadListener<T> pageListener) {
+        if (ObjectUtil.isNull(inputStream)) {
+            throw new IllegalArgumentException("输入流不能为空");
+        }
         EasyExcel.read(inputStream, clazz, pageListener)
                 .sheet()
                 .headRowNumber(pageSize)
@@ -155,6 +173,9 @@ public class ExcelUtils {
      * @return 数据列表
      */
     public static <T> List<T> importExcel(File file, Class<T> clazz) {
+        if (ObjectUtil.isNull(file)) {
+            throw new IllegalArgumentException("文件不能为空");
+        }
         try {
             return importExcel(new FileInputStream(file), clazz);
         } catch (FileNotFoundException e) {
@@ -173,6 +194,9 @@ public class ExcelUtils {
      * @return 数据列表
      */
     public static <T> List<T> readExcel(InputStream inputStream, Class<T> clazz, int sheetNo) {
+        if (ObjectUtil.isNull(inputStream)) {
+            throw new IllegalArgumentException("输入流不能为空");
+        }
         try {
             return EasyExcel.read(inputStream, clazz, null)
                     .sheet(sheetNo)
@@ -193,6 +217,9 @@ public class ExcelUtils {
      * @return 数据列表
      */
     public static <T> List<T> readExcel(InputStream inputStream, Class<T> clazz, String sheetName) {
+        if (ObjectUtil.isNull(inputStream)) {
+            throw new IllegalArgumentException("输入流不能为空");
+        }
         try {
             return EasyExcel.read(inputStream, clazz, null)
                     .sheet(sheetName)
@@ -214,6 +241,9 @@ public class ExcelUtils {
      * @param response     HTTP 响应
      */
     public static void fillTemplate(String templatePath, Map<String, Object> data, String fileName, HttpServletResponse response) {
+        if (StrUtil.isBlank(templatePath)) {
+            throw new IllegalArgumentException("模板路径不能为空");
+        }
         try {
             setExcelResponse(response, fileName);
 
@@ -239,6 +269,12 @@ public class ExcelUtils {
      * @param response     HTTP 响应
      */
     public static void fillTemplateMultiple(String templatePath, Map<String, List<?>> dataList, String fileName, HttpServletResponse response) {
+        if (StrUtil.isBlank(templatePath)) {
+            throw new IllegalArgumentException("模板路径不能为空");
+        }
+        if (CollUtil.isEmpty(dataList)) {
+            throw new IllegalArgumentException("数据列表不能为空");
+        }
         try {
             setExcelResponse(response, fileName);
 
@@ -274,7 +310,7 @@ public class ExcelUtils {
     private static InputStream getTemplateStream(String templatePath) throws IOException {
         // 尝试从 classpath 加载
         InputStream stream = ExcelUtils.class.getClassLoader().getResourceAsStream(templatePath);
-        if (stream != null) {
+        if (ObjectUtil.isNotNull(stream)) {
             return stream;
         }
 
@@ -343,7 +379,7 @@ public class ExcelUtils {
      * @param excelReader ExcelReader
      */
     public static void close(ExcelReader excelReader) {
-        if (excelReader != null) {
+        if (ObjectUtil.isNotNull(excelReader)) {
             excelReader.finish();
         }
     }

@@ -1,7 +1,10 @@
 package com.xiyao.security.utils;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.xiyao.security.details.LoginUser;
 import com.xiyao.security.enums.AdminType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -35,6 +38,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @see SecurityContextHolder
  * @see LoginUser
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SecurityUtils {
 
     // ==================== 认证信息获取 ====================
@@ -64,7 +68,7 @@ public class SecurityUtils {
         // 获取当前认证对象
         Authentication authentication = getAuthentication();
         // 检查认证对象是否存在且主体为 LoginUser 类型
-        if (authentication != null && authentication.getPrincipal() instanceof LoginUser) {
+        if (ObjectUtil.isNotNull(authentication) && authentication.getPrincipal() instanceof LoginUser) {
             // 强制类型转换并返回
             return (LoginUser) authentication.getPrincipal();
         }
@@ -85,7 +89,7 @@ public class SecurityUtils {
         // 获取登录用户对象
         LoginUser loginUser = getLoginUser();
         // 三元表达式：登录返回 userId，未登录返回 null
-        return loginUser != null ? loginUser.getUserId() : null;
+        return ObjectUtil.isNotNull(loginUser) ? loginUser.getUserId() : null;
     }
 
     /**
@@ -99,7 +103,7 @@ public class SecurityUtils {
         // 获取登录用户对象
         LoginUser loginUser = getLoginUser();
         // 三元表达式：登录返回用户名，未登录返回 null
-        return loginUser != null ? loginUser.getUsername() : null;
+        return ObjectUtil.isNotNull(loginUser) ? loginUser.getUsername() : null;
     }
 
     /**
@@ -122,7 +126,7 @@ public class SecurityUtils {
         // 获取登录用户对象
         LoginUser loginUser = getLoginUser();
         // 三元表达式：登录返回 adminType，未登录返回普通用户类型
-        return loginUser != null ? loginUser.getAdminType() : AdminType.NormalUser.ordinal();
+        return ObjectUtil.isNotNull(loginUser) ? loginUser.getAdminType() : AdminType.NormalUser.ordinal();
     }
 
     // ==================== 三员类型判断 ====================
@@ -138,7 +142,7 @@ public class SecurityUtils {
         // 获取登录用户
         LoginUser loginUser = getLoginUser();
         // 判断条件：用户存在且三员类型为普通用户
-        return loginUser != null && loginUser.getAdminType() == AdminType.NormalUser.ordinal();
+        return ObjectUtil.isNotNull(loginUser) && loginUser.getAdminType() == AdminType.NormalUser.ordinal();
     }
 
     /**
@@ -157,7 +161,7 @@ public class SecurityUtils {
         // 获取登录用户
         LoginUser loginUser = getLoginUser();
         // 判断条件：用户存在且三员类型为系统管理员
-        return loginUser != null && loginUser.getAdminType() == AdminType.SystemAdmin.ordinal();
+        return ObjectUtil.isNotNull(loginUser) && loginUser.getAdminType() == AdminType.SystemAdmin.ordinal();
     }
 
     /**
@@ -176,7 +180,7 @@ public class SecurityUtils {
         // 获取登录用户
         LoginUser loginUser = getLoginUser();
         // 判断条件：用户存在且三员类型为安全管理员
-        return loginUser != null && loginUser.getAdminType() == AdminType.SecurityAdmin.ordinal();
+        return ObjectUtil.isNotNull(loginUser) && loginUser.getAdminType() == AdminType.SecurityAdmin.ordinal();
     }
 
     /**
@@ -195,7 +199,7 @@ public class SecurityUtils {
         // 获取登录用户
         LoginUser loginUser = getLoginUser();
         // 判断条件：用户存在且三员类型为审计管理员
-        return loginUser != null && loginUser.getAdminType() == AdminType.AuditAdmin.ordinal();
+        return ObjectUtil.isNotNull(loginUser) && loginUser.getAdminType() == AdminType.AuditAdmin.ordinal();
     }
 
     /**

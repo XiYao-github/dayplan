@@ -1,5 +1,7 @@
 package com.xiyao.crypto.core;
 
+import cn.hutool.core.util.ObjectUtil;
+
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.xiyao.crypto.annotation.CryptoField;
@@ -194,7 +196,7 @@ public class EncryptorManager {
 
         // 遍历当前类及其父类
         Class<?> current = clazz;
-        while (current != null) {
+        while (ObjectUtil.isNotNull(current)) {
             for (Field field : current.getDeclaredFields()) {
                 // 检查是否有 @CryptoField 注解，且字段类型必须是 String
                 if (field.isAnnotationPresent(CryptoField.class) && field.getType() == String.class) {

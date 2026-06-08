@@ -1,10 +1,12 @@
 package com.xiyao.security.controller;
 
-import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.data.Result;
 import com.xiyao.framework.exception.BusinessException;
+import com.xiyao.framework.utils.SpringUtils;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.enums.OperationType;
 import com.xiyao.log.event.LogLoginEvent;
@@ -15,7 +17,6 @@ import com.xiyao.system.entity.SysUser;
 import com.xiyao.system.entity.SysUserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,7 +63,6 @@ import java.time.LocalDateTime;
  * @see UserVo
  * @see LogLoginEvent
  */
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @ConditionalOnBean(AuthenticationManager.class)
@@ -118,9 +118,18 @@ public class LoginController extends MyBaseController {
      */
     @PostMapping("/login")
     public Result<Object> login(@RequestBody UserVo user) {
-        // 从请求参数中提取用户名和密码
+        // 参数校验
+        if (ObjectUtil.isNull(user)) {
+            throw new BusinessException("登录信息不能为空");
+        }
         String username = user.getUsername();
         String password = user.getPassword();
+        if (StrUtil.isBlank(username)) {
+            throw new BusinessException("用户名不能为空");
+        }
+        if (StrUtil.isBlank(password)) {
+            throw new BusinessException("密码不能为空");
+        }
 
         // 构造登录事件对象，用于记录登录日志
         // 事件会在 finally 块中发布，确保无论成功失败都记录
@@ -180,7 +189,7 @@ public class LoginController extends MyBaseController {
             // 通过 Spring Event 机制发布事件
             // 事件会被 LogListener 异步监听，保存到数据库
             // LogListener 会计算 SM3 哈希链，保证日志防篡改
-            SpringUtil.publishEvent(event);
+            SpringUtils.publishEvent(event);
         }
     }
 
@@ -214,6 +223,18 @@ public class LoginController extends MyBaseController {
      */
     @PostMapping("/register")
     public Result<Object> register(@RequestBody UserVo user) {
+        // 参数校验
+        if (ObjectUtil.isNull(user)) {
+            throw new BusinessException("注册信息不能为空");
+        }
+        String username = user.getUsername();
+        String password = user.getPassword();
+        if (StrUtil.isBlank(username)) {
+            throw new BusinessException("用户名不能为空");
+        }
+        if (StrUtil.isBlank(password)) {
+            throw new BusinessException("密码不能为空");
+        }
         // 构造注册事件对象，用于记录注册日志
         LogLoginEvent event = new LogLoginEvent();
         try {
@@ -298,7 +319,7 @@ public class LoginController extends MyBaseController {
             // ========== 发布注册事件 ==========
 
             // 通过 Spring Event 机制发布事件
-            SpringUtil.publishEvent(event);
+            SpringUtils.publishEvent(event);
         }
     }
 
@@ -380,7 +401,7 @@ public class LoginController extends MyBaseController {
             // ========== 发布登出事件 ==========
 
             // 通过 Spring Event 机制发布事件
-            SpringUtil.publishEvent(event);
+            SpringUtils.publishEvent(event);
         }
     }
 

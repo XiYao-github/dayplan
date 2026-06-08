@@ -1,13 +1,15 @@
 package com.xiyao.dict.utils;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.system.entity.DictData;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
  * 数据字典缓存管理器
  * <p>
  * 负责管理字典数据缓存，提供字典标签查询功能。
- * 使用单例模式实现，确保全局唯一的缓存实例。
+ * 使用静态方法实现，直接通过类名调用。
  *
  * <p>
  * <b>核心功能：</b>
@@ -31,39 +33,24 @@ import java.util.stream.Collectors;
  * <b>使用示例：</b>
  * <pre>{@code
  * // 获取字典标签
- * String label = DictUtils.getInstance().getDictLabel("status", "1");
+ * String label = DictUtils.getDictLabel("status", "1");
  *
  * // 刷新字典缓存
- * DictUtils.getInstance().loadDictAll();
+ * DictUtils.loadAll();
  * }</pre>
  *
  * @author xiyao
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DictUtils {
-
-    /**
-     * 单例实例
-     * <p>
-     * 使用饿汉模式，确保全局唯一实例
-     */
-    private static final DictUtils INSTANCE = new DictUtils();
-
-    /**
-     * 获取单例实例
-     *
-     * @return DictUtils 实例
-     */
-    public static DictUtils getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * 字典缓存：dictCode -> (dictValue -> dictLabel)
      * <p>
      * 使用 ConcurrentHashMap 保证线程安全
      */
-    private final Map<String, Map<String, String>> dictCache = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, String>> dictCache = new ConcurrentHashMap<>();
 
     /**
      * 读写锁，保证线程安全
@@ -71,7 +58,7 @@ public class DictUtils {
      * 读操作使用读锁，多个线程可同时读取；
      * 写操作使用写锁，保证同一时刻只有一个线程写入
      */
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final ReadWriteLock lock = new ReentrantReadWriteLock();
 
 
     // ==================== 字典缓存操作 ====================
@@ -84,8 +71,18 @@ public class DictUtils {
      * @param dictCode 字典编码
      * @return 字典值到标签的映射，如果不存在返回空 Map
      */
-    public Map<String, String> getDictMap(String dictCode) {
-        return dictCache.getOrDefault(dictCode, new ConcurrentHashMap<>());
+    public static Map<String, String> getDictMap(String dictCode) {
+        if (StrUtil.isBlank(dictCode)) {
+            return Collections.emptyMap();
+        }
+        lock.readLock().lock();
+        try {
+            Map<String, String> map = dictCache.get(dictCode);
+            // 返回拷贝，防止外部修改影响缓存
+            return ObjectUtil.isNotNull(map) ? new ConcurrentHashMap<>(map) : new ConcurrentHashMap<>();
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -97,9 +94,47 @@ public class DictUtils {
      * @param dictValue 字典值
      * @return 对应的字典标签，找不到返回空字符串
      */
-    public String getDictLabel(String dictCode, String dictValue) {
-        Map<String, String> map = getDictMap(dictCode);
-        return map.getOrDefault(dictValue, "");
+    public static String getDictLabel(String dictCode, String dictValue) {
+        if (StrUtil.isBlank(dictCode)) {
+            return "";
+        }
+        lock.readLock().lock();
+        try {
+            Map<String, String> map = dictCache.get(dictCode);
+            return ObjectUtil.isNotNull(map) ? map.getOrDefault(dictValue, "") : "";
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    /**
+     * 获取字典值
+     * <p>
+     * 根据字典编码和字典标签反向查询对应的字典值。
+     *
+     * @param dictCode  字典编码
+     * @param dictLabel 字典标签
+     * @return 对应的字典值，找不到返回空字符串
+     */
+    public static String getDictValue(String dictCode, String dictLabel) {
+        if (StrUtil.isBlank(dictCode) || StrUtil.isBlank(dictLabel)) {
+            return "";
+        }
+        lock.readLock().lock();
+        try {
+            Map<String, String> map = dictCache.get(dictCode);
+            if (CollUtil.isEmpty(map)) {
+                return "";
+            }
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (dictLabel.equals(entry.getValue())) {
+                    return entry.getKey();
+                }
+            }
+            return "";
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -107,8 +142,13 @@ public class DictUtils {
      *
      * @return 字典编码集合
      */
-    public Set<String> getDictMapKey() {
-        return new HashSet<>(dictCache.keySet());
+    public static Set<String> getDictMapKey() {
+        lock.readLock().lock();
+        try {
+            return new HashSet<>(dictCache.keySet());
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     /**
@@ -119,13 +159,14 @@ public class DictUtils {
      *
      * @param dictCode 字典编码
      */
-    public void loadDictMap(String dictCode) {
+    public static void loadDictMap(String dictCode) {
+        if (StrUtil.isBlank(dictCode)) {
+            return;
+        }
         lock.writeLock().lock();
         try {
             // 清空缓存
-            if (dictCache.containsKey(dictCode)) {
-                dictCache.remove(dictCode);
-            }
+            dictCache.remove(dictCode);
             // 查询数据库中状态正常的字典数据
             List<DictData> list = Db.lambdaQuery(DictData.class)
                     .eq(DictData::getDictCode, dictCode)
@@ -146,13 +187,11 @@ public class DictUtils {
      * 在应用启动时执行，将所有字典数据按 dictCode 分组存储。
      * 使用写锁保证线程安全。
      */
-    public void loadDictAll() {
+    public static void loadAll() {
         lock.writeLock().lock();
         try {
             // 清空缓存
-            if (!dictCache.isEmpty()) {
-                dictCache.clear();
-            }
+            dictCache.clear();
             // 查询所有状态正常的字典数据
             List<DictData> list = Db.lambdaQuery(DictData.class)
                     .eq(DictData::getStatus, 1)
@@ -174,8 +213,8 @@ public class DictUtils {
      * <p>
      * 等同于清空后重新加载所有字典数据。
      */
-    public void refreshAll() {
-        loadDictAll();
+    public static void refreshAll() {
+        loadAll();
     }
 
 }

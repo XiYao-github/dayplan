@@ -1,5 +1,6 @@
 package com.xiyao.common.utils.data;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -86,7 +87,7 @@ public class PageResult<T> implements Serializable {
      * @param <T>      数据类型
      * @return PageResult 实例
      */
-    public static <T> PageResult<T> from(com.baomidou.mybatisplus.core.metadata.IPage<?> page, List<T> voList) {
+    public static <T> PageResult<T> from(IPage<?> page, List<T> voList) {
         return new PageResult<>(
                 voList,
                 page.getTotal(),
