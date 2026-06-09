@@ -35,5 +35,40 @@ import com.xiyao.common.base.mapper.MyBaseMapper;
  * @see ServiceImpl
  */
 public abstract class MyBaseServiceImpl<M extends MyBaseMapper<T>, T> extends ServiceImpl<M, T> {
-
+    //
+    // /**
+    //  * 生成当天单号
+    //  *
+    //  * @param prefix 单号前缀
+    //  * @return number
+    //  */
+    // protected String generateNumber(String prefix) {
+    //     LocalDate date = LocalDate.now();
+    //     QueryWrapper<T> wrapper = new QueryWrapper<>();
+    //     wrapper.apply(String.format("to_days(create_date) = to_days('%s')", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+    //     int dayCount = this.queryCount(wrapper);
+    //     return prefix + date.format(DateTimeFormatter.ofPattern("yyMMdd")) + String.format("%04d", dayCount + 1);
+    // }
+    //
+    // /**
+    //  * 根据条件生成当天单号
+    //  *
+    //  * @param prefix 单号前缀
+    //  * @param field  条件字段
+    //  * @param values 条件值
+    //  * @return number
+    //  */
+    // protected String generateNumber(String prefix, String field, Object... values) {
+    //     LocalDate date = LocalDate.now();
+    //     QueryWrapper<T> wrapper = new QueryWrapper<>();
+    //     wrapper.in(field, values);
+    //     wrapper.apply(String.format("to_days(create_date) = to_days('%s')", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+    //     int dayCount = this.queryCount(wrapper);
+    //     return prefix + date.format(DateTimeFormatter.ofPattern("yyMMdd")) + String.format("%04d", dayCount + 1);
+    // }
+    //
+    // protected Integer queryCount(Wrapper<T> wrapper) {
+    //     String tableName = SqlHelper.table(this.entityClass).getTableName();
+    //     return this.getBaseMapper().queryCount(tableName, wrapper);
+    // }
 }

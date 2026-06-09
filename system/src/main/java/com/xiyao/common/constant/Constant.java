@@ -77,4 +77,36 @@ public interface Constant {
      * 注册操作标识
      */
     String REGISTER = "register";
+
+    // ==================== 数据库 ====================
+
+    /**
+     * 升序
+     */
+    String ASC = "asc";
+
+    /**
+     * 降序
+     */
+    String DESC = "desc";
+
+    /**
+     * 当前页码
+     */
+    String PAGE = "page";
+
+    /**
+     * 每页显示记录数
+     */
+    String LIMIT = "limit";
+
+    /**
+     * 排序字段
+     */
+    String ORDER_FIELD = "orderField";
+
+    /**
+     * 排序方式
+     */
+    String ORDER = "order";
 }

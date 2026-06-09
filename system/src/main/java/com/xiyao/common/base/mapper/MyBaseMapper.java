@@ -25,4 +25,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface MyBaseMapper<T> extends BaseMapper<T> {
 
+    /**
+     * 自定义条件获取数据条数
+     *
+     * @param table   表名
+     * @param wrapper 条件
+     * @return count
+     */
+    // @InterceptorIgnore(illegalSql = "1")
+    // @Select("select count(1) from ${table} ${ew.customSqlSegment}")
+    // Integer queryCount(@Param("table") String table, @Param(Constants.WRAPPER) Wrapper<T> wrapper);
 }

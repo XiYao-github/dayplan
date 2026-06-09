@@ -150,6 +150,22 @@ com.xiyao.common/
     │                                   # - groupByKey(): 分组
     │                                   # - merge(): Map 合并
     │
+    ├── IdUtils.java                # ID生成工具类
+    │                                   # - getSnowflakeId(): 雪花算法ID
+    │                                   # - getUuid(): UUID生成
+    │                                   # - getBusinessCode(): 业务编码
+    │                                   # - getTodayCount(): 当天数据统计
+    │                                   # - generateBusinessId(): 生成业务ID
+    │
+    ├── DateUtils.java              # 日期工具类
+    │                                   # - format(): 格式化日期时间
+    │                                   # - parse(): 解析日期字符串
+    │                                   # - getStartOfDay/getEndOfDay(): 当天起止时间
+    │                                   # - plusDays/plusMonths(): 日期加减
+    │                                   # - daysBetween(): 计算天数差
+    │                                   # - getAge(): 计算年龄
+    │                                   # - isToday/isBetween(): 日期范围判断
+    │
     ├── TestDataUtils.java           # 测试数据生成
     │                                   # - randomString(): 随机字符串
     │                                   # - randomPhone(): 随机手机号
