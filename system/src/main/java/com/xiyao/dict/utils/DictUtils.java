@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * <p>
  * <b>核心功能：</b>
  * <ul>
- *     <li>字典缓存管理：存储 dictCode -> (dictValue -> dictLabel) 的映射</li>
+ *     <li>字典缓存管理：存储 dictType -> (dictValue -> dictLabel) 的映射</li>
  *     <li>线程安全：使用读写锁保证并发安全</li>
  *     <li>全量加载：应用启动时加载所有字典数据到缓存</li>
  * </ul>
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class DictUtils {
 
     /**
-     * 字典缓存：dictCode -> (dictValue -> dictLabel)
+     * 字典缓存：dictType -> (dictValue -> dictLabel)
      * <p>
      * 使用 ConcurrentHashMap 保证线程安全
      */
@@ -68,16 +68,16 @@ public class DictUtils {
      * <p>
      * 根据字典编码获取对应的 (dictValue -> dictLabel) 映射。
      *
-     * @param dictCode 字典编码
+     * @param dictType 字典类型
      * @return 字典值到标签的映射，如果不存在返回空 Map
      */
-    public static Map<String, String> getDictMap(String dictCode) {
-        if (StrUtil.isBlank(dictCode)) {
+    public static Map<String, String> getDictMap(String dictType) {
+        if (StrUtil.isBlank(dictType)) {
             return Collections.emptyMap();
         }
         lock.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictCode);
+            Map<String, String> map = dictCache.get(dictType);
             // 返回拷贝，防止外部修改影响缓存
             return ObjectUtil.isNotNull(map) ? new ConcurrentHashMap<>(map) : new ConcurrentHashMap<>();
         } finally {
@@ -88,19 +88,19 @@ public class DictUtils {
     /**
      * 获取字典标签文本
      * <p>
-     * 根据字典编码和字典值查询对应的标签描述。
+     * 根据字典类型和字典值查询对应的标签描述。
      *
-     * @param dictCode  字典编码
+     * @param dictType  字典类型
      * @param dictValue 字典值
      * @return 对应的字典标签，找不到返回空字符串
      */
-    public static String getDictLabel(String dictCode, String dictValue) {
-        if (StrUtil.isBlank(dictCode)) {
+    public static String getDictLabel(String dictType, String dictValue) {
+        if (StrUtil.isBlank(dictType)) {
             return "";
         }
         lock.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictCode);
+            Map<String, String> map = dictCache.get(dictType);
             return ObjectUtil.isNotNull(map) ? map.getOrDefault(dictValue, "") : "";
         } finally {
             lock.readLock().unlock();
@@ -110,19 +110,19 @@ public class DictUtils {
     /**
      * 获取字典值
      * <p>
-     * 根据字典编码和字典标签反向查询对应的字典值。
+     * 根据字典类型和字典标签反向查询对应的字典值。
      *
-     * @param dictCode  字典编码
+     * @param dictType  字典类型
      * @param dictLabel 字典标签
      * @return 对应的字典值，找不到返回空字符串
      */
-    public static String getDictValue(String dictCode, String dictLabel) {
-        if (StrUtil.isBlank(dictCode) || StrUtil.isBlank(dictLabel)) {
+    public static String getDictValue(String dictType, String dictLabel) {
+        if (StrUtil.isBlank(dictType) || StrUtil.isBlank(dictLabel)) {
             return "";
         }
         lock.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictCode);
+            Map<String, String> map = dictCache.get(dictType);
             if (CollUtil.isEmpty(map)) {
                 return "";
             }
@@ -152,30 +152,30 @@ public class DictUtils {
     }
 
     /**
-     * 加载指定字典编码的字典数据到缓存
+     * 加载指定字典类型的字典数据到缓存
      * <p>
      * 使用写锁保证线程安全，加载后缓存到 dictCache 中。
      * 如果缓存已存在则先清空再加载。
      *
-     * @param dictCode 字典编码
+     * @param dictType 字典类型
      */
-    public static void loadDictMap(String dictCode) {
-        if (StrUtil.isBlank(dictCode)) {
+    public static void loadDictMap(String dictType) {
+        if (StrUtil.isBlank(dictType)) {
             return;
         }
         lock.writeLock().lock();
         try {
             // 清空缓存
-            dictCache.remove(dictCode);
+            dictCache.remove(dictType);
             // 查询数据库中状态正常的字典数据
             List<DictData> list = Db.lambdaQuery(DictData.class)
-                    .eq(DictData::getDictCode, dictCode)
+                    .eq(DictData::getDictType, dictType)
                     .eq(DictData::getStatus, 1)
                     .list();
             // 转换为 Map 并缓存
             Map<String, String> map = list.stream()
                     .collect(Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a));
-            dictCache.put(dictCode, map);
+            dictCache.put(dictType, map);
         } finally {
             lock.writeLock().unlock();
         }
@@ -184,7 +184,7 @@ public class DictUtils {
     /**
      * 加载所有字典数据到缓存
      * <p>
-     * 在应用启动时执行，将所有字典数据按 dictCode 分组存储。
+     * 在应用启动时执行，将所有字典数据按 dictType 分组存储。
      * 使用写锁保证线程安全。
      */
     public static void loadAll() {
@@ -196,9 +196,9 @@ public class DictUtils {
             List<DictData> list = Db.lambdaQuery(DictData.class)
                     .eq(DictData::getStatus, 1)
                     .list();
-            // 按字典编码分组，每组内按 dictValue -> dictLabel 映射
+            // 按字典类型分组，每组内按 dictValue -> dictLabel 映射
             Map<String, Map<String, String>> map = list.stream()
-                    .collect(Collectors.groupingBy(DictData::getDictCode,
+                    .collect(Collectors.groupingBy(DictData::getDictType,
                                     Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a)
                             )
                     );

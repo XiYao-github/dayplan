@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-06-09
  */
 @Data
 @Accessors(chain = true)
@@ -20,13 +20,13 @@ import lombok.experimental.Accessors;
 public class SysRoleMenu {
 
     /**
-     * 角色id
+     * 角色ID
      */
     @TableField("role_id")
     private Long roleId;
 
     /**
-     * 菜单id
+     * 菜单ID
      */
     @TableField("menu_id")
     private Long menuId;

@@ -1,8 +1,6 @@
 package com.xiyao.system.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +12,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-06-09
  */
 @Data
 @Accessors(chain = true)
@@ -24,7 +22,7 @@ public class SysAddress {
     /**
      * 区划代码
      */
-    @TableId(value = "code", type = IdType.AUTO)
+    @TableField("code")
     private Long code;
 
     /**
@@ -76,15 +74,14 @@ public class SysAddress {
     private String areaName;
 
     /**
-     * 排序
-     */
-    @TableField("sort")
-    private Integer sort;
-
-    /**
      * 级别(1.省/直辖市, 2.市, 3.区/县/地级市)
      */
     @TableField("level")
     private Integer level;
 
+    /**
+     * 排序
+     */
+    @TableField("sort")
+    private Integer sort;
 }

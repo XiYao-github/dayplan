@@ -1,6 +1,5 @@
 package com.xiyao.system.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -10,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -18,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-06-09
  */
 @Data
 @TableName("sys_role")
@@ -45,36 +43,6 @@ public class SysRole {
      */
     @TableField("status")
     private Integer status;
-
-    /**
-     * 角色类型（0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员）
-     */
-    @TableField("type")
-    private Integer type;
-
-    /**
-     * 备注
-     */
-    @TableField("remark")
-    private String remark;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
-    /**
-     * 删除时间
-     */
-    @TableField("delete_time")
-    private LocalDateTime deleteTime;
 
     /**
      * 逻辑删除(0.未删除 1.已删除)

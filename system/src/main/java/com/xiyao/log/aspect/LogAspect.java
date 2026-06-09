@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * 日志切面
  * <p>
- * 拦截标注 @Log 注解的方法，自动记录操作日志或审计日志。
+ * 拦截标注 @Log 注解的方法，自动记录操作日志。
  *
  * <p>
  * <b>核心功能：</b>
@@ -44,13 +44,6 @@ import java.util.Map;
  *     <li>请求信息：继承 MyBaseEvent 自动获取</li>
  *     <li>链路追踪：从 MDC 获取 traceId</li>
  *     <li>事件发布：异步发布 LogOperationEvent</li>
- * </ul>
- *
- * <p>
- * <b>日志分流：</b>
- * <ul>
- *     <li>logType = OPERATION：存入 log_operation 表（无哈希链）</li>
- *     <li>logType = AUDIT：存入 log_operation 表（有 SM3 哈希链）</li>
  * </ul>
  *
  * @author xiyao
@@ -107,7 +100,7 @@ public class LogAspect {
         } finally {
             // ========== 计算耗时并发布时间 ==========
             // 设置方法执行耗时
-            event.setCostTime(System.currentTimeMillis() - startTime);
+            event.setCost(System.currentTimeMillis() - startTime);
             // 设置操作时间
             event.setTime(LocalDateTime.now());
             // 异步发布事件，由 LogListener 处理保存逻辑
@@ -130,27 +123,19 @@ public class LogAspect {
         LogOperationEvent event = new LogOperationEvent();
 
         // ========== 用户信息 ==========
-        // 从 SecurityUtils 获取当前登录用户信息
-        event.setUserId(SecurityUtils.getUserId());          // 用户 ID
-        event.setUsername(SecurityUtils.getUsername());     // 用户名
-        event.setAdminType(SecurityUtils.getAdminType());  // 三员类型
+        event.setUserId(SecurityUtils.getUserId());
+        event.setUsername(SecurityUtils.getUsername());
 
         // ========== 操作信息 ==========
-        event.setModule(log.module());                      // 操作模块
-        event.setType(log.type().ordinal());                // 操作类型
-        event.setLogType(log.logType().ordinal());          // 日志类型
-        event.setTraceId(traceId);                          // 链路追踪 ID
-
-        // ========== 方法信息 ==========
-        // 获取类名和方法名，格式：类名.方法名
-        String className = point.getTarget().getClass().getSimpleName();
+        // 操作模块 = 全类名.方法名
+        String className = point.getTarget().getClass().getName();
         String methodName = point.getSignature().getName();
-        event.setMethod(className + "." + methodName);
+        event.setModule(className + "." + methodName);
+        event.setType(log.type().ordinal());
 
         // ========== 请求参数 ==========
-        // 根据注解配置决定是否保存请求参数
         if (log.isSaveRequestData()) {
-            event.setRequestParam(getRequestParams(point));
+            event.setParam(getRequestParams(point));
         }
 
         return event;
@@ -173,7 +158,7 @@ public class LogAspect {
         // 根据配置决定是否保存响应数据
         if (saveResponseData && ObjectUtil.isNotNull(result)) {
             // 将返回值序列化为 JSON 字符串
-            event.setReturnResult(JSONUtil.toJsonStr(result));
+            event.setResult(JSONUtil.toJsonStr(result));
         }
     }
 

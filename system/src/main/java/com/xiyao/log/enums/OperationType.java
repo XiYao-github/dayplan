@@ -29,12 +29,6 @@ package com.xiyao.log.enums;
  * public Result createUser(@RequestBody User user) {
  *     // 业务逻辑
  * }
- *
- * // 记录删除角色操作（审计日志）
- * @Log(module = "权限管理", type = OperationType.DELETE, logType = LogType.AUDIT)
- * public Result deleteRole(Long id) {
- *     // 业务逻辑
- * }
  * }</pre>
  *
  * @author xiyao

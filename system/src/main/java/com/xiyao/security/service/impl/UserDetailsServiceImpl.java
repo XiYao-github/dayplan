@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
  * <ul>
  *     <li>根据用户名查询用户基本信息（ID、密码、状态）</li>
  *     <li>查询用户关联的角色和菜单权限</li>
- *     <li>查询用户的三员类型</li>
  *     <li>构建包含完整权限信息的 LoginUser 对象</li>
  * </ul>
  *
@@ -35,7 +34,6 @@ import java.util.stream.Collectors;
  *     <li>查询 sys_user_role 表获取用户关联的角色</li>
  *     <li>查询 sys_role_menu 表获取角色关联的菜单</li>
  *     <li>查询 sys_menu 表获取菜单的权限标识</li>
- *     <li>查询 sys_role 表获取角色的三员类型</li>
  * </ol>
  *
  * <p>
@@ -65,8 +63,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      *     <li>查询用户关联的角色列表</li>
      *     <li>查询角色关联的菜单列表</li>
      *     <li>查询菜单的权限标识集合</li>
-     *     <li>查询角色的三员类型</li>
-     *     <li>构建 LoginUser 对象返回</li>
+     *     <li>构造 LoginUser 对象返回</li>
      * </ol>
      *
      * @param username 用户名
@@ -124,23 +121,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .filter(StrUtil::isNotBlank)  // 过滤空权限
                 .collect(Collectors.toSet());
 
-        // ========== 第6步：查询用户关联的三员类型 ==========
-        // 从 sys_role 表查询角色类型
-        // 用户可能关联多个角色，取最大类型值
-        Set<Integer> adminTypes = Db.lambdaQuery(SysRole.class)
-                .in(SysRole::getId, roleIdList)
-                .select(SysRole::getType)
-                .list()
-                .stream()
-                .map(SysRole::getType)
-                .collect(Collectors.toSet());
-
-        // 取最大角色类型（用户只会分配一种角色类型）
-        // 0：普通用户，1：系统管理员，2：安全管理员，3：审计管理员
-        Integer adminType = adminTypes.stream().max(Integer::compare).orElse(0);
-
-        // ========== 第7步：构造 LoginUser 对象返回 ==========
-        // LoginUser 包含用户ID、三员类型、用户实体、权限集合
-        return new LoginUser(user.getId(), adminType, user, perms);
+        // ========== 第6步：构造 LoginUser 对象返回 ==========
+        // LoginUser 包含用户ID、用户实体、权限集合
+        return new LoginUser(user.getId(), user, perms);
     }
 }

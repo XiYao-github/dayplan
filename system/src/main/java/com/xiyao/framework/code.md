@@ -121,56 +121,58 @@ JSON 处理: Jackson + JavaTimeModule
 ```tree
 com.xiyao.framework/
 ├── annotation/
-│   └── CurrentUser.java           # 当前登录用户注解
-│                                   # 标注在 Controller 参数上自动注入
+│   └── CurrentUser.java               # 当前登录用户注解
+│                                       # 标注在 Controller 参数上自动注入
 │
 ├── config/
-│   ├── JacksonConfig.java        # Jackson 配置
-│   │                               # - 日期时间格式：yyyy-MM-dd HH:mm:ss
-│   │                               # - Long 转字符串防精度丢失
-│   │                               # - 空值不序列化
+│   ├── JacksonConfig.java            # Jackson 配置
+│   │                                   # - 日期时间格式：yyyy-MM-dd HH:mm:ss
+│   │                                   # - Long 转字符串防精度丢失
+│   │                                   # - 空值不序列化
 │   │
-│   ├── MybatisPlusConfig.java    # MyBatis-Plus 配置
-│   │                               # - 分页插件（DbType.MYSQL）
-│   │                               # - 乐观锁插件（@Version）
-│   │                               # - 防全表操作插件
-│   │                               # - 自动填充（createBy/time、updateBy/time）
+│   ├── MybatisPlusConfig.java        # MyBatis-Plus 配置
+│   │                                   # - 分页插件（DbType.MYSQL）
+│   │                                   # - 乐观锁插件（@Version）
+│   │                                   # - 防全表操作插件
+│   │                                   # - 自动填充（createBy/time、updateBy/time）
 │   │
-│   ├── RedisConfig.java          # Redis 配置
-│   │                               # - RedisTemplate（String-JSON）
-│   │                               # - CacheManager（Spring Cache）
-│   │                               # - 序列化方式配置
+│   ├── RedisConfig.java              # Redis 配置
+│   │                                   # - RedisTemplate（String-JSON）
+│   │                                   # - CacheManager（Spring Cache）
+│   │                                   # - 序列化方式配置
 │   │
-│   ├── ThreadPoolConfig.java     # 线程池配置
-│   │                               # - logExecutor：日志异步线程池
-│   │                               # - corePoolSize=2, maxPoolSize=5
+│   ├── ThreadPoolConfig.java         # 线程池配置
+│   │                                   # - logExecutor：日志异步线程池
+│   │                                   # - corePoolSize=2, maxPoolSize=5
 │   │
-│   └── WebMvcConfig.java        # Web MVC 配置
-│                                   # - CORS 跨域配置
-│                                   # - 静态资源处理
-│                                   # - 拦截器配置
-│                                   # - 参数解析器（@CurrentUser）
-│                                   # - 消息转换器
+│   └── WebMvcConfig.java            # Web MVC 配置
+│                                       # - CORS 跨域配置
+│                                       # - 静态资源处理
+│                                       # - 拦截器配置
+│                                       # - 参数解析器（@CurrentUser）
+│                                       # - 消息转换器
 │
 ├── exception/
-│   ├── BusinessException.java    # 业务异常
-│   │                               # - code: HTTP 状态码
-│   │                               # - message: 错误信息
+│   ├── BusinessException.java        # 业务异常
+│   │                                   # - code: HTTP 状态码
+│   │                                   # - message: 错误信息
 │   │
-│   └── GlobalExceptionHandler.java # 全局异常处理器
-│                                   # - 参数校验异常（400）
-│                                   # - 认证/权限异常（401/403）
-│                                   # - 数据库异常（DuplicateKey 等）
-│                                   # - 业务异常（BusinessException）
-│                                   # - 系统异常（500）
+│   └── GlobalExceptionHandler.java    # 全局异常处理器
+│                                       # - 参数校验异常（400）
+│                                       # - 认证/权限异常（401/403）
+│                                       # - 数据库异常（DuplicateKey 等）
+│                                       # - 业务异常（BusinessException）
+│                                       # - 系统异常（500）
 │
-└── resolver/
-    └── CurrentUserArgumentResolver.java # @CurrentUser 参数解析器
-
-└── utils/                         # 工具类（从 common 迁移）
-    ├── RedisUtils.java           # Redis 工具类
-    ├── SpringUtils.java          # Spring 容器工具类
-    └── WebUtils.java             # Web 工具类
+│
+├── resolver/
+│   └── CurrentUserArgumentResolver.java # @CurrentUser 参数解析器
+│
+└── utils/
+    ├── RedisUtils.java               # Redis 工具类
+    ├── SpringUtils.java              # Spring 容器工具类
+    └── WebUtils.java                  # Web 工具类
+```
 
 ---
 
@@ -180,16 +182,16 @@ com.xiyao.framework/
 
 ```java
 // 日期时间格式
-DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss"
-DATE_PATTERN = "yyyy-MM-dd"
-TIME_PATTERN = "HH:mm:ss"
-TIME_ZONE = "GMT+8"
+// DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss"
+// DATE_PATTERN = "yyyy-MM-dd"
+// TIME_PATTERN = "HH:mm:ss"
+// TIME_ZONE = "GMT+8"
 
 // 数值类型序列化转字符串
 // 解决 Long 类型在 JavaScript 中精度丢失
-Long → ToStringSerializer
-BigInteger → ToStringSerializer
-BigDecimal → ToStringSerializer
+// Long → ToStringSerializer
+// BigInteger → ToStringSerializer
+// BigDecimal → ToStringSerializer
 ```
 
 **MybatisPlusConfig：**
@@ -234,29 +236,6 @@ BigDecimal → ToStringSerializer
 
 ---
 
-### 全局配置
-
-```yaml
-# application.yml（通常无需配置，使用框架默认值）
-
-# MyBatis-Plus 会在启动时自动加载配置
-# Redis 连接由 spring.data.redis.* 配置
-# 线程池由框架自动创建
-
-# 如需自定义，可覆盖以下配置：
-# mybatis-plus:
-#   mapper-locations: classpath*:mapper/**/*.xml
-#   type-aliases-package: com.xiyao.**.entity
-
-# spring:
-#   data:
-#     redis:
-#       host: localhost
-#       port: 6379
-```
-
----
-
 ### 依赖文件路径
 
 ```tree
@@ -264,18 +243,17 @@ BigDecimal → ToStringSerializer
 src/main/java/com/xiyao/common/
 ├── base/
 │   ├── controller/MyBaseController.java    # Controller 基类
-│   ├── entity/MyBaseEntity.java          # 实体基类（审计字段）
+│   ├── entity/MyBaseEntity.java          # 实体基类（公共字段）
 │   ├── event/MyBaseEvent.java            # 事件基类（自动获取请求信息）
 │   ├── mapper/MyBaseMapper.java           # Mapper 基类
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
 ├── constant/Constant.java               # 通用常量
-├── enums/Status.java                     # 状态枚举（从 dict 迁移）
+├── enums/Status.java                     # 状态枚举
 └── utils/
     ├── CodeGenerator.java               # 代码生成器
     ├── ExcelUtils.java                   # Excel 工具
     ├── FileUtils.java                    # 文件工具
-    ├── SmsUtils.java                     # 短信工具
     ├── StreamUtils.java                   # 流式处理工具
     └── data/
         ├── PageResult.java               # 分页结果封装
@@ -284,30 +262,25 @@ src/main/java/com/xiyao/common/
 # Security 模块（自动填充依赖）
 src/main/java/com/xiyao/security/
 ├── config/SecurityConfig.java            # Spring Security 配置
-├── controller/LoginController.java        # 认证控制器（登录/注册/登出）
-├── details/
-│   ├── LoginUser.java                   # 登录用户详情
-│   └── UserVo.java                      # 用户视图对象
-├── enums/AdminType.java                 # 三员类型枚举
-├── filter/JwtAuthenticationFilter.java  # JWT 认证过滤器
-├── handler/
-│   ├── AccessDeniedHandlerImpl.java     # 权限不足处理器
-│   └── AuthenticationEntryPointImpl.java # 认证失败处理器
+├── controller/LoginController.java       # 认证控制器（登录/注册/登出）
+├── details/LoginUser.java               # 登录用户详情
+├── details/UserVo.java                  # 用户视图对象
+├── filter/JwtAuthenticationFilter.java   # JWT 认证过滤器
+├── handler/AccessDeniedHandlerImpl.java # 权限不足处理器
+├── handler/AuthenticationEntryPointImpl.java # 认证失败处理器
 ├── properties/SecurityData.java        # Security 配置属性
-├── service/SecurityService.java         # 安全服务（角色权限判断）
-└── utils/
-    ├── JwtUtils.java                    # JWT 工具类
-    └── SecurityUtils.java                # 安全工具类
+├── service/SecurityService.java         # 安全服务
+├── service/impl/UserDetailsServiceImpl.java # 用户信息加载服务
+├── utils/JwtUtils.java                   # JWT 工具类
+└── utils/SecurityUtils.java               # 安全工具类
 
 # Dict 模块（枚举和字典）
 src/main/java/com/xiyao/dict/
 ├── annotation/DictBind.java             # 字典绑定注解
-├── config/
-│   ├── DictAutoConfig.java              # 字典模块自动配置
-│   └── EnumAutoConfig.java              # 枚举自动配置
+├── config/DictAutoConfig.java          # 字典模块自动配置
 ├── enums/
 │   ├── BaseEnum.java                    # 枚举基础接口
 │   └── DataStatus.java                  # 数据状态枚举
 ├── interceptor/DictInterceptor.java   # 字典结果拦截器
-└── utils/DictUtils.java                # 字典缓存工具（从 DictCache 重命名）
+└── utils/DictUtils.java                # 字典缓存工具
 ```

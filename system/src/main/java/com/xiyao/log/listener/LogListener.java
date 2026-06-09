@@ -3,7 +3,6 @@ package com.xiyao.log.listener;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.SmUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import com.xiyao.log.enums.LogType;
 import com.xiyao.log.event.LogLoginEvent;
 import com.xiyao.log.event.LogOperationEvent;
 import com.xiyao.system.entity.LogLogin;
@@ -20,23 +19,22 @@ import org.springframework.scheduling.annotation.Async;
  * <p>
  * <b>监听的事件：</b>
  * <ul>
- *     <li>LogOperationEvent：操作/审计日志事件</li>
+ *     <li>LogOperationEvent：操作日志事件</li>
  *     <li>LogLoginEvent：认证日志事件（登录/登出/注册）</li>
  * </ul>
  *
  * <p>
  * <b>存储策略：</b>
  * <ul>
- *     <li>OPERATION 日志：存入 log_operation 表（无哈希链）</li>
- *     <li>AUDIT 日志：存入 log_operation 表（带 SM3 哈希链）</li>
+ *     <li>操作日志：存入 log_operation 表（带 SM3 哈希链）</li>
  *     <li>认证日志：存入 log_login 表（带 SM3 哈希链）</li>
  * </ul>
  *
  * <p>
  * <b>哈希链说明：</b>
- * AUDIT 类型日志和认证日志使用 SM3 国密算法计算哈希链，
- * 每条记录的 hash 值包含：数据内容 + 上一条记录的 hash，
- * 保证日志完整性，任何篡改都可以被检测到。
+ * 操作日志和认证日志都使用 SM3 哈希链防篡改。
+ * 哈希算法：hash = SM3(上条记录id + "|" + 上条记录hash)
+ * 任意一条日志被篡改会导致后续所有日志哈希验证失败。
  *
  * @author xiyao
  * @see LogOperationEvent
@@ -46,20 +44,14 @@ import org.springframework.scheduling.annotation.Async;
 public class LogListener {
 
     /**
-     * 哈希种子
-     * <p>
-     * 用于哈希计算的数据混淆，增加安全性。
+     * 哈希分隔符
      */
-    private static final String HASH_SEED = "Log_Listener";
+    private static final String HASH_SEPARATOR = "|";
 
     /**
      * 监听操作日志事件并保存
      * <p>
-     * 根据 logType 决定是否计算 SM3 哈希链：
-     * <ul>
-     *     <li>OPERATION：无哈希链，普通业务追踪</li>
-     *     <li>AUDIT：有 SM3 哈希链，用于等保合规审计</li>
-     * </ul>
+     * 操作日志记录业务操作，带 SM3 哈希链防篡改。
      *
      * <p>
      * <b>异步执行：</b>
@@ -71,45 +63,49 @@ public class LogListener {
     @EventListener
     public void saveOperationLog(LogOperationEvent event) {
         try {
+            // ========== 获取上一条记录的信息 ==========
+            LogOperation lastLog = getLastOperation();
+
             // ========== 构建日志实体 ==========
             LogOperation logOperation = new LogOperation();
             // 用户信息
             logOperation.setUserId(event.getUserId());
             logOperation.setUsername(event.getUsername());
-            logOperation.setAdminType(event.getAdminType());
             // 操作信息
-            logOperation.setOperationModule(event.getModule());
-            logOperation.setOperationMethod(event.getMethod());
-            logOperation.setOperationType(event.getType());
-            logOperation.setOperationTime(event.getTime());
+            logOperation.setModule(event.getModule());
+            logOperation.setType(event.getType());
             logOperation.setStatus(event.getStatus());
+            logOperation.setTime(event.getTime());
             logOperation.setMessage(event.getMessage());
             // 请求响应信息
-            logOperation.setRequestParam(event.getRequestParam());
-            logOperation.setReturnResult(event.getReturnResult());
-            logOperation.setCostTime(event.getCostTime());
+            logOperation.setMethod(event.getRequestMethod());
+            logOperation.setUrl(event.getRequestUrl());
+            logOperation.setParam(event.getParam());
+            logOperation.setResult(event.getResult());
+            logOperation.setCost(event.getCost());
             // 客户端信息
             logOperation.setIp(event.getClientIp());
             logOperation.setOs(event.getOs());
             logOperation.setBrowser(event.getBrowser());
             logOperation.setPlatform(event.getPlatform());
             logOperation.setTraceId(event.getTraceId());
-            logOperation.setRequestMethod(event.getRequestMethod());
-            logOperation.setRequestUrl(event.getRequestUrl());
-            logOperation.setLogType(event.getLogType());
-
-            // ========== AUDIT 类型计算哈希链 ==========
-            // OPERATION 类型日志不做哈希链，AUDIT 类型需要防篡改
-            if (ObjectUtil.isNotNull(event.getLogType()) && event.getLogType() == LogType.AUDIT.ordinal()) {
-                // 计算当前记录的哈希值
-                String hash = computeOperationHash(logOperation);
-                logOperation.setHash(hash);
-                // 获取上一条记录的哈希值，形成链式结构
-                logOperation.setPrevHash(getLastOperationHash());
-            }
 
             // ========== 保存到数据库 ==========
             Db.save(logOperation);
+
+            // ========== 计算哈希链 ==========
+            // hash = SM3(上条记录id + "|" + 上条记录hash)
+            if (ObjectUtil.isNotNull(lastLog)) {
+                String hash = SmUtil.sm3(lastLog.getId() + HASH_SEPARATOR + lastLog.getHash());
+                logOperation.setPrevHash(lastLog.getHash());
+                logOperation.setHash(hash);
+                Db.updateById(logOperation);
+            } else {
+                // 第一条记录，hash 为空
+                logOperation.setPrevHash(null);
+                logOperation.setHash(null);
+                Db.updateById(logOperation);
+            }
 
         } catch (Exception e) {
             // 保存失败记录错误日志，不影响业务
@@ -117,10 +113,11 @@ public class LogListener {
         }
     }
 
+
     /**
      * 监听认证日志事件并保存
      * <p>
-     * 认证日志（登录/登出/注册）强制使用 SM3 哈希链防篡改。
+     * 认证日志（登录/登出/注册）使用 SM3 哈希链防篡改。
      *
      * <p>
      * <b>异步执行：</b>
@@ -132,16 +129,19 @@ public class LogListener {
     @EventListener
     public void saveLoginLog(LogLoginEvent event) {
         try {
+            // ========== 获取上一条记录的信息 ==========
+            LogLogin lastLog = getLastLogin();
+
             // ========== 构建日志实体 ==========
             LogLogin logLogin = new LogLogin();
             // 用户信息
             logLogin.setUserId(event.getUserId());
             logLogin.setUsername(event.getUsername());
             // 认证信息
-            logLogin.setAuthType(event.getAuthType());
+            logLogin.setType(event.getType());
             logLogin.setStatus(event.getStatus());
             logLogin.setMessage(event.getMessage());
-            logLogin.setLoginTime(event.getLoginTime());
+            logLogin.setTime(event.getTime());
             // 客户端信息
             logLogin.setIp(event.getClientIp());
             logLogin.setOs(event.getOs());
@@ -149,14 +149,22 @@ public class LogListener {
             logLogin.setPlatform(event.getPlatform());
             logLogin.setTraceId(event.getTraceId());
 
-            // ========== 计算 SM3 哈希链 ==========
-            // 认证日志强制使用哈希链，保证登录操作可追溯和防篡改
-            String hash = computeLoginHash(logLogin);
-            logLogin.setHash(hash);
-            logLogin.setPrevHash(getLastLoginHash());
-
             // ========== 保存到数据库 ==========
             Db.save(logLogin);
+
+            // ========== 计算哈希链 ==========
+            // hash = SM3(上条记录id + "|" + 上条记录hash)
+            if (ObjectUtil.isNotNull(lastLog)) {
+                String hash = SmUtil.sm3(lastLog.getId() + HASH_SEPARATOR + lastLog.getHash());
+                logLogin.setPrevHash(lastLog.getHash());
+                logLogin.setHash(hash);
+                Db.updateById(logLogin);
+            } else {
+                // 第一条记录，hash 为空
+                logLogin.setPrevHash(null);
+                logLogin.setHash(null);
+                Db.updateById(logLogin);
+            }
 
         } catch (Exception e) {
             // 保存失败记录错误日志，不影响业务
@@ -167,128 +175,32 @@ public class LogListener {
     // ==================== 哈希链计算 ====================
 
     /**
-     * 获取上一条认证日志的哈希值
-     * <p>
-     * 用于构建哈希链，将上一条记录的哈希值存入当前记录的 prevHash 字段。
+     * 获取上一条认证日志
      *
-     * @return 上一条记录的哈希值，无记录则返回 null
+     * @return 上一条认证日志，无则返回 null
      */
-    private String getLastLoginHash() {
+    private LogLogin getLastLogin() {
         try {
-            // 查询最新一条认证日志的哈希值
-            LogLogin last = Db.lambdaQuery(LogLogin.class)
-                    .orderByDesc(LogLogin::getId)                 // 按 ID 降序
-                    .select(LogLogin::getHash)                     // 只查询 hash 字段
-                    .last("LIMIT 1").one();                        // 取最新一条
-            return ObjectUtil.isNotNull(last) ? last.getHash() : null;
+            return Db.lambdaQuery(LogLogin.class)
+                    .orderByDesc(LogLogin::getId)
+                    .last("LIMIT 1").one();
         } catch (Exception e) {
-            // 查询失败返回 null，第一条记录没有 prevHash
             return null;
         }
     }
 
     /**
-     * 获取上一条操作日志的哈希值
-     * <p>
-     * 用于构建哈希链，将上一条记录的哈希值存入当前记录的 prevHash 字段。
-     * 仅 AUDIT 类型日志需要计算哈希链。
+     * 获取上一条操作日志
      *
-     * @return 上一条记录的哈希值，无记录则返回 null
+     * @return 上一条操作日志，无则返回 null
      */
-    private String getLastOperationHash() {
+    private LogOperation getLastOperation() {
         try {
-            // 查询最新一条操作日志的哈希值
-            LogOperation last = Db.lambdaQuery(LogOperation.class)
-                    .eq(LogOperation::getLogType,LogType.AUDIT.ordinal())
-                    .orderByDesc(LogOperation::getId)              // 按 ID 降序
-                    .select(LogOperation::getHash)                // 只查询 hash 字段
-                    .last("LIMIT 1").one();                        // 取最新一条
-            return ObjectUtil.isNotNull(last) ? last.getHash() : null;
+            return Db.lambdaQuery(LogOperation.class)
+                    .orderByDesc(LogOperation::getId)
+                    .last("LIMIT 1").one();
         } catch (Exception e) {
-            // 查询失败返回 null，第一条记录没有 prevHash
             return null;
         }
-    }
-
-    /**
-     * 计算认证日志 SM3 哈希值
-     * <p>
-     * 哈希数据包含：
-     * <ul>
-     *     <li>哈希种子（HASH_SEED）</li>
-     *     <li>用户 ID</li>
-     *     <li>用户名</li>
-     *     <li>认证类型</li>
-     *     <li>认证状态</li>
-     *     <li>消息</li>
-     *     <li>IP</li>
-     *     <li>traceId</li>
-     *     <li>认证时间</li>
-     *     <li>上一条记录的哈希值（形成链式结构）</li>
-     * </ul>
-     *
-     * @param logLogin 认证日志实体
-     * @return SM3 哈希值（64位十六进制字符串）
-     */
-    private String computeLoginHash(LogLogin logLogin) {
-        // 使用 | 分隔符拼接各项数据
-        String data = String.join("|",
-                HASH_SEED,                                              // 哈希种子
-                String.valueOf(logLogin.getUserId()),                  // 用户 ID
-                ObjectUtil.isNotNull(logLogin.getUsername()) ? logLogin.getUsername() : "",  // 用户名
-                String.valueOf(logLogin.getAuthType()),               // 认证类型
-                String.valueOf(logLogin.getStatus()),                 // 认证状态
-                ObjectUtil.isNotNull(logLogin.getMessage()) ? logLogin.getMessage() : "",    // 消息
-                ObjectUtil.isNotNull(logLogin.getIp()) ? logLogin.getIp() : "",      // IP
-                ObjectUtil.isNotNull(logLogin.getTraceId()) ? logLogin.getTraceId() : "",    // traceId
-                String.valueOf(ObjectUtil.isNotNull(logLogin.getLoginTime()) ? logLogin.getLoginTime().toString() : ""),  // 认证时间
-                ObjectUtil.isNotNull(getLastLoginHash()) ? getLastLoginHash() : ""   // 上一条哈希
-        );
-        // 使用国密 SM3 算法计算哈希
-        return SmUtil.sm3(data);
-    }
-
-    /**
-     * 计算操作日志 SM3 哈希值（用于 AUDIT 类型）
-     * <p>
-     * 哈希数据包含：
-     * <ul>
-     *     <li>哈希种子（HASH_SEED）</li>
-     *     <li>用户 ID</li>
-     *     <li>用户名</li>
-     *     <li>三员类型</li>
-     *     <li>操作模块</li>
-     *     <li>操作方法</li>
-     *     <li>操作类型</li>
-     *     <li>状态</li>
-     *     <li>消息</li>
-     *     <li>消耗时间</li>
-     *     <li>traceId</li>
-     *     <li>操作时间</li>
-     *     <li>上一条记录的哈希值（形成链式结构）</li>
-     * </ul>
-     *
-     * @param logOperation 操作日志实体
-     * @return SM3 哈希值（64位十六进制字符串）
-     */
-    private String computeOperationHash(LogOperation logOperation) {
-        // 使用 | 分隔符拼接各项数据
-        String data = String.join("|",
-                HASH_SEED,                                              // 哈希种子
-                String.valueOf(logOperation.getUserId()),             // 用户 ID
-                ObjectUtil.isNotNull(logOperation.getUsername()) ? logOperation.getUsername() : "",  // 用户名
-                String.valueOf(logOperation.getAdminType()),          // 三员类型
-                ObjectUtil.isNotNull(logOperation.getOperationModule()) ? logOperation.getOperationModule() : "",  // 操作模块
-                ObjectUtil.isNotNull(logOperation.getOperationMethod()) ? logOperation.getOperationMethod() : "",  // 操作方法
-                String.valueOf(logOperation.getOperationType()),      // 操作类型
-                String.valueOf(logOperation.getStatus()),            // 状态
-                ObjectUtil.isNotNull(logOperation.getMessage()) ? logOperation.getMessage() : "",  // 消息
-                String.valueOf(logOperation.getCostTime()),           // 消耗时间
-                ObjectUtil.isNotNull(logOperation.getTraceId()) ? logOperation.getTraceId() : "",  // traceId
-                String.valueOf(ObjectUtil.isNotNull(logOperation.getOperationTime()) ? logOperation.getOperationTime().toString() : ""),  // 操作时间
-                ObjectUtil.isNotNull(getLastOperationHash()) ? getLastOperationHash() : ""  // 上一条哈希
-        );
-        // 使用国密 SM3 算法计算哈希
-        return SmUtil.sm3(data);
     }
 }

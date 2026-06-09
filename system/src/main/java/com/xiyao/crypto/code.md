@@ -170,10 +170,9 @@ com.xiyao.crypto/
 │   │                                 # - 路径过滤
 │   │                                 # - 请求解密/响应加密
 │   │
-│   └── wrapper/
+│   └── wrapper/                     # 请求/响应包装器
 │       ├── DecryptRequestWrapper.java   # 请求解密包装器
 │       └── EncryptResponseWrapper.java # 响应加密包装器
-│
 ├── interceptor/
 │   ├── EncryptInterceptor.java      # 入库加密拦截器（@Intercepts）
 │   │                                 # - @Signature(type=ParameterHandler)

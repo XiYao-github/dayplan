@@ -106,4 +106,5 @@ public class PageResult<T> implements Serializable {
         pageResult.setPages(page.getPages());
         return pageResult;
     }
-}
+
+    }

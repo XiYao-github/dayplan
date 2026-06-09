@@ -55,19 +55,6 @@ public class LoginUser implements UserDetails {
     private Long userId;
 
     /**
-     * 三员类型
-     * <p>
-     * 用于等保合规的三员管理：
-     * <ul>
-     *     <li>0：普通用户</li>
-     *     <li>1：系统管理员</li>
-     *     <li>2：安全管理员</li>
-     *     <li>3：审计管理员</li>
-     * </ul>
-     */
-    private Integer adminType;
-
-    /**
      * 用户基本信息实体
      * <p>
      * 包含用户名、密码等敏感信息。

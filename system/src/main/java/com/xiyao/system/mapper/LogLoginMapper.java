@@ -5,9 +5,12 @@ import com.xiyao.system.entity.LogLogin;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 认证日志 Mapper
+ * <p>
+ * 登录记录 Mapper 接口
+ * </p>
  *
  * @author xiyao
+ * @since 2026-06-09
  */
 @Mapper
 public interface LogLoginMapper extends MyBaseMapper<LogLogin> {

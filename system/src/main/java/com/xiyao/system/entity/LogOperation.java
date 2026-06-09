@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-20
+ * @since 2026-06-09
  */
 @Data
 @Accessors(chain = true)
@@ -26,7 +26,7 @@ public class LogOperation {
     private Long id;
 
     /**
-     * 用户id
+     * 用户ID
      */
     @TableField("user_id")
     private Long userId;
@@ -38,40 +38,16 @@ public class LogOperation {
     private String username;
 
     /**
-     * 三员类型(0.普通用户 1.系统管理员 2.安全管理员 3.审计管理员)
+     * 操作模块(全类名.方法名)
      */
-    @TableField("admin_type")
-    private Integer adminType;
+    @TableField("module")
+    private String module;
 
     /**
-     * 日志类型（0=操作日志 1=审计日志）
+     * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除 5.导出 6.导入)
      */
-    @TableField("log_type")
-    private Integer logType;
-
-    /**
-     * 操作方法
-     */
-    @TableField("operation_method")
-    private String operationMethod;
-
-    /**
-     * 操作模块
-     */
-    @TableField("operation_module")
-    private String operationModule;
-
-    /**
-     * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除)
-     */
-    @TableField("operation_type")
-    private Integer operationType;
-
-    /**
-     * 操作时间
-     */
-    @TableField("operation_time")
-    private LocalDateTime operationTime;
+    @TableField("type")
+    private Integer type;
 
     /**
      * 操作状态(0.失败 1.成功)
@@ -80,43 +56,49 @@ public class LogOperation {
     private Integer status;
 
     /**
+     * 操作时间
+     */
+    @TableField("time")
+    private LocalDateTime time;
+
+    /**
      * 提示消息
      */
     @TableField("message")
     private String message;
 
     /**
-     * 请求参数
-     */
-    @TableField("request_param")
-    private String requestParam;
-
-    /**
-     * 返回结果
-     */
-    @TableField("return_result")
-    private String returnResult;
-
-    /**
-     * 消耗时间(毫秒)
-     */
-    @TableField("cost_time")
-    private Long costTime;
-
-    /**
      * 请求方式
      */
-    @TableField("request_method")
-    private String requestMethod;
+    @TableField("method")
+    private String method;
 
     /**
      * 请求url
      */
-    @TableField("request_url")
-    private String requestUrl;
+    @TableField("url")
+    private String url;
 
     /**
-     * 客户端IP
+     * 请求参数
+     */
+    @TableField("param")
+    private String param;
+
+    /**
+     * 返回结果
+     */
+    @TableField("result")
+    private String result;
+
+    /**
+     * 消耗时间(毫秒)
+     */
+    @TableField("cost")
+    private Long cost;
+
+    /**
+     * 客户端ip
      */
     @TableField("ip")
     private String ip;
@@ -146,19 +128,19 @@ public class LogOperation {
     private String platform;
 
     /**
-     * 链路追踪 ID
+     * 链路追踪ID
      */
     @TableField("trace_id")
     private String traceId;
 
     /**
-     * 哈希值（SM3 防篡改，仅审计日志需要）
+     * 哈希值
      */
     @TableField("hash")
     private String hash;
 
     /**
-     * 上一条哈希值（哈希链）
+     * 上一条哈希值
      */
     @TableField("prev_hash")
     private String prevHash;

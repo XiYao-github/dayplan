@@ -1,6 +1,5 @@
 package com.xiyao.system.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -10,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.Version;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -18,7 +16,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author xiyao
- * @since 2026-05-19
+ * @since 2026-06-09
  */
 @Data
 @TableName("dict_data")
@@ -35,12 +33,6 @@ public class DictData {
     private String dictType;
 
     /**
-     * 字典编码
-     */
-    @TableField("dict_code")
-    private String dictCode;
-
-    /**
      * 字典标签
      */
     @TableField("dict_label")
@@ -53,40 +45,16 @@ public class DictData {
     private String dictValue;
 
     /**
-     * 状态(0.停用 1.正常)
-     */
-    @TableField("status")
-    private Integer status;
-
-    /**
      * 是否默认(0.否 1.是)
      */
     @TableField("is_default")
     private Integer isDefault;
 
     /**
-     * 备注
+     * 状态(0.停用 1.正常)
      */
-    @TableField("remark")
-    private String remark;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updateTime;
-
-    /**
-     * 删除时间
-     */
-    @TableField("delete_time")
-    private LocalDateTime deleteTime;
+    @TableField("status")
+    private Integer status;
 
     /**
      * 逻辑删除(0.未删除 1.已删除)

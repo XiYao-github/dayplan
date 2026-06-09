@@ -18,7 +18,6 @@ import java.util.Arrays;
  * <ul>
  *     <li>登录状态判断：isLogin()</li>
  *     <li>用户信息获取：getLoginUserId()、getLoginUser()</li>
- *     <li>三员类型判断：isSystemAdmin()、isSecurityAdmin()、isAuditAdmin()、isNormalUser()</li>
  *     <li>角色权限判断：hasRole()、hasAnyRole()</li>
  *     <li>资源权限判断：hasAuthority()</li>
  * </ul>
@@ -27,19 +26,10 @@ import java.util.Arrays;
  * <b>使用方式：</b>
  * <pre>
  * &#64;PreAuthorize("@ss.isLogin()")  // 需要登录
- * &#64;PreAuthorize("@ss.isSystemAdmin()")  // 系统管理员
+ * &#64;PreAuthorize("@ss.hasRole('admin')")  // 具有 admin 角色
  * &#64;PreAuthorize("@ss.hasAnyRole('admin', 'user')")  // 任一角色
  * &#64;PreAuthorize("@ss.hasAuthority('system:user:delete')")  // 指定权限
  * </pre>
- *
- * <p>
- * <b>三员类型说明：</b>
- * <ul>
- *     <li>系统管理员(1)：负责系统配置、用户账号管理</li>
- *     <li>安全管理员(2)：负责用户权限分配、安全策略设置</li>
- *     <li>审计管理员(3)：负责查看和导出审计日志，监督其他两员操作</li>
- *     <li>普通用户(0)：无特殊权限的普通用户</li>
- * </ul>
  *
  * @author xiyao
  * @see SecurityUtils
@@ -81,70 +71,6 @@ public class SecurityService {
     public LoginUser getLoginUser() {
         // 调用 SecurityUtils 获取登录用户信息
         return SecurityUtils.getLoginUser();
-    }
-
-    /**
-     * 判断是否是普通用户
-     * <p>
-     * 普通用户的三员类型为 0，不具备三员权限。
-     *
-     * @return true 是普通用户，false 不是
-     */
-    public boolean isNormalUser() {
-        // 调用 SecurityUtils 判断普通用户
-        return SecurityUtils.isNormalUser();
-    }
-
-    /**
-     * 判断是否是系统管理员
-     * <p>
-     * 系统管理员负责系统配置、用户账号管理。
-     * 不能操作业务数据，不能查看安全审计日志。
-     *
-     * @return true 是系统管理员，false 不是
-     */
-    public boolean isSystemAdmin() {
-        // 调用 SecurityUtils 判断系统管理员
-        return SecurityUtils.isSystemAdmin();
-    }
-
-    /**
-     * 判断是否是安全管理员
-     * <p>
-     * 安全管理员负责用户权限分配、安全策略设置。
-     * 不能查看审计日志，无法知道自己被审计管理员监督的情况。
-     *
-     * @return true 是安全管理员，false 不是
-     */
-    public boolean isSecurityAdmin() {
-        // 调用 SecurityUtils 判断安全管理员
-        return SecurityUtils.isSecurityAdmin();
-    }
-
-    /**
-     * 判断是否是审计管理员
-     * <p>
-     * 审计管理员负责查看和导出审计日志，监督其他两员操作。
-     * 拥有日志完整查看权限，但没有系统配置权限和权限分配权限。
-     *
-     * @return true 是审计管理员，false 不是
-     */
-    public boolean isAuditAdmin() {
-        // 调用 SecurityUtils 判断审计管理员
-        return SecurityUtils.isAuditAdmin();
-    }
-
-    /**
-     * 判断是否具有三员权限
-     * <p>
-     * 判断用户是否为系统管理员或安全管理员。
-     * 审计管理员不属于三员权限范畴。
-     *
-     * @return true 具有三员权限，false 不具有
-     */
-    public boolean hasAnyAdmin() {
-        // 调用 SecurityUtils 判断三员权限
-        return SecurityUtils.hasAdminPermission();
     }
 
     /**

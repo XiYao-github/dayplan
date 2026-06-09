@@ -200,12 +200,6 @@ public class SecurityConfig {
                 // ========== 请求授权 ==========
 
                 .authorizeHttpRequests(auth -> auth
-                        // 审计日志相关接口：需要 AUDIT_ADMIN 角色（审计管理员）
-                        .requestMatchers("/audit/**").hasRole("AUDIT_ADMIN")
-                        // 用户和角色管理接口：需要 SYSTEM_ADMIN 或 SECURITY_ADMIN 角色
-                        .requestMatchers("/user/**", "/role/**").hasAnyRole("SYSTEM_ADMIN", "SECURITY_ADMIN")
-                        // 系统配置接口：需要 SYSTEM_ADMIN 角色（系统管理员）
-                        .requestMatchers("/config/**").hasRole("SYSTEM_ADMIN")
                         // 放行无需认证的接口（如登录、注册、验证码等）
                         // 路径列表来自配置文件 security-data.include-paths
                         .requestMatchers(properties.getIncludePaths().toArray(String[]::new)).permitAll()

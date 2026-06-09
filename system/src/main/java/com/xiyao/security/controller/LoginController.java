@@ -158,10 +158,10 @@ public class LoginController extends MyBaseController {
             // 设置用户ID、用户名、认证类型、状态、消息、时间等
             event.setUserId(loginUser.getUserId())
                     .setUsername(loginUser.getUsername())
-                    .setAuthType(OperationType.LOGIN.ordinal())
+                    .setType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.SUCCESS.ordinal())
                     .setMessage("登录成功")
-                    .setLoginTime(LocalDateTime.now());
+                    .setTime(LocalDateTime.now());
 
             // 生成 JWT Token 并返回给前端
             // Token 包含用户登录标识，有效期内可复用
@@ -174,10 +174,10 @@ public class LoginController extends MyBaseController {
             // 设置用户名（无法获取用户ID，因为用户可能不存在）
             // 设置失败状态和异常消息
             event.setUsername(user.getUsername())
-                    .setAuthType(OperationType.LOGIN.ordinal())
+                    .setType(OperationType.LOGIN.ordinal())
                     .setStatus(OperationStatus.FAIL.ordinal())
                     .setMessage(e.getMessage())
-                    .setLoginTime(LocalDateTime.now());
+                    .setTime(LocalDateTime.now());
 
             // 抛出业务异常，由全局异常处理器统一处理
             // 异常信息会返回给前端展示
@@ -250,10 +250,10 @@ public class LoginController extends MyBaseController {
             if (count > 0) {
                 // 构造失败事件（无法获取用户ID，因为还没创建成功）
                 event.setUsername(user.getUsername())
-                        .setAuthType(OperationType.REGISTER.ordinal())
+                        .setType(OperationType.REGISTER.ordinal())
                         .setStatus(OperationStatus.FAIL.ordinal())
                         .setMessage("用户已存在")
-                        .setLoginTime(LocalDateTime.now());
+                        .setTime(LocalDateTime.now());
                 // 返回错误提示
                 return error("用户已存在");
             }
@@ -271,8 +271,6 @@ public class LoginController extends MyBaseController {
             newUser.setPassword(encode);               // 设置加密后的密码
 
             newUser.setStatus(1);                      // 启用状态（1=启用，0=禁用）
-            newUser.setCreateTime(LocalDateTime.now()); // 创建时间
-            newUser.setUpdateTime(LocalDateTime.now()); // 更新时间
 
             // ========== 第3步：保存用户到数据库 ==========
 
@@ -294,10 +292,10 @@ public class LoginController extends MyBaseController {
             // 构造注册成功事件
             event.setUserId(newUser.getId())          // 设置用户 ID
                     .setUsername(newUser.getUsername()) // 设置用户名
-                    .setAuthType(OperationType.REGISTER.ordinal())  // 注册类型
+                    .setType(OperationType.REGISTER.ordinal())  // 注册类型
                     .setStatus(OperationStatus.SUCCESS.ordinal())   // 成功状态
                     .setMessage("注册成功")             // 消息
-                    .setLoginTime(LocalDateTime.now()); // 注册时间
+                    .setTime(LocalDateTime.now()); // 注册时间
 
             // 返回成功
             return ok();
@@ -307,10 +305,10 @@ public class LoginController extends MyBaseController {
 
             // 构造失败事件
             event.setUsername(user.getUsername())
-                    .setAuthType(OperationType.REGISTER.ordinal())
+                    .setType(OperationType.REGISTER.ordinal())
                     .setStatus(OperationStatus.FAIL.ordinal())
                     .setMessage(e.getMessage())
-                    .setLoginTime(LocalDateTime.now());
+                    .setTime(LocalDateTime.now());
 
             // 抛出业务异常
             throw new BusinessException(e.getMessage(), e);
@@ -372,10 +370,10 @@ public class LoginController extends MyBaseController {
             // 构造退出成功事件
             event.setUserId(loginUser.getUserId())     // 设置用户 ID
                     .setUsername(loginUser.getUsername()) // 设置用户名
-                    .setAuthType(OperationType.LOGOUT.ordinal())  // 登出类型
+                    .setType(OperationType.LOGOUT.ordinal())  // 登出类型
                     .setStatus(OperationStatus.SUCCESS.ordinal())   // 成功状态
                     .setMessage("退出成功")             // 消息
-                    .setLoginTime(LocalDateTime.now()); // 退出时间
+                    .setTime(LocalDateTime.now()); // 退出时间
 
             // ========== 第4步：删除 Redis 缓存 ==========
 
@@ -389,10 +387,10 @@ public class LoginController extends MyBaseController {
 
             // 构造失败事件
             // 无法获取用户ID和用户名，因为 Token 无效
-            event.setAuthType(OperationType.LOGOUT.ordinal())
+            event.setType(OperationType.LOGOUT.ordinal())
                     .setStatus(OperationStatus.FAIL.ordinal())
                     .setMessage(e.getMessage())
-                    .setLoginTime(LocalDateTime.now());
+                    .setTime(LocalDateTime.now());
 
             // 抛出业务异常
             throw new BusinessException(e.getMessage(), e);

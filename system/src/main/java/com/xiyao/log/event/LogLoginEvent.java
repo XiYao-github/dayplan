@@ -67,7 +67,7 @@ public class LogLoginEvent extends MyBaseEvent {
      *     <li>REGISTER = 9：注册</li>
      * </ul>
      */
-    private Integer authType;
+    private Integer type;
 
     /**
      * 认证状态（对应 OperationStatus 枚举的 ordinal）
@@ -80,15 +80,16 @@ public class LogLoginEvent extends MyBaseEvent {
     private Integer status;
 
     /**
+     * 认证时间
+     */
+    private LocalDateTime time;
+
+    /**
      * 提示消息
      * <p>
      * 成功时为"登录成功"等提示，失败时为异常信息。
      */
     private String message;
 
-    /**
-     * 认证时间
-     */
-    private LocalDateTime loginTime;
 
 }
