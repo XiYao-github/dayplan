@@ -38,10 +38,16 @@ public class LogOperation {
     private String username;
 
     /**
-     * 操作模块(全类名.方法名)
+     * 操作模块(业务分类，如用户管理、订单管理)
      */
     @TableField("module")
     private String module;
+
+    /**
+     * 操作路径(全类名.方法名)
+     */
+    @TableField("path")
+    private String path;
 
     /**
      * 操作类型(0.其它 1.查询 2.新增 3.更新 4.删除 5.导出 6.导入)

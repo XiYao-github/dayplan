@@ -127,10 +127,12 @@ public class LogAspect {
         event.setUsername(SecurityUtils.getUsername());
 
         // ========== 操作信息 ==========
-        // 操作模块 = 全类名.方法名
+        // 操作模块 - 使用注解中定义的值（如"用户管理"、"订单管理"）
+        event.setModule(log.module());
+        // 操作路径 - 记录具体方法位置（全类名.方法名）
         String className = point.getTarget().getClass().getName();
         String methodName = point.getSignature().getName();
-        event.setModule(className + "." + methodName);
+        event.setPath(className + "." + methodName);
         event.setType(log.type().ordinal());
 
         // ========== 请求参数 ==========

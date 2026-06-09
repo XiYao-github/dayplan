@@ -47,9 +47,14 @@ public class LogOperationEvent extends MyBaseEvent {
     private String username;
 
     /**
-     * 操作模块(全类名.方法名)
+     * 操作模块(业务分类，如用户管理、订单管理)
      */
     private String module;
+
+    /**
+     * 操作路径(全类名.方法名)
+     */
+    private String path;
 
     /**
      * 操作类型（对应 OperationType 枚举的 ordinal）

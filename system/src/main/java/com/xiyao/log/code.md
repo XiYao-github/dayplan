@@ -230,8 +230,9 @@ com.xiyao.log/
 │   ├── LogOperationEvent.java        # 操作日志事件
 │   │                                   # - 继承 MyBaseEvent
 │   │                                   # - userId/username
-│   │                                   # - module/type/status/message
-│   │                                   # - traceId/param/result/cost
+│   │                                   # - module: 业务模块（如"用户管理"）
+│   │                                   # - path: 操作路径（全类名.方法名）
+│   │                                   # - type/status/message/param/result/cost
 │   │
 │   └── LogLoginEvent.java            # 认证日志事件
 │                                       # - 继承 MyBaseEvent
@@ -323,6 +324,15 @@ LogOperationEvent 和 LogLoginEvent 继承 MyBaseEvent，构造函数自动从 H
 
 // 认证操作（自动走 log_login 表）
 // LOGIN/LOGOUT/REGISTER 类型自动识别为认证日志
+```
+
+**module 与 path 的区别：**
+
+```java
+// @Log(module = "用户管理", type = OperationType.INSERT)
+// 记录到 log_operation 表：
+//   module = "用户管理"（业务分类，便于按模块统计）
+//   path = "com.xiyao.system.controller.UserController.createUser"（具体方法位置）
 ```
 
 **日志类型说明：**
