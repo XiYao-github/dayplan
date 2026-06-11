@@ -24,6 +24,12 @@ import org.apache.ibatis.annotations.Select;
  *     <li>selectPage(page, wrapper)：分页查询</li>
  * </ul>
  *
+ * <p>
+ * <b>扩展方法：</b>
+ * <ul>
+ *     <li>queryCount(table, wrapper)：自定义条件统计</li>
+ * </ul>
+ *
  * @param <T> 实体类型
  * @author xiyao
  * @see BaseMapper
@@ -32,10 +38,19 @@ public interface MyBaseMapper<T> extends BaseMapper<T> {
 
     /**
      * 自定义条件获取数据条数
+     * <p>
+     * 使用 @InterceptorIgnore 忽略 MyBatis-Plus 的逻辑删除过滤，
+     * 直接执行 COUNT 查询。
+     * <p>
+     * <b>使用场景：</b>
+     * <ul>
+     *     <li>统计当日数据量（如 getNumber 方法中统计当日记录数）</li>
+     *     <li>需要绕过逻辑删除的统计场景</li>
+     * </ul>
      *
-     * @param table   表名
-     * @param wrapper 条件
-     * @return count
+     * @param table   表名（动态传入）
+     * @param wrapper 查询条件构造器
+     * @return 符合条件的数据条数
      */
     @InterceptorIgnore(illegalSql = "1")
     @Select("select count(1) from ${table} ${ew.customSqlSegment}")

@@ -135,6 +135,14 @@ public enum FormatType {
      */
     private final String format;
 
+    /**
+     * 根据字符串获取对应的日期格式枚举
+     * <p>
+     * 遍历所有格式枚举，查找包含给定字符串的格式。
+     *
+     * @param str 日期格式字符串
+     * @return 匹配的 FormatType，找不到返回 null
+     */
     public static FormatType getFormatsType(String str) {
         for (FormatType value : values()) {
             if (StrUtil.contains(str, value.getFormat())) {

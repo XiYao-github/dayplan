@@ -15,22 +15,19 @@ import java.io.Serializable;
  * {
  *     "code": 200,
  *     "msg": "请求成功",
- *     "data": { ... }
+ *     "data": { ... },
+ *     "traceId": "abc123"
  * }
  * }</pre>
  *
  * <p>
- * <b>使用示例：</b>
- * <pre>{@code
- * // 返回成功
- * return <T> Result<T>.ok("操作成功", user);
- *
- * // 返回失败
- * return <T> Result<T>.error("用户名或密码错误");
- *
- * // 自定义错误码
- * return <T> Result<T>.error(401, "未授权");
- * }</pre>
+ * <b>状态码说明：</b>
+ * <ul>
+ *     <li>200：成功</li>
+ *     <li>401：未授权（未登录或登录失效）</li>
+ *     <li>403：禁止访问（无权限）</li>
+ *     <li>500：系统错误或业务错误</li>
+ * </ul>
  *
  * @author xiyao
  */
@@ -52,35 +49,32 @@ public class Result<T> implements Serializable {
 
     /**
      * 响应编码
-     * <p>
-     * 200 表示成功，非 200 表示业务错误或系统错误
      */
     private Integer code;
 
     /**
      * 响应消息
-     * <p>
-     * 成功时返回 "请求成功"，失败时返回具体错误信息
      */
     private String msg;
 
     /**
      * 响应数据
-     * <p>
-     * 成功时返回业务数据，失败时可能返回 null 或错误详情
      */
     private T data;
 
     /**
-     * 全链路追踪标识，用于串联一次请求的所有日志
+     * 全链路追踪标识
      */
     private String traceId;
 
-    // ==================== 成功响应 ====================
+    // ==================== 成功响应工厂方法 ====================
 
     /**
-     * 返回成功（无数据）
+     * 返回成功响应（无数据）
+     * <p>
+     * 使用默认消息"请求成功"
      *
+     * @param <T> 响应数据类型
      * @return 成功结果
      */
     public static <T> Result<T> ok() {
@@ -88,9 +82,10 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回成功（带消息）
+     * 返回成功响应（带消息）
      *
      * @param msg 成功消息
+     * @param <T> 响应数据类型
      * @return 成功结果
      */
     public static <T> Result<T> ok(String msg) {
@@ -98,9 +93,10 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回成功（带数据）
+     * 返回成功响应（带数据）
      *
      * @param data 业务数据
+     * @param <T>  响应数据类型
      * @return 成功结果
      */
     public static <T> Result<T> ok(T data) {
@@ -108,21 +104,23 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回成功（带消息和数据）
+     * 返回成功响应（带消息和数据）
      *
      * @param msg  成功消息
      * @param data 业务数据
+     * @param <T>  响应数据类型
      * @return 成功结果
      */
     public static <T> Result<T> ok(String msg, T data) {
         return result(OK, msg, data);
     }
 
-    // ==================== 失败响应 ====================
+    // ==================== 失败响应工厂方法 ====================
 
     /**
-     * 返回失败（默认消息）
+     * 返回失败响应（默认消息）
      *
+     * @param <T> 响应数据类型
      * @return 失败结果
      */
     public static <T> Result<T> error() {
@@ -130,9 +128,10 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回失败（带消息）
+     * 返回失败响应（带消息）
      *
      * @param msg 错误消息
+     * @param <T> 响应数据类型
      * @return 失败结果
      */
     public static <T> Result<T> error(String msg) {
@@ -140,23 +139,25 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回失败（带状态码和数据）
+     * 返回失败响应（带状态码和消息）
      *
      * @param code 状态码
-     * @param msg  成功消息
+     * @param msg  错误消息
+     * @param <T>  响应数据类型
      * @return 失败结果
      */
     public static <T> Result<T> error(Integer code, String msg) {
         return result(code, msg, null);
     }
 
-    // ==================== 状态响应 ====================
+    // ==================== 通用响应工厂方法 ====================
 
     /**
-     * 返回（带状态码和数据）
+     * 返回响应（带状态码）
      *
      * @param code 状态码
-     * @param msg  成功消息
+     * @param msg  消息
+     * @param <T>  响应数据类型
      * @return 结果
      */
     public static <T> Result<T> result(Integer code, String msg) {
@@ -164,32 +165,37 @@ public class Result<T> implements Serializable {
     }
 
     /**
-     * 返回（完整参数）
+     * 返回响应（完整参数）
      *
      * @param code 状态码
-     * @param msg  成功消息
+     * @param msg  消息
      * @param data 业务数据
+     * @param <T>  响应数据类型
      * @return 结果
      */
     public static <T> Result<T> result(Integer code, String msg, T data) {
         return getResult(code, msg, data);
     }
 
-    // ==================== 内部方法 ====================
+    // ==================== 内部构建方法 ====================
 
     /**
      * 构建响应结果
+     * <p>
+     *创建一个 Result 实例，设置状态码、消息、数据，并自动注入 traceId。
      *
      * @param code 状态码
      * @param msg  消息
-     * @param data 数据
-     * @return Result<T> 实例
+     * @param data 业务数据
+     * @param <T>  响应数据类型
+     * @return Result 实例
      */
     private static <T> Result<T> getResult(Integer code, String msg, T data) {
-        Result<T> result = new <T>Result<T>();
+        Result<T> result = new Result<>();
         result.setCode(code);
-        result.setData(data);
         result.setMsg(msg);
+        result.setData(data);
+        // 从 MDC 中获取链路追踪 ID，用于串联日志
         result.setTraceId(MDC.get("traceId"));
         return result;
     }
