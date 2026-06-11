@@ -1,7 +1,16 @@
 package com.xiyao.common.base.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.xiyao.common.base.mapper.MyBaseMapper;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Service 实现基类
@@ -35,40 +44,33 @@ import com.xiyao.common.base.mapper.MyBaseMapper;
  * @see ServiceImpl
  */
 public abstract class MyBaseServiceImpl<M extends MyBaseMapper<T>, T> extends ServiceImpl<M, T> {
-    //
-    // /**
-    //  * 生成当天单号
-    //  *
-    //  * @param prefix 单号前缀
-    //  * @return number
-    //  */
-    // protected String generateNumber(String prefix) {
-    //     LocalDate date = LocalDate.now();
-    //     QueryWrapper<T> wrapper = new QueryWrapper<>();
-    //     wrapper.apply(String.format("to_days(create_date) = to_days('%s')", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
-    //     int dayCount = this.queryCount(wrapper);
-    //     return prefix + date.format(DateTimeFormatter.ofPattern("yyMMdd")) + String.format("%04d", dayCount + 1);
-    // }
-    //
-    // /**
-    //  * 根据条件生成当天单号
-    //  *
-    //  * @param prefix 单号前缀
-    //  * @param field  条件字段
-    //  * @param values 条件值
-    //  * @return number
-    //  */
-    // protected String generateNumber(String prefix, String field, Object... values) {
-    //     LocalDate date = LocalDate.now();
-    //     QueryWrapper<T> wrapper = new QueryWrapper<>();
-    //     wrapper.in(field, values);
-    //     wrapper.apply(String.format("to_days(create_date) = to_days('%s')", date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
-    //     int dayCount = this.queryCount(wrapper);
-    //     return prefix + date.format(DateTimeFormatter.ofPattern("yyMMdd")) + String.format("%04d", dayCount + 1);
-    // }
-    //
-    // protected Integer queryCount(Wrapper<T> wrapper) {
-    //     String tableName = SqlHelper.table(this.entityClass).getTableName();
-    //     return this.getBaseMapper().queryCount(tableName, wrapper);
-    // }
+
+    /**
+     * 生成业务编号
+     * <p>
+     * 根据指定的时间字段统计当日数据条数，生成格式为"前缀+年月日+序号"的编号。
+     * <p>
+     * 编号格式：prefix + yyMMdd + 4位序号（如 TX202606100001）
+     *
+     * @param prefix     编号前缀，用于标识业务类型
+     * @param codeGetter 实体类中日期字段的 Getter 方法引用
+     * @return 生成的业务编号
+     */
+    public String getNumber(String prefix, SFunction<T, LocalDateTime> codeGetter) {
+        LocalDate today = LocalDate.now(); // 当前时间
+        LocalDateTime start = today.atStartOfDay(); // 当天零点
+        LocalDateTime end = today.plusDays(1).atStartOfDay(); // 明天零点
+
+        LambdaQueryWrapper<T> lqw = new LambdaQueryWrapper<>();
+        lqw.ge(codeGetter, start).lt(codeGetter, end);
+
+        TableInfo tableInfo = TableInfoHelper.getTableInfo(this.getEntityClass());
+        String tableName = tableInfo.getTableName();
+
+        Integer count = this.baseMapper.queryCount(tableName, lqw);
+        int currentCount = ObjectUtil.defaultIfNull(count,0) ;
+
+        return prefix + today.format(DateTimeFormatter.ofPattern("yyMMdd")) + String.format("%04d", currentCount + 1);
+    }
+
 }

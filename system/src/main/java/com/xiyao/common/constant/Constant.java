@@ -81,6 +81,26 @@ public interface Constant {
     // ==================== 数据库 ====================
 
     /**
+     * 当前记录起始索引
+     */
+   String PAGE_NUM = "pageNum";
+
+    /**
+     * 每页显示记录数
+     */
+    String PAGE_SIZE = "pageSize";
+
+    /**
+     * 排序列
+     */
+    String ORDER_BY_COLUMN = "orderByColumn";
+
+    /**
+     * 排序方式
+     */
+    String ORDER = "order";
+
+    /**
      * 升序
      */
     String ASC = "asc";
@@ -91,22 +111,7 @@ public interface Constant {
     String DESC = "desc";
 
     /**
-     * 当前页码
+     * 降序
      */
-    String PAGE = "page";
-
-    /**
-     * 每页显示记录数
-     */
-    String LIMIT = "limit";
-
-    /**
-     * 排序字段
-     */
-    String ORDER_FIELD = "orderField";
-
-    /**
-     * 排序方式
-     */
-    String ORDER = "order";
+    String IS_ASC = "isAsc";
 }

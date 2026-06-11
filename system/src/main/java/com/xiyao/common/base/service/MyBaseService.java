@@ -1,6 +1,21 @@
 package com.xiyao.common.base.service;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.xiyao.common.utils.ConvertUtils;
+import com.xiyao.common.utils.data.PageQuery;
+import com.xiyao.common.utils.data.PageResult;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Service 基类接口
@@ -27,187 +42,110 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface MyBaseService<T> extends IService<T> {
 
     /**
-     * 筛选条件
+     * 批量插入实体对象集合
      *
-     * @param params map
-     * @return QueryWrapper
+     * @param entity 实体对象
+     * @return 插入操作是否成功的布尔值
      */
-    // QueryWrapper<T> queryWrapper(Map<String, Object> params);
+    @Transactional(rollbackFor = Exception.class)
+    default boolean insert(T entity) {
+        return Db.save(entity);
+    }
 
     /**
-     * 关联处理
+     * 批量根据ID更新实体对象集合
      *
-     * @param list   源数据
-     * @param params 筛选条件
+     * @param entity 实体对象
+     * @return 更新操作是否成功的布尔值
      */
-    // void handleList(List<T> list, Map<String, Object> params);
+    @Transactional(rollbackFor = Exception.class)
+    default boolean update(T entity) {
+        return Db.updateById(entity);
+    }
 
-    // default IPage<T> getPage(Map<String, Object> params, String defaultOrderField, Boolean isAsc) {
-    //     // 分页参数
-    //     long curPage = 1;
-    //     long limit = 10;
-    //     if (!StrUtil.isBlankIfStr(params.get(Constant.PAGE))) {
-    //         curPage = Long.parseLong(params.get(Constant.PAGE).toString());
-    //     }
-    //     if (!StrUtil.isBlankIfStr(params.get(Constant.LIMIT))) {
-    //         limit = Long.parseLong(params.get(Constant.LIMIT).toString());
-    //     }
-    //     // 分页对象
-    //     Page<T> page = new Page<>(curPage, limit);
-    //     // 分页参数
-    //     params.put(Constant.PAGE, page);
-    //     // 前端字段排序
-    //     if (!StrUtil.isBlankIfStr(params.get(Constant.ORDER_FIELD)) && !StrUtil.isBlankIfStr(params.get(Constant.ORDER))) {
-    //         // 排序字段 防止SQL注入
-    //         String orderField = SqlFilter.sqlInject(params.get(Constant.ORDER_FIELD).toString());
-    //         String order = params.get(Constant.ORDER).toString();
-    //         return page.addOrder(Constant.ASC.equalsIgnoreCase(order) ? OrderItem.asc(orderField) : OrderItem.desc(orderField));
-    //     }
-    //     // 没有排序字段，则不排序
-    //     if (StrUtils.isBlank(defaultOrderField)) {
-    //         return page;
-    //     }
-    //     // 默认排序
-    //     return page.addOrder(isAsc ? OrderItem.asc(defaultOrderField) : OrderItem.desc(defaultOrderField));
-    // }
+    /**
+     * 批量插入或更新实体对象集合
+     *
+     * @param entity 实体对象
+     * @return 插入或更新操作是否成功的布尔值
+     */
+    @Transactional(rollbackFor = Exception.class)
+    default boolean insertOrUpdate(T entity) {
+        return Db.saveOrUpdate(entity);
+    }
 
-    // default <E> PageData<E> queryPage(Map<String, Object> params, Class<E> target) {
-    //     return new PageData<>(this.queryPage(params), target);
-    // }
-    //
-    // default IPage<T> queryPage(Map<String, Object> params) {
-    //     return this.queryPage(params, true);
-    // }
-    //
-    // default IPage<T> queryPage(Map<String, Object> params, Boolean isHandle) {
-    //     IPage<T> page = this.page(getPage(params, "", false), this.queryWrapper(params));
-    //     if (isHandle && !page.getRecords().isEmpty()) {
-    //         this.handleList(page.getRecords(), params);
-    //     }
-    //     return page;
-    // }
-    //
-    // default List<T> queryList(Collection<? extends Serializable> idList) {
-    //     List<T> list = this.listByIds(idList);
-    //     if (!list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list;
-    // }
-    //
-    // default List<T> queryList(Map<String, Object> params, Boolean isHandle) {
-    //     List<T> list = this.list(this.queryWrapper(params));
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, params);
-    //     }
-    //     return list;
-    // }
-    //
-    // default <E> List<E> queryList(Map<String, Object> params, Boolean isHandle, Class<E> target) {
-    //     List<T> list = this.list(this.queryWrapper(params));
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, params);
-    //     }
-    //     return ConvertUtils.sourceToTarget(list, target);
-    // }
-    //
-    // default List<T> queryList(Wrapper<T> queryWrapper, Boolean isHandle) {
-    //     List<T> list = this.list(queryWrapper);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list;
-    // }
-    //
-    // default <V> Map<V, T> queryMap(Collection<? extends Serializable> idList, Function<? super T, V> mapper, Boolean isHandle) {
-    //     List<T> list = this.listByIds(idList);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.toMap(mapper, Function.identity()));
-    // }
-    //
-    // default <V, U> Map<V, U> queryMap(Collection<? extends Serializable> idList, Function<? super T, V> keyMapper, Function<? super T, U> valueMapper, Boolean isHandle) {
-    //     List<T> list = this.listByIds(idList);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.toMap(keyMapper, valueMapper));
-    // }
-    //
-    // default <V> Map<V, T> queryMap(Wrapper<T> queryWrapper, Function<? super T, V> mapper, Boolean isHandle) {
-    //     List<T> list = this.list(queryWrapper);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.toMap(mapper, Function.identity()));
-    // }
-    //
-    // default <V, U> Map<V, U> queryMap(Wrapper<T> queryWrapper, Function<? super T, V> keyMapper, Function<? super T, U> valueMapper, Boolean isHandle) {
-    //     List<T> list = this.list(queryWrapper);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.toMap(keyMapper, valueMapper));
-    // }
-    //
-    // default <V> Map<V, List<T>> queryListMap(Collection<? extends Serializable> idList, Function<? super T, V> mapper, Boolean isHandle) {
-    //     List<T> list = this.listByIds(idList);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper));
-    // }
-    //
-    // default <V> Map<V, List<T>> queryListMap(Map<String, Object> params, Function<? super T, V> mapper, Boolean isHandle) {
-    //     List<T> list = this.list(this.queryWrapper(params));
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper));
-    // }
-    //
-    // default <V> Map<V, List<T>> queryListMap(Wrapper<T> queryWrapper, Function<? super T, V> mapper, Boolean isHandle) {
-    //     List<T> list = this.list(queryWrapper);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper));
-    // }
-    //
-    // default <V, A, R> Map<V, R> queryListMap(Collection<? extends Serializable> idList, Function<? super T, V> mapper, Collector<? super T, A, R> collector, Boolean isHandle) {
-    //     List<T> list = this.listByIds(idList);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper, collector));
-    // }
-    //
-    // default <V, A, R> Map<V, R> queryListMap(Map<String, Object> params, Function<? super T, V> mapper, Collector<? super T, A, R> collector, Boolean isHandle) {
-    //     List<T> list = this.list(this.queryWrapper(params));
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper, collector));
-    // }
-    //
-    // default <V, A, R> Map<V, R> queryListMap(Wrapper<T> queryWrapper, Function<? super T, V> mapper, Collector<? super T, A, R> collector, Boolean isHandle) {
-    //     List<T> list = this.list(queryWrapper);
-    //     if (isHandle && !list.isEmpty()) {
-    //         this.handleList(list, new HashMap<>());
-    //     }
-    //     return list.stream().collect(Collectors.groupingBy(mapper, collector));
-    // }
-    //
-    // default <V> List<V> queryValueList(Collection<? extends Serializable> idList, Function<? super T, V> mapper) {
-    //     return this.listByIds(idList).stream().filter(Objects::nonNull).map(mapper).distinct().collect(Collectors.toList());
-    // }
-    //
-    // default <V> List<V> queryValueList(Map<String, Object> params, Function<? super T, V> mapper) {
-    //     return this.list(this.queryWrapper(params)).stream().filter(Objects::nonNull).map(mapper).distinct().collect(Collectors.toList());
-    // }
-    //
-    // default <V> List<V> queryValueList(Wrapper<T> queryWrapper, Function<? super T, V> mapper) {
-    //     return this.list(queryWrapper).stream().filter(Objects::nonNull).map(mapper).distinct().collect(Collectors.toList());
-    // }
+    /**
+     * 批量插入实体对象集合
+     *
+     * @param entityList 实体对象集合
+     * @return 插入操作是否成功的布尔值
+     */
+    @Transactional(rollbackFor = Exception.class)
+    default boolean insertBatch(Collection<T> entityList) {
+        return Db.saveBatch(entityList);
+    }
+
+    /**
+     * 批量根据ID更新实体对象集合
+     *
+     * @param entityList 实体对象集合
+     * @return 更新操作是否成功的布尔值
+     */
+    @Transactional(rollbackFor = Exception.class)
+    default boolean updateBatch(Collection<T> entityList) {
+        return Db.updateBatchById(entityList);
+    }
+
+    /**
+     * 批量插入或更新实体对象集合
+     *
+     * @param entityList 实体对象集合
+     * @return 插入或更新操作是否成功的布尔值
+     */
+    @Transactional(rollbackFor = Exception.class)
+    default boolean insertOrUpdateBatch(Collection<T> entityList) {
+        return Db.saveOrUpdateBatch(entityList);
+    }
+
+
+    default T queryByField(SFunction<T, ?> codeGetter, Object object) {
+        if (ObjectUtil.isNull(object)) {
+            return null;
+        }
+        return Db.lambdaQuery(this.getEntityClass()).eq(codeGetter, object).one();
+    }
+
+    default List<T> queryByField(SFunction<T, ?> codeGetter, Collection<?> list) {
+        if (CollUtil.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        return Db.lambdaQuery(this.getEntityClass()).in(codeGetter, list).list();
+    }
+
+    default PageResult<T> queryPage(PageQuery query) {
+        // 分页对象
+        Page<T> build = query.build(this.getEntityClass());
+        // 查询数据
+        IPage<T> page = Db.page(build, this.getEntityClass());
+        // 封装分页结果
+        return PageResult.page(page, page.getRecords());
+    }
+
+    default PageResult<T> queryPage(PageQuery query, QueryWrapper<T> queryWrapper) {
+        // 分页对象
+        Page<T> build = query.build(this.getEntityClass());
+        // 查询数据
+        IPage<T> page = Db.page(build, queryWrapper);
+        // 封装分页结果
+        return PageResult.page(page, page.getRecords());
+    }
+
+    default <V> PageResult<V> queryPage(PageQuery query, QueryWrapper<T> queryWrapper, Class<V> entityClass) {
+        // 分页对象
+        Page<T> build = query.build(this.getEntityClass());
+        // 查询数据
+        IPage<T> page = Db.page(build, queryWrapper);
+        // 封装分页结果
+        return PageResult.page(page, ConvertUtils.sourceToTarget(page.getRecords(), entityClass));
+    }
 }

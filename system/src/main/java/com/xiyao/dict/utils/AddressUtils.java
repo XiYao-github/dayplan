@@ -105,12 +105,12 @@ public class AddressUtils {
      */
     public static String getName(Long code) {
         if (ObjectUtil.isNull(code)) {
-            return "";
+            return null;
         }
         lock.readLock().lock();
         try {
             SysAddress address = addressCache.get(code);
-            return ObjectUtil.isNotNull(address) ? address.getName() : "";
+            return ObjectUtil.isNotNull(address) ? address.getName() : null;
         } finally {
             lock.readLock().unlock();
         }

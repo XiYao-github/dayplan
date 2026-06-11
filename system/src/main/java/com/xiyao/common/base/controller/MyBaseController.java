@@ -1,7 +1,8 @@
 package com.xiyao.common.base.controller;
 
 import com.xiyao.common.utils.data.Result;
-import lombok.extern.slf4j.Slf4j;
+import com.xiyao.security.details.LoginUser;
+import com.xiyao.security.utils.SecurityUtils;
 
 /**
  * Controller 基类
@@ -85,4 +86,27 @@ public class MyBaseController {
         return Result.error(message);
     }
 
+    /**
+     * 获取登录用户信息
+     */
+    public LoginUser getLoginUser()
+    {
+        return SecurityUtils.getLoginUser();
+    }
+
+    /**
+     * 获取登录用户id
+     */
+    public Long getUserId()
+    {
+        return getLoginUser().getUserId();
+    }
+
+    /**
+     * 获取登录用户名
+     */
+    public String getUsername()
+    {
+        return getLoginUser().getUsername();
+    }
 }

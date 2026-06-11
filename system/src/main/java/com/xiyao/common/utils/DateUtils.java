@@ -1,7 +1,10 @@
 package com.xiyao.common.utils;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -23,28 +26,27 @@ import java.util.Date;
  *
  * @author xiyao
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateUtils {
 
-    /** 标准日期格式：yyyy-MM-dd */
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
-
-    /** 标准时间格式：HH:mm:ss */
-    public static final String TIME_PATTERN = "HH:mm:ss";
-
-    /** 标准日期时间格式：yyyy-MM-dd HH:mm:ss */
+    /**
+     * 标准日期时间格式：yyyy-MM-dd HH:mm:ss
+     */
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
-    /** 紧凑日期格式：yyyyMMdd */
-    public static final String COMPACT_DATE_PATTERN = "yyyyMMdd";
+    /**
+     * 标准日期格式：yyyy-MM-dd
+     */
+    public static final String DATE_PATTERN = "yyyy-MM-dd";
 
-    /** 紧凑时间格式：HHmmss */
-    public static final String COMPACT_TIME_PATTERN = "HHmmss";
+    /**
+     * 标准时间格式：HH:mm:ss
+     */
+    public static final String TIME_PATTERN = "HH:mm:ss";
 
-    /** 年月格式：yyyy-MM */
-    public static final String YEAR_MONTH_PATTERN = "yyyy-MM";
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern(DATETIME_PATTERN);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
 
     // ==================== 格式化与解析 ====================
 
@@ -55,7 +57,7 @@ public class DateUtils {
      * @return 格式化后的字符串
      */
     public static String format(LocalDateTime dateTime) {
-        return dateTime == null ? "" : dateTime.format(DATETIME_FORMATTER);
+        return ObjectUtil.isNull(dateTime) ? "" : dateTime.format(DATETIME_FORMATTER);
     }
 
     /**
@@ -66,10 +68,7 @@ public class DateUtils {
      * @return 格式化后的字符串
      */
     public static String format(LocalDateTime dateTime, String pattern) {
-        if (dateTime == null) {
-            return "";
-        }
-        return dateTime.format(DateTimeFormatter.ofPattern(pattern));
+        return ObjectUtil.isNull(dateTime) ? "" : dateTime.format(DateTimeFormatter.ofPattern(pattern));
     }
 
     /**
@@ -79,7 +78,11 @@ public class DateUtils {
      * @return 格式化后的字符串
      */
     public static String format(LocalDate date) {
-        return date == null ? "" : date.format(DATE_FORMATTER);
+        return ObjectUtil.isNull(date) ? "" : date.format(DATE_FORMATTER);
+    }
+
+    public static String format(LocalDate date, String pattern) {
+        return ObjectUtil.isNull(date) ? "" : date.format(DateTimeFormatter.ofPattern(pattern));
     }
 
     /**
@@ -89,7 +92,11 @@ public class DateUtils {
      * @return 格式化后的字符串
      */
     public static String format(LocalTime time) {
-        return time == null ? "" : time.format(DateTimeFormatter.ofPattern(TIME_PATTERN));
+        return ObjectUtil.isNull(time) ? "" : time.format(TIME_FORMATTER);
+    }
+
+    public static String format(LocalTime time, String pattern) {
+        return ObjectUtil.isNull(time) ? "" : time.format(DateTimeFormatter.ofPattern(pattern));
     }
 
     /**
@@ -99,10 +106,7 @@ public class DateUtils {
      * @return LocalDateTime
      */
     public static LocalDateTime parseDateTime(String dateStr) {
-        if (StrUtil.isBlank(dateStr)) {
-            return null;
-        }
-        return LocalDateTime.parse(dateStr, DATETIME_FORMATTER);
+        return StrUtil.isBlank(dateStr) ? null : LocalDateTime.parse(dateStr, DATETIME_FORMATTER);
     }
 
     /**
@@ -112,10 +116,7 @@ public class DateUtils {
      * @return LocalDate
      */
     public static LocalDate parseDate(String dateStr) {
-        if (StrUtil.isBlank(dateStr)) {
-            return null;
-        }
-        return LocalDate.parse(dateStr, DATE_FORMATTER);
+        return StrUtil.isBlank(dateStr) ? null : LocalDate.parse(dateStr, DATE_FORMATTER);
     }
 
     /**
@@ -174,50 +175,6 @@ public class DateUtils {
     }
 
     // ==================== 日期计算 ====================
-
-    /**
-     * 日期加减天数
-     *
-     * @param date   日期
-     * @param days   天数（正数为加，负数为减）
-     * @return 计算后的日期
-     */
-    public static LocalDate plusDays(LocalDate date, long days) {
-        return date.plusDays(days);
-    }
-
-    /**
-     * 日期时间加减天数
-     *
-     * @param dateTime 日期时间
-     * @param days     天数
-     * @return 计算后的日期时间
-     */
-    public static LocalDateTime plusDays(LocalDateTime dateTime, long days) {
-        return dateTime.plusDays(days);
-    }
-
-    /**
-     * 日期加减月数
-     *
-     * @param date  日期
-     * @param months 月数
-     * @return 计算后的日期
-     */
-    public static LocalDate plusMonths(LocalDate date, long months) {
-        return date.plusMonths(months);
-    }
-
-    /**
-     * 日期加减年数
-     *
-     * @param date  日期
-     * @param years 年数
-     * @return 计算后的日期
-     */
-    public static LocalDate plusYears(LocalDate date, long years) {
-        return date.plusYears(years);
-    }
 
     /**
      * 计算两个日期之间的天数
@@ -292,7 +249,7 @@ public class DateUtils {
     /**
      * 判断日期时间是否在范围内
      *
-     * @param dateTime   日期时间
+     * @param dateTime      日期时间
      * @param startDateTime 开始时间
      * @param endDateTime   结束时间
      * @return 是否在范围内
@@ -335,30 +292,17 @@ public class DateUtils {
     // ==================== 工具方法 ====================
 
     /**
-     * 获取当前日期
+     * 从 Date 转换
      *
-     * @return 当前日期
+     * @param date Date
+     * @return LocalDateTime
      */
-    public static LocalDate getCurrentDate() {
-        return LocalDate.now();
+    public static LocalDateTime toLocalDateTime(Date date) {
+        return ObjectUtil.isNull(date) ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    /**
-     * 获取当前时间
-     *
-     * @return 当前时间
-     */
-    public static LocalTime getCurrentTime() {
-        return LocalTime.now();
-    }
-
-    /**
-     * 获取当前日期时间
-     *
-     * @return 当前日期时间
-     */
-    public static LocalDateTime getCurrentDateTime() {
-        return LocalDateTime.now();
+    public static LocalDate toLocalDate(Date date) {
+        return ObjectUtil.isNull(date) ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     /**
@@ -368,25 +312,17 @@ public class DateUtils {
      * @return Date
      */
     public static Date toDate(LocalDateTime localDateTime) {
-        if (localDateTime == null) {
-            return null;
-        }
-        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return ObjectUtil.isNull(localDateTime) ? null : Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /**
-     * 从 Date 转换
+     * 转换为 Date 对象
      *
-     * @param date Date
-     * @return LocalDateTime
+     * @param localDate localDate
+     * @return Date
      */
-    public static LocalDateTime toLocalDateTime(Date date) {
-        if (date == null) {
-            return null;
-        }
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    public static Date toDate(LocalDate localDate) {
+        return ObjectUtil.isNull(localDate) ? null : Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    private DateUtils() {
-    }
 }

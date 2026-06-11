@@ -1,6 +1,11 @@
 package com.xiyao.common.base.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * Mapper 基类接口
@@ -32,7 +37,7 @@ public interface MyBaseMapper<T> extends BaseMapper<T> {
      * @param wrapper 条件
      * @return count
      */
-    // @InterceptorIgnore(illegalSql = "1")
-    // @Select("select count(1) from ${table} ${ew.customSqlSegment}")
-    // Integer queryCount(@Param("table") String table, @Param(Constants.WRAPPER) Wrapper<T> wrapper);
+    @InterceptorIgnore(illegalSql = "1")
+    @Select("select count(1) from ${table} ${ew.customSqlSegment}")
+    Integer queryCount(@Param("table") String table, @Param(Constants.WRAPPER) Wrapper<T> wrapper);
 }
