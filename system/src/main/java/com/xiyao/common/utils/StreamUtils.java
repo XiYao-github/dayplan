@@ -69,17 +69,16 @@ public class StreamUtils {
      * @return 过滤后的新列表，永远不会返回 null
      */
     public static <E> List<E> filter(Collection<E> collection, Predicate<E> function) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
         return collection.stream()
-            .filter(function)
-            /**
-             * 注意此处不要使用 .toList() 新语法
-             * 因为 toList() 返回的是不可变 List，会导致序列化问题（如 Redis 存储、Jackson 序列化）
-             * 故使用Collectors.toList()显式创建可变 ArrayList
-             */
-            .collect(Collectors.toList());
+                .filter(function)
+                // 注意此处不要使用 .toList() 新语法
+                // 因为 toList() 返回的是不可变 List，会导致序列化问题（如 Redis 存储、Jackson 序列化）
+                // 故使用 Collectors.toList() 显式创建可变 ArrayList
+                .collect(Collectors.toList());
     }
 
     /**
@@ -97,12 +96,13 @@ public class StreamUtils {
      * @see #findFirstValue(Collection, Predicate)
      */
     public static <E> Optional<E> findFirst(Collection<E> collection, Predicate<E> function) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Optional.empty();
         }
         return collection.stream()
-            .filter(function)
-            .findFirst();
+                .filter(function)
+                .findFirst();
     }
 
     /**
@@ -118,7 +118,7 @@ public class StreamUtils {
      * @see #findFirst(Collection, Predicate)
      */
     public static <E> E findFirstValue(Collection<E> collection, Predicate<E> function) {
-        return findFirst(collection,function).orElse(null);
+        return findFirst(collection, function).orElse(null);
     }
 
     /**
@@ -134,12 +134,13 @@ public class StreamUtils {
      * @see #findAnyValue(Collection, Predicate)
      */
     public static <E> Optional<E> findAny(Collection<E> collection, Predicate<E> function) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Optional.empty();
         }
         return collection.stream()
-            .filter(function)
-            .findAny();
+                .filter(function)
+                .findAny();
     }
 
     /**
@@ -155,7 +156,7 @@ public class StreamUtils {
      * @see #findAny(Collection, Predicate)
      */
     public static <E> E findAnyValue(Collection<E> collection, Predicate<E> function) {
-        return findAny(collection,function).orElse(null);
+        return findAny(collection, function).orElse(null);
     }
 
     /**
@@ -187,13 +188,14 @@ public class StreamUtils {
      * @return 拼接后的字符串，如果集合为空返回空字符串
      */
     public static <E> String join(Collection<E> collection, Function<E, String> function, CharSequence delimiter) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return StringUtils.EMPTY;
         }
         return collection.stream()
-            .map(function)
-            .filter(Objects::nonNull)
-            .collect(Collectors.joining(delimiter));
+                .map(function)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(delimiter));
     }
 
     /**
@@ -208,14 +210,15 @@ public class StreamUtils {
      * @return 排序后的新列表，空集合返回空列表
      */
     public static <E> List<E> sorted(Collection<E> collection, Comparator<E> comparing) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .sorted(comparing)
-            // 注意此处不要使用 .toList() 新语法，因为返回的是不可变List，会导致序列化问题
-            .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .sorted(comparing)
+                // 注意此处不要使用 .toList() 新语法，因为返回的是不可变 List，会导致序列化问题
+                .collect(Collectors.toList());
     }
 
     /**
@@ -233,12 +236,13 @@ public class StreamUtils {
      * @throws NullPointerException 如果 key 为 null
      */
     public static <V, K> Map<K, V> toIdentityMap(Collection<V> collection, Function<V, K> key) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Collections.emptyMap();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.toMap(key, Function.identity(), (l, r) -> l));
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(key, Function.identity(), (l, r) -> l));
     }
 
     /**
@@ -258,12 +262,13 @@ public class StreamUtils {
      * @throws NullPointerException 如果 key 或 value 函数返回 null
      */
     public static <E, K, V> Map<K, V> toMap(Collection<E> collection, Function<E, K> key, Function<E, V> value) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Collections.emptyMap();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.toMap(key, value, (l, r) -> l));
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(key, value, (l, r) -> l));
     }
 
     /**
@@ -272,17 +277,19 @@ public class StreamUtils {
      * 遍历原 Map，对每个 entry 应用 take 函数生成新的 value。
      * key 保持不变，value 类型可能发生变化。
      *
-     * @param map   需要处理的原 Map
-     * @param take  取值函数，参数为 (key, oldValue)，返回 newValue
-     * @param <K>   Map 的 key 类型
-     * @param <E>   原 Map 的 value 类型
-     * @param <V>   新 Map 的 value 类型
+     * @param map  需要处理的原 Map
+     * @param take 取值函数，参数为 (key, oldValue)，返回 newValue
+     * @param <K>  Map 的 key 类型
+     * @param <E>  原 Map 的 value 类型
+     * @param <V>  新 Map 的 value 类型
      * @return 新的 Map，key 不变，value 为转换后的结果
      */
     public static <K, E, V> Map<K, V> toMap(Map<K, E> map, BiFunction<K, E, V> take) {
+        // 空 Map 校验
         if (CollUtil.isEmpty(map)) {
             return Collections.emptyMap();
         }
+        // 使用 toMap 重载版本进行转换
         return toMap(map.entrySet(), Map.Entry::getKey, entry -> take.apply(entry.getKey(), entry.getValue()));
     }
 
@@ -300,12 +307,13 @@ public class StreamUtils {
      * @return 分组后的 Map，key 为分类键，value 为该分类下的元素列表
      */
     public static <E, K> Map<K, List<E>> groupByKey(Collection<E> collection, Function<E, K> key) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Collections.emptyMap();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.groupingBy(key, LinkedHashMap::new, Collectors.toList()));
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(key, LinkedHashMap::new, Collectors.toList()));
     }
 
     /**
@@ -324,12 +332,13 @@ public class StreamUtils {
      * @return 双层分组后的 Map
      */
     public static <E, K, U> Map<K, Map<U, List<E>>> groupBy2Key(Collection<E> collection, Function<E, K> key1, Function<E, U> key2) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Collections.emptyMap();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.groupingBy(key2, LinkedHashMap::new, Collectors.toList())));
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.groupingBy(key2, LinkedHashMap::new, Collectors.toList())));
     }
 
     /**
@@ -348,12 +357,13 @@ public class StreamUtils {
      * @return 双层分组后的 Map，每组只有一个元素
      */
     public static <E, T, U> Map<T, Map<U, E>> group2Map(Collection<E> collection, Function<E, T> key1, Function<E, U> key2) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return Collections.emptyMap();
         }
         return collection.stream()
-            .filter(Objects::nonNull)
-            .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.toMap(key2, Function.identity(), (l, r) -> l)));
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(key1, LinkedHashMap::new, Collectors.toMap(key2, Function.identity(), (l, r) -> l)));
     }
 
     /**
@@ -370,14 +380,15 @@ public class StreamUtils {
      * @return 转换后的 List
      */
     public static <E, T> List<T> toList(Collection<E> collection, Function<E, T> function) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newArrayList();
         }
         return collection.stream()
-            .map(function)
-            .filter(Objects::nonNull)
-            // 注意此处不要使用 .toList() 新语法，因为返回的是不可变List，会导致序列化问题
-            .collect(Collectors.toList());
+                .map(function)
+                .filter(Objects::nonNull)
+                // 注意此处不要使用 .toList() 新语法，因为返回的是不可变 List，会导致序列化问题
+                .collect(Collectors.toList());
     }
 
     /**
@@ -394,15 +405,15 @@ public class StreamUtils {
      * @return 转换后的 Set（可能包含 null 值被过滤）
      */
     public static <E, T> Set<T> toSet(Collection<E> collection, Function<E, T> function) {
+        // 空集合校验
         if (CollUtil.isEmpty(collection)) {
             return CollUtil.newHashSet();
         }
         return collection.stream()
-            .map(function)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
+                .map(function)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
     }
-
 
     /**
      * 合并两个相同 key 类型的 Map
@@ -421,20 +432,26 @@ public class StreamUtils {
      * @return 合并后的 Map
      */
     public static <K, X, Y, V> Map<K, V> merge(Map<K, X> map1, Map<K, Y> map2, BiFunction<X, Y, V> merge) {
+        // 1. 处理两个 Map 都为空的情况
         if (CollUtil.isEmpty(map1) && CollUtil.isEmpty(map2)) {
-            // 如果两个 map 都为空，则直接返回空的 map
             return Collections.emptyMap();
-        } else if (CollUtil.isEmpty(map1)) {
-            // 如果 map1 为空，则直接处理返回 map2（value2 传入 null）
+        }
+        // 2. 处理 map1 为空，map2 非空的情况
+        else if (CollUtil.isEmpty(map1)) {
+            // map2 的 value 传入 merge 函数，map1 的 value 传入 null
             return toMap(map2.entrySet(), Map.Entry::getKey, entry -> merge.apply(null, entry.getValue()));
-        } else if (CollUtil.isEmpty(map2)) {
-            // 如果 map2 为空，则直接处理返回 map1（value1 传入 null）
+        }
+        // 3. 处理 map2 为空，map1 非空的情况
+        else if (CollUtil.isEmpty(map2)) {
+            // map1 的 value 传入 merge 函数，map2 的 value 传入 null
             return toMap(map1.entrySet(), Map.Entry::getKey, entry -> merge.apply(entry.getValue(), null));
         }
-        // 两个 map 都非空，合并所有 key
+        // 4. 两个 Map 都非空，合并所有 key
+        // 收集两个 Map 的所有 key
         Set<K> keySet = new HashSet<>();
         keySet.addAll(map1.keySet());
         keySet.addAll(map2.keySet());
+        // 对每个 key 执行 merge 函数
         return toMap(keySet, key -> key, key -> merge.apply(map1.get(key), map2.get(key)));
     }
 

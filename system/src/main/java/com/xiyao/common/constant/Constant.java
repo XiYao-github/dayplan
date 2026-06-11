@@ -3,27 +3,33 @@ package com.xiyao.common.constant;
 /**
  * 全局常量接口
  * <p>
- * 定义项目中使用的通用常量，
- * 包括日期格式、字符集、登录相关常量等。
+ * 定义项目中使用的通用常量，包括日期格式、字符集、排序方向、数据库相关常量等。
+ * 通过接口 + 常量的方式组织，便于集中管理和使用。
  *
  * @author xiyao
  */
 public interface Constant {
 
-    // ==================== 日期时间格式 ====================
+    // ==================== 日期时间格式常量 ====================
 
     /**
      * 日期时间格式（前端常用格式）
+     * <p>
+     * 格式：yyyy-MM-dd HH:mm:ss
      */
     String PATTERN_DATE_TIME = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 日期格式
+     * <p>
+     * 格式：yyyy-MM-dd
      */
     String PATTERN_DATE = "yyyy-MM-dd";
 
     /**
      * 时间格式
+     * <p>
+     * 格式：HH:mm:ss
      */
     String PATTERN_TIME = "HH:mm:ss";
 
@@ -32,7 +38,7 @@ public interface Constant {
      */
     String TIME_ZONE = "GMT+8";
 
-    // ==================== 字符集 ====================
+    // ==================== 字符集常量 ====================
 
     /**
      * UTF-8 字符集
@@ -44,7 +50,7 @@ public interface Constant {
      */
     String GBK = "GBK";
 
-    // ==================== URL 相关 ====================
+    // ==================== URL 相关常量 ====================
 
     /**
      * www 主域前缀
@@ -61,7 +67,7 @@ public interface Constant {
      */
     String HTTPS = "https://";
 
-    // ==================== 登录相关操作 ====================
+    // ==================== 登录操作常量 ====================
 
     /**
      * 登录操作标识
@@ -78,25 +84,25 @@ public interface Constant {
      */
     String REGISTER = "register";
 
-    // ==================== 数据库 ====================
+    // ==================== 数据库相关常量 ====================
 
     /**
-     * 当前记录起始索引
+     * 当前记录起始索引（分页参数）
      */
-   String PAGE_NUM = "pageNum";
+    String PAGE_NUM = "pageNum";
 
     /**
-     * 每页显示记录数
+     * 每页显示记录数（分页参数）
      */
     String PAGE_SIZE = "pageSize";
 
     /**
-     * 排序列
+     * 排序列（分页参数）
      */
     String ORDER_BY_COLUMN = "orderByColumn";
 
     /**
-     * 排序方式
+     * 排序方式（分页参数）
      */
     String ORDER = "order";
 
@@ -111,7 +117,7 @@ public interface Constant {
     String DESC = "desc";
 
     /**
-     * 降序
+     * 排序方向参数名
      */
     String IS_ASC = "isAsc";
 }

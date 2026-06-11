@@ -68,10 +68,18 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EncryptInterceptor implements Interceptor {
 
-    /** 加密管理器，负责执行具体的加密操作 */
+    /**
+     * 加密管理器
+     * <p>
+     * 负责管理加密器实例和字段缓存。
+     */
     private final EncryptorManager manager;
 
-    /** 加密模块配置属性 */
+    /**
+     * 加解密配置属性
+     * <p>
+     * 从 yml 配置文件中加载的全局加解密配置。
+     */
     private final EncryptorData properties;
 
     /**
@@ -107,6 +115,7 @@ public class EncryptInterceptor implements Interceptor {
      * @param result 待处理的对象
      */
     private void encryptHandler(Object result) {
+        // 空值检查，避免空指针异常
         if (ObjectUtil.isEmpty(result)) {
             return;
         }
@@ -153,26 +162,32 @@ public class EncryptInterceptor implements Interceptor {
      * @return 加密后的字符串（带 ENC_ 前缀）
      */
     private String encryptField(String value, Field field) {
+        // 空值检查
         if (StrUtil.isBlank(value)) {
             return null;
         }
+
         // 获取注解配置信息
         CryptoField cryptoField = field.getAnnotation(CryptoField.class);
+
         // 构建加密上下文，注解未配置时使用全局配置
         EncryptContext context = new EncryptContext();
-        // 算法：注解指定则用注解，否则用全局配置
-        context.setAlgorithm(cryptoField.algorithm() == AlgorithmType.DEFAULT
-                ? properties.getAlgorithm() : cryptoField.algorithm());
-        // 编码：注解指定则用注解，否则用全局配置
-        context.setEncode(cryptoField.encode() == EncodeType.DEFAULT
-                ? properties.getEncode() : cryptoField.encode());
-        // 密钥：注解指定则用注解，否则用全局配置
-        context.setPassword(StrUtil.isBlank(cryptoField.password())
-                ? properties.getPassword() : cryptoField.password());
-        context.setPrivateKey(StrUtil.isBlank(cryptoField.privateKey())
-                ? properties.getPrivateKey() : cryptoField.privateKey());
-        context.setPublicKey(StrUtil.isBlank(cryptoField.publicKey())
-                ? properties.getPublicKey() : cryptoField.publicKey());
+
+        // 设置算法类型：字段注解优先，否则使用全局配置
+        context.setAlgorithm(cryptoField.algorithm() == AlgorithmType.DEFAULT ? properties.getAlgorithm() : cryptoField.algorithm());
+
+        // 设置编码类型：字段注解优先，否则使用全局配置
+        context.setEncode(cryptoField.encode() == EncodeType.DEFAULT ? properties.getEncode() : cryptoField.encode());
+
+        // 设置密钥：字段注解优先，否则使用全局配置
+        context.setPassword(StrUtil.isBlank(cryptoField.password()) ? properties.getPassword() : cryptoField.password());
+
+        // 设置私钥：字段注解优先，否则使用全局配置
+        context.setPrivateKey(StrUtil.isBlank(cryptoField.privateKey()) ? properties.getPrivateKey() : cryptoField.privateKey());
+
+        // 设置公钥：字段注解优先，否则使用全局配置
+        context.setPublicKey(StrUtil.isBlank(cryptoField.publicKey()) ? properties.getPublicKey() : cryptoField.publicKey());
+
         // 执行加密并返回
         return this.manager.encrypt(value, context);
     }

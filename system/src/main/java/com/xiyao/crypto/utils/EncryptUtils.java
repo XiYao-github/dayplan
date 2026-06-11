@@ -172,6 +172,17 @@ public class EncryptUtils {
         return sm2.decryptStr(data, KeyType.PrivateKey, StandardCharsets.UTF_8);
     }
 
+
+    /**
+     * sm3加密
+     *
+     * @param data 待加密数据
+     * @return 加密后字符串, 采用Hex编码
+     */
+    public static String encryptBySm3(String data) {
+        return SmUtil.sm3(data);
+    }
+
     /**
      * 主方法 - 生成密钥对和加解密演示
      * <p>
@@ -179,6 +190,12 @@ public class EncryptUtils {
      */
     public static void main(String[] args) {
         System.out.println("========== 生成 SM2 密钥对 ==========");
+
+        // SM2 sm2 = SmUtil.sm2();
+        // String privateKeyBase64 = sm2.getPrivateKeyBase64();
+        // String publicKeyBase64 = sm2.getPublicKeyBase64();
+        // PrivateKey sm2PrivateKey = sm2.getPrivateKey();
+        // PublicKey sm2PublicKey = sm2.getPublicKey();
 
         // 生成 SM2 密钥对
         KeyPair keyPair = KeyUtil.generateKeyPair("SM2");
