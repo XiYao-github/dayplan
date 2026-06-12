@@ -35,15 +35,17 @@ import java.util.Objects;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * encryptor-api:
- *   enable: true
- *   headerFlag: "encrypt-data"
- *   publicKey: "sm2-public-key-for-response"
- *   privateKey: "sm2-private-key-for-request"
- *   includePaths:
- *     - "/api/*"
- *   excludePaths:
- *     - "/api/public/*"
+ * system:
+ *   crypto:
+ *     api:
+ *       enable: true
+ *       headerFlag: "encrypt-data"
+ *       publicKey: "sm2-public-key-for-response"
+ *       privateKey: "sm2-private-key-for-request"
+ *       includePaths:
+ *         - "/api/*"
+ *       excludePaths:
+ *         - "/api/public/*"
  * }</pre>
  *
  * @author xiyao

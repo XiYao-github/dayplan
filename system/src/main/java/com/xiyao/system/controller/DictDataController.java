@@ -13,7 +13,7 @@ import com.xiyao.common.base.controller.MyBaseController;
  * @since 2026-06-09
  */
 @RestController
-@RequestMapping("/dict-data")
+@RequestMapping("/dict")
 public class DictDataController extends MyBaseController {
 
 }

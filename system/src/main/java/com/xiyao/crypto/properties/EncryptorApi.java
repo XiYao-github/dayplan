@@ -12,15 +12,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * encryptor-api:
- *   enable: true                                    # 是否开启接口加解密
- *   headerFlag: "encrypt-data"                      # 请求头标识，用于传递 SM4 密钥
- *   publicKey: "sm2-public-key-for-response"       # 响应加密公钥（SM2）
- *   privateKey: "sm2-private-key-for-request"      # 请求解密私钥（SM2）
- *   includePaths:                                   # 需要加解密的路径
- *     - "/api/*"
- *   excludePaths:                                   # 排除加解密的路径
- *     - "/api/public/*"
+ * system:
+ *   crypto:
+ *     api:
+ *       enable: true                                    # 是否开启接口加解密
+ *       headerFlag: "encrypt-data"                      # 请求头标识，用于传递 SM4 密钥
+ *       publicKey: "sm2-public-key-for-response"       # 响应加密公钥（SM2）
+ *       privateKey: "sm2-private-key-for-request"      # 请求解密私钥（SM2）
+ *       includePaths:                                   # 需要加解密的路径
+ *         - "/api/*"
+ *       excludePaths:                                   # 排除加解密的路径
+ *         - "/api/public/*"
  * }</pre>
  * <p>
  * <b>配置说明：</b>

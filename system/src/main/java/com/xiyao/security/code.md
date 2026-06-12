@@ -146,7 +146,7 @@ com.xiyao.security/
 │
 ├── properties/
 │   └── SecurityData.java        # 安全配置属性类
-│                                   # @ConfigurationProperties(prefix = "security-data")
+│                                   # @ConfigurationProperties(prefix = "system.security")
 │
 ├── service/
 │   ├── SecurityService.java     # 权限服务（SpEL 表达式调用）
@@ -283,19 +283,20 @@ src/main/java/com/xiyao/log/
 
 ```yaml
 # application.yml
-security-data:
-  enable: true                    # 是否启用安全过滤
-  include-paths: # 无需认证的路径
-    - /login
-    - /register
-    - /code
-    - /oauth/**
-  static-paths: # 静态资源路径
-    - /static/**
-    - /public/**
-  jwt:
-    secret: your-secret-key-here-must-be-at-least-32-characters  # 签名密钥
-    expire: 7200                  # Token 过期时间（秒）
+system:
+  security:
+    enable: true                    # 是否启用安全过滤
+    include-paths: # 无需认证的路径
+      - /login
+      - /register
+      - /code
+      - /oauth/**
+    static-paths: # 静态资源路径
+      - /static/**
+      - /public/**
+    jwt:
+      secret: your-secret-key-here-must-be-at-least-32-characters  # 签名密钥
+      expire: 7200                  # Token 过期时间（秒）
 
 # 配置说明
 # enable: true 时启用 Security 安全过滤，false 时跳过所有安全配置

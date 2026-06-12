@@ -15,18 +15,19 @@ import java.util.List;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * security-data:
- *   enable: true
- *   include-paths:
- *     - /login
- *     - /register
- *     - /code
- *   static-paths:
- *     - /static/**
- *     - /public/**
- *   jwt:
- *     secret: your-secret-key-here
- *     expire: 7200
+ * system:
+ *   security:
+ *     enable: true
+ *     include-paths:
+ *       - /login
+ *       - /register
+ *       - /code
+ *     static-paths:
+ *       - /static/**
+ *       - /public/**
+ *     jwt:
+ *       secret: your-secret-key-here
+ *       expire: 7200
  * }</pre>
  *
  * <p>

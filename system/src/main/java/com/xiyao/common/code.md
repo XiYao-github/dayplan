@@ -128,6 +128,30 @@ com.xiyao.common/
 │                                       # - 日期格式、字符集等
 │                                       # - ASC/DESC 排序方向常量
 │
+├── enums/
+│   └── FormatType.java # 日期格式枚举
+│                                       # - 提供常用的日期时间格式常量
+│                                       # - getFormatsType() 按字符串匹配格式
+│
+├── properties/
+│   ├── OssProperties.java        # 对象存储配置（阿里云 OSS）
+│   │                                 # - accessKeyId/accessKeySecret
+│   │                                 # - endpoint/bucketName
+│   │
+│   ├── SmsProperties.java        # 短信服务配置（阿里云）
+│   │                                 # - accessKeyId/accessKeySecret
+│   │                                 # - signName/templateCode
+│   │
+│   └── WeChatProperties.java # 微信小程序配置
+│                                     # - appId/appSecret
+│
+├── validate/
+│   └── groups/
+│       ├── Add.java              # 新增校验分组
+│       ├── Edit.java             # 编辑校验分组
+│       └── Query.java            # 查询校验分组
+│                                     # 用于 @Validated 注解分组校验
+│
 └── utils/
     ├── CodeGenerator.java          # 代码生成器
     │                                   # - 根据数据库表生成 Entity/Mapper/Service/Controller
@@ -140,12 +164,6 @@ com.xiyao.common/
     │                                   # - export(): 导出 Excel
     │                                   # - importExcel(): 导入 Excel
     │                                   # - fillTemplate(): 模板填充
-    │
-    ├── FileUtils.java               # 文件工具类
-    │                                   # - upload(): 文件上传
-    │                                   # - download(): 文件下载
-    │                                   # - delete(): 文件删除
-    │                                   # - 支持本地/云存储（OSS/COS/七牛云）
     │
     ├── StreamUtils.java             # Stream 流工具
     │                                   # - filter(): 过滤
@@ -348,7 +366,25 @@ common 是所有其他模块的基础，不依赖任何其他业务模块
 ### 配置说明
 
 ```yaml
-# common 模块无需配置，基础类直接继承使用
+# common 模块基础类无需配置，直接继承使用
+
+#第三方服务配置（system.common.xxx 前缀）
+system:
+  common:
+    oss:                    # 对象存储配置
+      accessKeyId: "your-access-key-id"
+      accessKeySecret: "your-access-key-secret"
+      endpoint: "oss-cn-hangzhou.aliyuncs.com"
+      bucketName: "your-bucket-name"
+    sms:                    # 短信服务配置
+      accessKeyId: "your-access-key-id"
+      accessKeySecret: "your-access-key-secret"
+      endpoint: "dysmsapi.aliyuncs.com"
+      signName: "签名名称"
+      templateCode: "SMS_xxx"
+    wechat:                 # 微信小程序配置
+      appId: "your-app-id"
+      secret: "your-secret"
 
 # 使用 MyBaseEntity 只需在实体类中
 @Data

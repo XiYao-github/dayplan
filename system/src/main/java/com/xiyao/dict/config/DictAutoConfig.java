@@ -35,8 +35,9 @@ import org.springframework.context.event.EventListener;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * dict-data:
- *   enable: true  # 默认 true，可不配置
+ * system:
+ *   dict:
+ *     enable: true  # 默认 true，可不配置
  * }</pre>
  *
  * @author xiyao

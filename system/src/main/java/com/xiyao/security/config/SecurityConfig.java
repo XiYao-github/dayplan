@@ -49,7 +49,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *
  * <p>
  * <b>配置条件：</b>
- * 只有当 security-data.enable=true 时才加载此配置类。
+ * 只有当 system.security.enable=true 时才加载此配置类。
  * 可以通过设置 enable=false 来禁用安全配置（测试环境）。
  *
  * @author xiyao
@@ -201,7 +201,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         // 放行无需认证的接口（如登录、注册、验证码等）
-                        // 路径列表来自配置文件 security-data.include-paths
+                                               // 路径列表来自配置文件 system.security.include-paths
                         .requestMatchers(properties.getIncludePaths().toArray(String[]::new)).permitAll()
                         // 放行静态资源（CSS、JS、图片等）
                         .requestMatchers(properties.getStaticPaths().toArray(String[]::new)).permitAll()

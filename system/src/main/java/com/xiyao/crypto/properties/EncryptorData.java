@@ -12,13 +12,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * encryptor-data:
- *   enable: true                          # 是否开启字段加解密
- *   algorithm: SM4                        # 默认加密算法
- *   encode: HEX                           # 默认编码方式
- *   password: "your-16-char-key"         # SM4 密钥（16字符）
- *   publicKey: "sm2-public-key"           # SM2 公钥
- *   privateKey: "sm2-private-key"         # SM2 私钥
+ * system:
+ *   crypto:
+ *     data:
+ *       enable: true                          # 是否开启字段加解密
+ *       algorithm: SM4                        # 默认加密算法
+ *       encode: HEX                           # 默认编码方式
+ *       password: "your-16-char-key"         # SM4 密钥（16字符）
+ *       publicKey: "sm2-public-key"           # SM2 公钥
+ *       privateKey: "sm2-private-key"         # SM2 私钥
  * }</pre>
  * <p>
  * <b>配置说明：</b>

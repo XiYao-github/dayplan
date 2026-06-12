@@ -33,13 +33,15 @@ import org.springframework.context.annotation.Configuration;
  * <p>
  * <b>配置示例（application.yml）：</b>
  * <pre>{@code
- * encryptor-data:
- *   enable: true
- *   algorithm: SM4
- *   encode: HEX
- *   password: "your-sm4-password"
- *   publicKey: "sm2-public-key"
- *   privateKey: "sm2-private-key"
+ * system:
+ *   crypto:
+ *     data:
+ *       enable: true
+ *       algorithm: SM4
+ *       encode: HEX
+ *       password: "your-sm4-password"
+ *       publicKey: "sm2-public-key"
+ *       privateKey: "sm2-private-key"
  * }</pre>
  *
  * @author xiyao

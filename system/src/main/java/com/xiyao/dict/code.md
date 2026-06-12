@@ -211,8 +211,9 @@ com.xiyao.dict/
 # application.yml
 
 # 字典模块配置
-dict-data:
-  enable: true                    # 是否启用字典功能（默认 true）
+system:
+  dict:
+    enable: true                    # 是否启用字典功能（默认 true）
 ```
 
 ---

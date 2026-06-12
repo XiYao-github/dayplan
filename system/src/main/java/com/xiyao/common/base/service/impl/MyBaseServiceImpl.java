@@ -72,13 +72,16 @@ public abstract class MyBaseServiceImpl<M extends MyBaseMapper<T>, T> extends Se
         lqw.lt(codeGetter, end);   // < 明天零点
 
         // 获取实体类对应的表名
+        // TableInfoHelper 会根据泛型 T 自动解析实体类上的 @TableName 注解获取表名
         TableInfo tableInfo = TableInfoHelper.getTableInfo(this.getEntityClass());
         String tableName = tableInfo.getTableName();
 
-        // 执行统计查询
+        // 执行统计查询，统计当天该前缀的记录数
+        // 注意：queryCount 是自定义方法，需要在 MyBaseMapper 中实现
         // TODO: 后续考虑redis缓存业务前缀订单数量，避免重复查询
         Integer count = this.baseMapper.queryCount(tableName, lqw);
         // 如果查询结果为 null（表中无数据），从 0 开始计数
+        // 使用 ObjectUtil.defaultIfNull 处理 count 为 null 的情况
         int currentCount = ObjectUtil.defaultIfNull(count, 0);
 
         // 生成编号：前缀 + 年月日（yyMMdd格式）+ 4位序号（从1开始）

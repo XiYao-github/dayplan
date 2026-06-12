@@ -30,7 +30,6 @@
 - dict：数据字典回显、自动映射枚举
 - log：满足操作留痕的日志模块，支持全链路追踪（traceId）
 - common：通用工具集
-  - 文件存储（本地存储、云存储、日志下载）
   - EasyExcel 工具封装
   - 代码生成器
   - 测试数据生成
@@ -222,7 +221,7 @@ Controller 中使用范例：
 ```java
 // crypto 模块的条件装配配置类
 // @Configuration
-// @ConditionalOnProperty(name = "crypto-data.enable", havingValue = "true", matchIfMissing = true)
+// @ConditionalOnProperty(name = "system.crypto.data.enable", havingValue = "true", matchIfMissing = true)
 // public class CryptoAutoConfiguration {
 // 配置内容
 // }
@@ -230,11 +229,10 @@ Controller 中使用范例：
 application.yml 中的对应配置：
 
 ```yaml
-
-crypto:
-  enabled: true
-governance:
-  enabled: true
+system:
+  crypto:
+    data:
+      enabled: true
 
 ```
 

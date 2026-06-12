@@ -47,60 +47,81 @@ spring:
       database: 0
       timeout: 5s
 
-# 权限过滤
-security-data:
-  # 是否开启权限过滤
-  enable: true
-  # 过滤路径
-  includePaths:
-    - /login
-    - /register
-    - /captcha
-    - /public/**
-  # 静态路径
-  staticPaths:
-  jwt:
-    # 密钥
-    secret: secret-key
-    # 过期时间(秒) 60*60*10
-    expire: 36000
+# 系统配置
+system:
+  # 权限过滤
+  security:
+    # 是否开启权限过滤
+    enable: true
+    # 过滤路径
+    includePaths:
+      - /login
+      - /register
+      - /captcha
+      - /public/**
+    # 静态路径
+    staticPaths:
+    jwt:
+      # 密钥
+      secret: secret-key
+      # 过期时间(秒) 60*60*10
+      expire: 36000
 
-# 日志记录
-log-data:
-  enable: true
+  # 日志记录
+  log:
+    enable: true
 
-# 字典转换
-dict-data:
-  enable: true
+  # 字典转换
+  dict:
+    enable: true
 
-# 数据加密
-crypto-data:
-  # 是否开启加密
-  enable: true
-  # 加密算法
-  algorithm: SM4
-  # 编码方式
-  encode: HEX
-  # 密钥(对称加密算法)
-  password: 4283CKFQ64YUZ7JW
-  # 公钥(非对称加密算法)
-  publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
-  # 私钥(非对称加密算法)
-  privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
+  common:
+    # 对象存储配置
+    oss:
+      accessKeyId: accessKeyId
+      accessKeySecret: accessKeySecret
+      endpoint: endpoint
+      bucketName: bucketName
+    # 短信服务配置
+    sms:
+      accessKeyId: accessKeyId
+      accessKeySecret: accessKeySecret
+      endpoint: endpoint
+      signName: 签名
+      templateCode: SMS_xxx
+    # 微信小程序配置
+    wechat:
+      appId: appId
+      secret: secret
 
-# 接口加密
-crypto-api:
-  # 是否开启加密
-  enable: true
-  # 加密头标识
-  headerFlag: headerFlag
-  # 响应加密公钥(非对称加密算法)
-  publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
-  # 请求解密私钥(非对称加密算法)
-  privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
-  # 包含加解密路径(默认 "/*")
-  includePaths:
-    - /api/**
-  # 排除加解密路径
-  excludePaths:
-    - /api/public/**
+  # 数据加密
+  crypto:
+    data:
+      # 是否开启加密
+      enable: true
+      # 加密算法
+      algorithm: SM4
+      # 编码方式
+      encode: HEX
+      # 密钥(对称加密算法)
+      password: 4283CKFQ64YUZ7JW
+      # 公钥(非对称加密算法)
+      publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
+      # 私钥(非对称加密算法)
+      privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
+    # 接口加密
+    api:
+      # 是否开启加密
+      enable: true
+      # 加密头标识
+      headerFlag: headerFlag
+      # 响应加密公钥(非对称加密算法)
+      publicKey: 02304312172dc80ca2c93999e3d80f839783a5de5ad11e2e0d3c620e3300546150
+      # 请求解密私钥(非对称加密算法)
+      privateKey: 00debc0fad35981a93a25553f8c2ebbff7e148bb07f90233b191b421649c522e9b
+      # 包含加解密路径(默认 "/*")
+      includePaths:
+        - /api/**
+      # 排除加解密路径
+      excludePaths:
+        - /api/public/**
