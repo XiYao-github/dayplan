@@ -30,7 +30,6 @@
 - dict：数据字典回显、自动映射枚举
 - log：满足操作留痕的日志模块，支持全链路追踪（traceId）
 - common：通用工具集
-  - EasyExcel 工具封装
   - 代码生成器
   - 测试数据生成
 - system：区别于 service 和 app ，这里主要提供给 system 层使用的系统级模块
