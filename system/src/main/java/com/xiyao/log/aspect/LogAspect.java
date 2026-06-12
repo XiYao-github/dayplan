@@ -7,7 +7,6 @@ import com.xiyao.framework.utils.SpringUtils;
 import com.xiyao.log.annotation.Log;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.event.LogOperationEvent;
-import com.xiyao.log.filter.TraceFilter;
 import com.xiyao.security.utils.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +16,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.MDC;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -42,7 +40,6 @@ import java.util.Map;
  *     <li>环绕通知：拦截方法执行，统计耗时</li>
  *     <li>用户信息：自动从 SecurityUtils 获取当前用户</li>
  *     <li>请求信息：继承 MyBaseEvent 自动获取</li>
- *     <li>链路追踪：从 MDC 获取 traceId</li>
  *     <li>事件发布：异步发布 LogOperationEvent</li>
  * </ul>
  *
@@ -78,11 +75,8 @@ public class LogAspect {
         // 记录方法开始时间
         long startTime = System.currentTimeMillis();
 
-        // 从 MDC 获取链路追踪 ID
-        String traceId = MDC.get(TraceFilter.TRACE_ID_KEY);
-
         // 构建日志事件（继承 MyBaseEvent，构造函数自动获取请求信息）
-        LogOperationEvent event = buildEvent(point, log, traceId);
+        LogOperationEvent event = buildEvent(point, log);
 
         try {
             // ========== 执行目标方法 ==========
@@ -115,10 +109,9 @@ public class LogAspect {
      *
      * @param point   连接点
      * @param log     日志注解
-     * @param traceId 链路追踪 ID
      * @return 构建好的日志事件
      */
-    private LogOperationEvent buildEvent(ProceedingJoinPoint point, Log log, String traceId) {
+    private LogOperationEvent buildEvent(ProceedingJoinPoint point, Log log) {
         // 创建事件对象
         LogOperationEvent event = new LogOperationEvent();
 

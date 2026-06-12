@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @see DictAutoConfig
  */
 @Data
-@ConfigurationProperties(prefix = "dict-data")
+@ConfigurationProperties(prefix = "system.dict")
 public class DictProperties {
 
     /**

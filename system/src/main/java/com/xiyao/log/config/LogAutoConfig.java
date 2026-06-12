@@ -45,7 +45,7 @@ import org.springframework.core.Ordered;
  */
 @Configuration
 @EnableConfigurationProperties(LogProperties.class)
-@ConditionalOnProperty(value = "log-data.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "system.log.enable", havingValue = "true", matchIfMissing = true)
 public class LogAutoConfig {
 
     /**

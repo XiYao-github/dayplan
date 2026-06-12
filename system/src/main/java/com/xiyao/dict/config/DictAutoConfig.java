@@ -47,7 +47,7 @@ import org.springframework.context.event.EventListener;
 @Configuration
 @AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
 @EnableConfigurationProperties(DictProperties.class)
-@ConditionalOnProperty(value = "dict-data.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "system.dict.enable", havingValue = "true", matchIfMissing = true)
 public class DictAutoConfig {
 
     /**

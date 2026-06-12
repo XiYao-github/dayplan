@@ -51,7 +51,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureAfter(MybatisPlusAutoConfiguration.class)
 @EnableConfigurationProperties(EncryptorData.class)
-@ConditionalOnProperty(value = "crypto-data.enable", havingValue = "true")
+@ConditionalOnProperty(value = "system.crypto.data.enable", havingValue = "true")
 public class EncryptorDataConfig {
 
     /**

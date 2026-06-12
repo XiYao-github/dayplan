@@ -59,7 +59,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity  // 启用方法级安全注解（如 @PreAuthorize、@Secured）
 @EnableConfigurationProperties(SecurityData.class)  // 启用配置属性类，使 @ConfigurationProperties 生效
-@ConditionalOnProperty(value = "security-data.enable", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "system.security.enable", havingValue = "true", matchIfMissing = true)
 public class SecurityConfig {
 
     // ==================== Bean 定义 ====================

@@ -42,7 +42,7 @@ import java.util.List;
  * @author xiyao
  */
 @Data
-@ConfigurationProperties(prefix = "security-data")
+@ConfigurationProperties(prefix = "system.security")
 public class SecurityData {
 
     /**

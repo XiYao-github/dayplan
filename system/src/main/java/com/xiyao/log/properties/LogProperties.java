@@ -21,7 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @see LogProperties
  */
 @Data
-@ConfigurationProperties(prefix = "log-data")
+@ConfigurationProperties(prefix = "system.log")
 public class LogProperties {
 
     /**

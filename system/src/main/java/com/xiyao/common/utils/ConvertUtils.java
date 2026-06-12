@@ -1,8 +1,6 @@
 package com.xiyao.common.utils;
 
 import cn.hutool.core.util.ObjectUtil;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -43,7 +41,6 @@ import java.util.List;
  */
 @Slf4j
 @UtilityClass
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConvertUtils {
 
     /**

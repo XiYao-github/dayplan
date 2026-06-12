@@ -76,6 +76,7 @@ public abstract class MyBaseServiceImpl<M extends MyBaseMapper<T>, T> extends Se
         String tableName = tableInfo.getTableName();
 
         // 执行统计查询
+        // TODO: 后续考虑redis缓存业务前缀订单数量，避免重复查询
         Integer count = this.baseMapper.queryCount(tableName, lqw);
         // 如果查询结果为 null（表中无数据），从 0 开始计数
         int currentCount = ObjectUtil.defaultIfNull(count, 0);
