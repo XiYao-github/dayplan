@@ -41,6 +41,11 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebUtils {
 
+    /**
+     * 分隔符
+     */
+    public static final String SEPARATOR = ",";
+
     // ==================== 获取请求/响应对象 ====================
 
     /**
@@ -219,8 +224,8 @@ public class WebUtils {
             ip = request.getRemoteAddr();
         }
         // 多级代理的情况下，取第一个真实 IP
-        if (ObjectUtil.isNotNull(ip) && ip.contains(",")) {
-            ip = ip.split(",")[0].trim();
+        if (ObjectUtil.isNotNull(ip) && ip.contains(SEPARATOR)) {
+            ip = ip.split(SEPARATOR)[0].trim();
         }
         return ip;
     }
@@ -376,7 +381,7 @@ public class WebUtils {
         Map<String, String[]> paramMap = request.getParameterMap();
         for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
             String[] values = entry.getValue();
-            result.put(entry.getKey(), String.join(",", values));
+            result.put(entry.getKey(), String.join(SEPARATOR, values));
         }
         return result;
     }

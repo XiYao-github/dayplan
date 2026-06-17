@@ -59,21 +59,21 @@ public class AddressUtils {
      * <p>
      * 使用 ConcurrentHashMap 保证线程安全，支持高并发读取
      */
-    private static final Map<Long, SysAddress> addressCache = new ConcurrentHashMap<>();
+    private static final Map<Long, SysAddress> ADDRESS_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 子地区缓存：parentCode -> 子地区列表
      * <p>
      * 用于快速查询某地区的下级地区列表
      */
-    private static final Map<Long, List<SysAddress>> childrenCache = new ConcurrentHashMap<>();
+    private static final Map<Long, List<SysAddress>> CHILDREN_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 读写锁，保证缓存更新时的线程安全
      * <p>
      * 读操作可并发执行，写操作独占
      */
-    private static final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final ReadWriteLock LOCK = new ReentrantReadWriteLock();
 
     // ==================== 基础查询 ====================
 
@@ -88,12 +88,12 @@ public class AddressUtils {
             return null;
         }
 
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            SysAddress address = addressCache.get(code);
+            SysAddress address = ADDRESS_CACHE.get(code);
             return ObjectUtil.isNotNull(address) ? toVo(address) : null;
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -107,12 +107,12 @@ public class AddressUtils {
         if (ObjectUtil.isNull(code)) {
             return null;
         }
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            SysAddress address = addressCache.get(code);
+            SysAddress address = ADDRESS_CACHE.get(code);
             return ObjectUtil.isNotNull(address) ? address.getName() : null;
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -205,9 +205,9 @@ public class AddressUtils {
         if (ObjectUtil.isNull(parentCode)) {
             return Collections.emptyList();
         }
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            List<SysAddress> children = childrenCache.get(parentCode);
+            List<SysAddress> children = CHILDREN_CACHE.get(parentCode);
             if (CollUtil.isEmpty(children)) {
                 return Collections.emptyList();
             }
@@ -215,7 +215,7 @@ public class AddressUtils {
                     .map(AddressUtils::toVo)
                     .collect(Collectors.toList());
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -257,7 +257,7 @@ public class AddressUtils {
      * @return 子地区树形列表，如果无子地区返回空列表
      */
     public static List<AddressVo> getTree(Long code) {
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
             List<AddressVo> childrenList = getAllChildren(code);
             if (CollUtil.isEmpty(childrenList)) {
@@ -284,7 +284,7 @@ public class AddressUtils {
             }
             return roots;
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -297,22 +297,22 @@ public class AddressUtils {
      * 使用写锁保证线程安全，加载完成后输出日志。
      */
     public static void loadAll() {
-        lock.writeLock().lock();
+        LOCK.writeLock().lock();
         try {
-            addressCache.clear();
-            childrenCache.clear();
+            ADDRESS_CACHE.clear();
+            CHILDREN_CACHE.clear();
 
             List<SysAddress> list = Db.lambdaQuery(SysAddress.class).list();
 
             for (SysAddress address : list) {
-                addressCache.put(address.getCode(), address);
-                childrenCache.computeIfAbsent(address.getParentCode(), k -> Collections.synchronizedList(new ArrayList<>()))
+                ADDRESS_CACHE.put(address.getCode(), address);
+                CHILDREN_CACHE.computeIfAbsent(address.getParentCode(), k -> Collections.synchronizedList(new ArrayList<>()))
                         .add(address);
             }
 
             log.info("地区缓存加载完成，共 {} 条", list.size());
         } finally {
-            lock.writeLock().unlock();
+            LOCK.writeLock().unlock();
         }
     }
 

@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class RepeatSubmitAspect {
 
-    private static final ThreadLocal<String> KEY_CACHE = new ThreadLocal<>();
+    // private static final ThreadLocal<String> KEY_CACHE = new ThreadLocal<>();
 
     // @Before("@annotation(repeatSubmit)")
     // public void doBefore(JoinPoint point, RepeatSubmit repeatSubmit) throws Throwable {

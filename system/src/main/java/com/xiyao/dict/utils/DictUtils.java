@@ -50,7 +50,7 @@ public class DictUtils {
      * <p>
      * 使用 ConcurrentHashMap 保证线程安全
      */
-    private static final Map<String, Map<String, String>> dictCache = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, String>> DICT_CACHE = new ConcurrentHashMap<>();
 
     /**
      * 读写锁，保证线程安全
@@ -58,7 +58,7 @@ public class DictUtils {
      * 读操作使用读锁，多个线程可同时读取；
      * 写操作使用写锁，保证同一时刻只有一个线程写入
      */
-    private static final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private static final ReadWriteLock LOCK = new ReentrantReadWriteLock();
 
 
     // ==================== 字典缓存操作 ====================
@@ -75,13 +75,13 @@ public class DictUtils {
         if (StrUtil.isBlank(dictType)) {
             return Collections.emptyMap();
         }
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictType);
+            Map<String, String> map = DICT_CACHE.get(dictType);
             // 返回拷贝，防止外部修改影响缓存
             return ObjectUtil.isNotNull(map) ? new ConcurrentHashMap<>(map) : new ConcurrentHashMap<>();
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -98,12 +98,12 @@ public class DictUtils {
         if (StrUtil.isBlank(dictType)) {
             return "";
         }
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictType);
+            Map<String, String> map = DICT_CACHE.get(dictType);
             return ObjectUtil.isNotNull(map) ? map.getOrDefault(dictValue, "") : "";
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -120,9 +120,9 @@ public class DictUtils {
         if (StrUtil.isBlank(dictType) || StrUtil.isBlank(dictLabel)) {
             return "";
         }
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            Map<String, String> map = dictCache.get(dictType);
+            Map<String, String> map = DICT_CACHE.get(dictType);
             if (CollUtil.isEmpty(map)) {
                 return "";
             }
@@ -133,7 +133,7 @@ public class DictUtils {
             }
             return "";
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
@@ -143,18 +143,18 @@ public class DictUtils {
      * @return 字典编码集合
      */
     public static Set<String> getDictMapKey() {
-        lock.readLock().lock();
+        LOCK.readLock().lock();
         try {
-            return new HashSet<>(dictCache.keySet());
+            return new HashSet<>(DICT_CACHE.keySet());
         } finally {
-            lock.readLock().unlock();
+            LOCK.readLock().unlock();
         }
     }
 
     /**
      * 加载指定字典类型的字典数据到缓存
      * <p>
-     * 使用写锁保证线程安全，加载后缓存到 dictCache 中。
+     * 使用写锁保证线程安全，加载后缓存到 DICT_CACHE 中。
      * 如果缓存已存在则先清空再加载。
      *
      * @param dictType 字典类型
@@ -163,10 +163,10 @@ public class DictUtils {
         if (StrUtil.isBlank(dictType)) {
             return;
         }
-        lock.writeLock().lock();
+        LOCK.writeLock().lock();
         try {
             // 清空缓存
-            dictCache.remove(dictType);
+            DICT_CACHE.remove(dictType);
             // 查询数据库中状态正常的字典数据
             List<DictData> list = Db.lambdaQuery(DictData.class)
                     .eq(DictData::getDictType, dictType)
@@ -175,9 +175,9 @@ public class DictUtils {
             // 转换为 Map 并缓存
             Map<String, String> map = list.stream()
                     .collect(Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a));
-            dictCache.put(dictType, map);
+            DICT_CACHE.put(dictType, map);
         } finally {
-            lock.writeLock().unlock();
+            LOCK.writeLock().unlock();
         }
     }
 
@@ -188,10 +188,10 @@ public class DictUtils {
      * 使用写锁保证线程安全。
      */
     public static void loadAll() {
-        lock.writeLock().lock();
+        LOCK.writeLock().lock();
         try {
             // 清空缓存
-            dictCache.clear();
+            DICT_CACHE.clear();
             // 查询所有状态正常的字典数据
             List<DictData> list = Db.lambdaQuery(DictData.class)
                     .eq(DictData::getStatus, 1)
@@ -202,10 +202,10 @@ public class DictUtils {
                                     Collectors.toMap(DictData::getDictValue, DictData::getDictLabel, (a, b) -> a)
                             )
                     );
-            dictCache.putAll(map);
+            DICT_CACHE.putAll(map);
             log.info("字典缓存加载完成，共 {} 条", list.size());
         } finally {
-            lock.writeLock().unlock();
+            LOCK.writeLock().unlock();
         }
     }
 

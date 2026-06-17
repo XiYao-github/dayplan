@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
  * <p>
  * 提供常用的日期时间格式常量，支持格式字符串匹配。
  *
- * <p>
  * <b>日期格式符号说明：</b>
  * <ul>
  *     <li>"yyyy"：4位数年份，如2023年表示为"2023"</li>
@@ -26,6 +25,8 @@ import lombok.RequiredArgsConstructor;
  *     <li>"ss"：秒数，00-59，如45秒表示为"45"</li>
  *     <li>"SSS"：毫秒，000-999，如123毫秒表示为"123"</li>
  * </ul>
+ *
+ * @author xiyao
  */
 @Getter
 @RequiredArgsConstructor
