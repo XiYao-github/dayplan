@@ -85,7 +85,7 @@ JSON 处理: Jackson + JavaTimeModule
         ├── AuthenticationException → 认证失败（401）
         ├── AccessDeniedException → 权限不足（403）
         ├── DuplicateKeyException → 数据重复（409）
-        ├── MyBaseException → 业务异常（自定义）
+        ├── BusinessException → 业务异常（自定义）
         └── 其他 Exception → 系统异常（500）
         │
         ▼
@@ -152,12 +152,16 @@ com.xiyao.framework/
 │                                       # - 参数解析器（@CurrentUser）
 │                                       # - 消息转换器
 │
-└── exception/
+├── exception/
+│   ├── BusinessException.java        # 业务异常
+│   │                                   # - code: HTTP 状态码
+│   │                                   # - message: 错误信息
+│   │
     └── GlobalExceptionHandler.java    # 全局异常处理器
                                         # - 参数校验异常（400）
                                         # - 认证/权限异常（401/403）
                                         # - 数据库异常（DuplicateKey 等）
-                                        # - 业务异常（MyBaseException）
+                                        # - 业务异常（BusinessException）
                                         # - 系统异常（500）
 
 ├── resolver/

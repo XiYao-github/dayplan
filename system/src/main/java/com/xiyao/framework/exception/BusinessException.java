@@ -1,6 +1,5 @@
-package com.xiyao.common.base.exception;
+package com.xiyao.framework.exception;
 
-import com.xiyao.framework.exception.GlobalExceptionHandler;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -15,17 +14,17 @@ import org.springframework.http.HttpStatus;
  * <pre>{@code
  * // 简单用法
  * if (user == null) {
- *     throw new MyBaseException("用户不存在");
+ *     throw new BusinessException("用户不存在");
  * }
  *
  * // 指定错误码
- * throw new MyBaseException(400, "参数错误");
+ * throw new BusinessException(400, "参数错误");
  *
  * // 携带原始异常
  * try {
  *     doSomething();
  * } catch (IOException e) {
- *     throw new MyBaseException("操作失败", e);
+ *     throw new BusinessException("操作失败", e);
  * }
  * }</pre>
  *
@@ -36,7 +35,7 @@ import org.springframework.http.HttpStatus;
  * @author xiyao
  */
 @Getter
-public class MyBaseException extends RuntimeException {
+public class BusinessException extends RuntimeException {
 
     /**
      * 默认错误码（HTTP 500）
@@ -58,7 +57,7 @@ public class MyBaseException extends RuntimeException {
      *
      * @param message 错误信息
      */
-    public MyBaseException(String message) {
+    public BusinessException(String message) {
         super(message);
         this.code = ERROR;
         this.message = message;
@@ -70,7 +69,7 @@ public class MyBaseException extends RuntimeException {
      * @param code    HTTP 错误码
      * @param message 错误信息
      */
-    public MyBaseException(Integer code, String message) {
+    public BusinessException(Integer code, String message) {
         super(message);
         this.code = code;
         this.message = message;
@@ -82,7 +81,7 @@ public class MyBaseException extends RuntimeException {
      * @param message 错误信息
      * @param cause   原始异常
      */
-    public MyBaseException(String message, Throwable cause) {
+    public BusinessException(String message, Throwable cause) {
         super(message, cause);
         this.code = ERROR;
         this.message = message;
@@ -95,7 +94,7 @@ public class MyBaseException extends RuntimeException {
      * @param message 错误信息
      * @param cause   原始异常
      */
-    public MyBaseException(Integer code, String message, Throwable cause) {
+    public BusinessException(Integer code, String message, Throwable cause) {
         super(message, cause);
         this.code = code;
         this.message = message;

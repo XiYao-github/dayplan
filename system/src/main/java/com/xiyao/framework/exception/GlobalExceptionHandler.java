@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.xiyao.common.base.exception.MyBaseException;
 import com.xiyao.common.utils.data.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -53,7 +52,7 @@ import java.util.stream.Collectors;
  *     <li>MySQL 数据库异常（8个）：唯一键、外键、超时、语法错误等</li>
  *     <li>Redis 异常（1个）：连接失败</li>
  *     <li>Jackson 异常（2个）：JSON 解析、映射错误</li>
- *     <li>业务异常（1个）：MyBaseException 自定义</li>
+ *     <li>业务异常（1个）：BusinessException 自定义</li>
  *     <li>兜底异常（2个）：RuntimeException、Exception</li>
  * </ol>
  *
@@ -64,7 +63,7 @@ import java.util.stream.Collectors;
  *
  * @author xiyao
  * @see Result
- * @see MyBaseException
+ * @see BusinessException
  */
 @Slf4j
 @RestControllerAdvice
@@ -719,19 +718,19 @@ public class GlobalExceptionHandler {
      * <p>出现情况：</p>
      * <ul>
      *   <li>业务逻辑校验失败时主动抛出</li>
-     *   <li>例如：余额不足时抛出 MyBaseException("余额不足")</li>
-     *   <li>例如：订单状态不正确时抛出 MyBaseException(4001, "订单不可取消")</li>
+     *   <li>例如：余额不足时抛出 BusinessException("余额不足")</li>
+     *   <li>例如：订单状态不正确时抛出 BusinessException(4001, "订单不可取消")</li>
      * </ul>
      *
      * <p>处理建议：</p>
      * <ul>
      *   <li>前端：根据返回的错误码和提示信息进行相应处理</li>
-     *   <li>后端：使用 MyBaseException 统一业务异常，便于前端统一处理</li>
+     *   <li>后端：使用 BusinessException 统一业务异常，便于前端统一处理</li>
      *   <li>后端：定义 ResultCode 枚举管理错误码</li>
      * </ul>
      */
-    @ExceptionHandler(MyBaseException.class)
-    public Result<Object> handleMyBaseException(MyBaseException e) {
+    @ExceptionHandler(BusinessException.class)
+    public Result<Object> handleBusinessException(BusinessException e) {
         log.error("业务异常: code={}, message={}", e.getCode(), e.getMessage());
         return Result.error(e.getCode(), e.getMessage());
     }
