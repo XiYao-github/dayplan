@@ -230,7 +230,7 @@ src/main/java/com/xiyao/common/
 │   ├── mapper/MyBaseMapper.java
 │   ├── service/MyBaseService.java
 │   └── service/impl/MyBaseServiceImpl.java
-├── constant/Constant.java
+├── constant/Constants.java
 └── utils/
     ├── Result.java
     ├── RedisUtils.java

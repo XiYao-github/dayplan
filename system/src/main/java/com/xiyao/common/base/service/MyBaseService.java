@@ -11,7 +11,6 @@ import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.utils.ConvertUtils;
 import com.xiyao.common.utils.data.PageQuery;
 import com.xiyao.common.utils.data.PageResult;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,12 +25,6 @@ import java.util.List;
  * <p>
  * <b>提供的通用方法：</b>
  * <ul>
- *     <li>insert(entity)：插入数据</li>
- *     <li>update(entity)：根据 ID 更新</li>
- *     <li>insertOrUpdate(entity)：插入或更新</li>
- *     <li>insertBatch(list)：批量插入</li>
- *     <li>updateBatch(list)：批量更新</li>
- *     <li>insertOrUpdateBatch(list)：批量插入或更新</li>
  *     <li>queryByField()：按字段查询单条/批量</li>
  *     <li>queryPage()：分页查询</li>
  * </ul>
@@ -53,84 +46,6 @@ import java.util.List;
  * @see IService
  */
 public interface MyBaseService<T> extends IService<T> {
-
-    /**
-     * 插入数据
-     * <p>
-     * 使用 MyBatis-Plus 的 Db.save() 方法，支持自动填充等特性。
-     *
-     * @param entity 实体对象
-     * @return 是否插入成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean insert(T entity) {
-        return Db.save(entity);
-    }
-
-    /**
-     * 根据 ID 更新数据
-     * <p>
-     * 使用主键作为条件更新实体所有字段（除自动填充字段外）。
-     *
-     * @param entity 实体对象（需包含 ID）
-     * @return 是否更新成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean update(T entity) {
-        return Db.updateById(entity);
-    }
-
-    /**
-     * 插入或更新数据
-     * <p>
-     * 根据实体 ID 判断是否存在：存在则更新，不存在则插入。
-     *
-     * @param entity 实体对象
-     * @return 是否操作成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean insertOrUpdate(T entity) {
-        return Db.saveOrUpdate(entity);
-    }
-
-    /**
-     * 批量插入数据
-     * <p>
-     *批量插入多个实体对象，使用 JDBC 的 addBatch 机制提升性能。
-     *
-     * @param entityList 实体对象集合
-     * @return 是否插入成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean insertBatch(Collection<T> entityList) {
-        return Db.saveBatch(entityList);
-    }
-
-    /**
-     * 批量根据 ID 更新数据
-     * <p>
-     * 批量更新多个实体对象，每个实体需包含 ID。
-     *
-     * @param entityList 实体对象集合
-     * @return 是否更新成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean updateBatch(Collection<T> entityList) {
-        return Db.updateBatchById(entityList);
-    }
-
-    /**
-     * 批量插入或更新数据
-     * <p>
-     * 批量插入或更新，效率比逐条判断插入或更新高。
-     *
-     * @param entityList 实体对象集合
-     * @return 是否操作成功
-     */
-    @Transactional(rollbackFor = Exception.class)
-    default boolean insertOrUpdateBatch(Collection<T> entityList) {
-        return Db.saveOrUpdateBatch(entityList);
-    }
 
     /**
      * 根据字段条件查询单个实体

@@ -49,7 +49,7 @@ public class EncryptorApi {
      *
      * @return true 表示启用，false 表示禁用
      */
-    private Boolean enable = false;
+    private Boolean enable = true;
 
     /**
      * 加解密请求头标识

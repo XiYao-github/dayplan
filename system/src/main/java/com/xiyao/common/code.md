@@ -124,7 +124,7 @@ com.xiyao.common/
 │                                       # - 自动从 HttpServletRequest 提取请求信息
 │
 ├── constant/
-│   └── Constant.java               # 全局常量接口
+│   └── Constants.java               # 全局常量接口
 │                                       # - 日期格式、字符集等
 │                                       # - ASC/DESC 排序方向常量
 │

@@ -5,7 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import com.xiyao.common.base.controller.MyBaseController;
 import com.xiyao.common.utils.data.Result;
-import com.xiyao.framework.exception.BusinessException;
+import com.xiyao.dict.enums.Status;
+import com.xiyao.common.base.exception.MyBaseException;
 import com.xiyao.framework.utils.SpringUtils;
 import com.xiyao.log.enums.OperationStatus;
 import com.xiyao.log.enums.OperationType;
@@ -104,7 +105,7 @@ public class LoginController extends MyBaseController {
      *     <li>构造 UsernamePasswordAuthenticationToken 认证令牌</li>
      *     <li>调用 AuthenticationManager.authenticate() 进行认证</li>
      *     <li>认证成功：生成 JWT Token，返回给前端</li>
-     *     <li>认证失败：发布失败事件，抛出 BusinessException</li>
+     *     <li>认证失败：发布失败事件，抛出 MyBaseException</li>
      * </ol>
      *
      * <p>
@@ -113,22 +114,22 @@ public class LoginController extends MyBaseController {
      * 成功事件包含用户 ID、用户名，失败事件包含失败原因。
      *
      * @param user 登录用户信息（包含用户名、密码）
-     * @return 成功时返回 JWT Token，失败时抛出 BusinessException
-     * @throws BusinessException 认证失败时抛出（用户名不存在、密码错误、用户被禁用等）
+     * @return 成功时返回 JWT Token，失败时抛出 MyBaseException
+     * @throws MyBaseException 认证失败时抛出（用户名不存在、密码错误、用户被禁用等）
      */
     @PostMapping("/login")
     public Result<Object> login(@RequestBody UserVo user) {
         // 参数校验
         if (ObjectUtil.isNull(user)) {
-            throw new BusinessException("登录信息不能为空");
+            throw new MyBaseException("登录信息不能为空");
         }
         String username = user.getUsername();
         String password = user.getPassword();
         if (StrUtil.isBlank(username)) {
-            throw new BusinessException("用户名不能为空");
+            throw new MyBaseException("用户名不能为空");
         }
         if (StrUtil.isBlank(password)) {
-            throw new BusinessException("密码不能为空");
+            throw new MyBaseException("密码不能为空");
         }
 
         // 构造登录事件对象，用于记录登录日志
@@ -181,7 +182,7 @@ public class LoginController extends MyBaseController {
 
             // 抛出业务异常，由全局异常处理器统一处理
             // 异常信息会返回给前端展示
-            throw new BusinessException(e.getMessage(), e);
+            throw new MyBaseException(e.getMessage(), e);
 
         } finally {
             // ========== 发布登录事件 ==========
@@ -218,22 +219,22 @@ public class LoginController extends MyBaseController {
      * </ul>
      *
      * @param user 注册用户信息（包含用户名、密码）
-     * @return 成功返回 null，失败抛出 BusinessException
-     * @throws BusinessException 用户已存在或注册失败时抛出
+     * @return 成功返回 null，失败抛出 MyBaseException
+     * @throws MyBaseException 用户已存在或注册失败时抛出
      */
     @PostMapping("/register")
     public Result<Object> register(@RequestBody UserVo user) {
         // 参数校验
         if (ObjectUtil.isNull(user)) {
-            throw new BusinessException("注册信息不能为空");
+            throw new MyBaseException("注册信息不能为空");
         }
         String username = user.getUsername();
         String password = user.getPassword();
         if (StrUtil.isBlank(username)) {
-            throw new BusinessException("用户名不能为空");
+            throw new MyBaseException("用户名不能为空");
         }
         if (StrUtil.isBlank(password)) {
-            throw new BusinessException("密码不能为空");
+            throw new MyBaseException("密码不能为空");
         }
         // 构造注册事件对象，用于记录注册日志
         LogLoginEvent event = new LogLoginEvent();
@@ -270,7 +271,7 @@ public class LoginController extends MyBaseController {
             String encode = passwordEncoder.encode(user.getPassword());
             newUser.setPassword(encode);               // 设置加密后的密码
 
-            newUser.setStatus(1);                      // 启用状态（1=启用，0=禁用）
+            newUser.setStatus(Status.NORMAL.getValue());
 
             // ========== 第3步：保存用户到数据库 ==========
 
@@ -311,7 +312,7 @@ public class LoginController extends MyBaseController {
                     .setTime(LocalDateTime.now());
 
             // 抛出业务异常
-            throw new BusinessException(e.getMessage(), e);
+            throw new MyBaseException(e.getMessage(), e);
 
         } finally {
             // ========== 发布注册事件 ==========
@@ -345,8 +346,8 @@ public class LoginController extends MyBaseController {
      * </ul>
      *
      * @param request HTTP 请求对象（用于从 Header 获取 Token）
-     * @return 成功返回 null，失败抛出 BusinessException
-     * @throws BusinessException Token 无效或已过期时抛出
+     * @return 成功返回 null，失败抛出 MyBaseException
+     * @throws MyBaseException Token 无效或已过期时抛出
      */
     @PostMapping("/logout")
     public Result<Object> logout(HttpServletRequest request) {
@@ -393,7 +394,7 @@ public class LoginController extends MyBaseController {
                     .setTime(LocalDateTime.now());
 
             // 抛出业务异常
-            throw new BusinessException(e.getMessage(), e);
+            throw new MyBaseException(e.getMessage(), e);
 
         } finally {
             // ========== 发布登出事件 ==========

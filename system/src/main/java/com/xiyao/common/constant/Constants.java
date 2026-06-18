@@ -8,7 +8,7 @@ package com.xiyao.common.constant;
  *
  * @author xiyao
  */
-public interface Constant {
+public interface Constants {
 
     // ==================== 日期时间格式常量 ====================
 

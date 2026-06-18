@@ -54,7 +54,7 @@ import java.util.Objects;
  */
 @Configuration
 @EnableConfigurationProperties(EncryptorApi.class)
-@ConditionalOnProperty(value = "system.crypto.api.enable", havingValue = "true")
+@ConditionalOnProperty(value = "system.crypto.api.enable", havingValue = "true", matchIfMissing = true)
 public class EncryptorApiConfig {
 
     /**

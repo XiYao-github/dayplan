@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.request.RequestAttributes;
@@ -38,6 +39,7 @@ import java.util.Map;
  *
  * @author xiyao
  */
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebUtils {
 
@@ -418,7 +420,7 @@ public class WebUtils {
             response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             response.getWriter().print(string);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("写入响应失败", e);
         }
     }
 

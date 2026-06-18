@@ -50,7 +50,7 @@ public class EncryptorData {
      *
      * @return true 表示启用，false 表示禁用
      */
-    private Boolean enable = false;
+    private Boolean enable = true;
 
     /**
      * 默认加密算法

@@ -395,7 +395,7 @@ src/main/java/com/xiyao/common/
 │   ├── mapper/MyBaseMapper.java           # Mapper 基类
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
-├── constant/Constant.java               # 通用常量
+├── constant/Constants.java               # 通用常量
 └── utils/
     ├── Result.java                       # 统一响应封装
     ├── RedisUtils.java                   # Redis 工具类

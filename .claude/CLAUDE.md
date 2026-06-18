@@ -204,11 +204,11 @@ Controller 中使用范例：
 
 ### 异常处理规范
 全局异常处理器统一拦截所有未捕获异常 GlobalExceptionHandler，转换为标准 Result 格式返回。
-业务异常类 BusinessException，使用时传入错误码和提示信息。
+业务异常类 MyBaseException，使用时传入错误码和提示信息。
 禁止在 Controller 中各自 try-catch 处理异常。
 ```java
 // 业务代码中抛出业务异常
-// throw new BusinessException(401, "用户名已存在");
+// throw new MyBaseException(401, "用户名已存在");
 
 ```
 

@@ -85,7 +85,7 @@ JSON 处理: Jackson + JavaTimeModule
         ├── AuthenticationException → 认证失败（401）
         ├── AccessDeniedException → 权限不足（403）
         ├── DuplicateKeyException → 数据重复（409）
-        ├── BusinessException → 业务异常（自定义码）
+        ├── MyBaseException → 业务异常（自定义）
         └── 其他 Exception → 系统异常（500）
         │
         ▼
@@ -152,19 +152,14 @@ com.xiyao.framework/
 │                                       # - 参数解析器（@CurrentUser）
 │                                       # - 消息转换器
 │
-├── exception/
-│   ├── BusinessException.java        # 业务异常
-│   │                                   # - code: HTTP 状态码
-│   │                                   # - message: 错误信息
-│   │
-│   └── GlobalExceptionHandler.java    # 全局异常处理器
-│                                       # - 参数校验异常（400）
-│                                       # - 认证/权限异常（401/403）
-│                                       # - 数据库异常（DuplicateKey 等）
-│                                       # - 业务异常（BusinessException）
-│                                       # - 系统异常（500）
-│
-│
+└── exception/
+    └── GlobalExceptionHandler.java    # 全局异常处理器
+                                        # - 参数校验异常（400）
+                                        # - 认证/权限异常（401/403）
+                                        # - 数据库异常（DuplicateKey 等）
+                                        # - 业务异常（MyBaseException）
+                                        # - 系统异常（500）
+
 ├── resolver/
 │   └── CurrentUserArgumentResolver.java # @CurrentUser 参数解析器
 │
@@ -248,7 +243,7 @@ src/main/java/com/xiyao/common/
 │   ├── mapper/MyBaseMapper.java           # Mapper 基类
 │   ├── service/MyBaseService.java         # Service 接口基类
 │   └── service/impl/MyBaseServiceImpl.java # Service 实现基类
-├── constant/Constant.java               # 通用常量
+├── constant/Constants.java               # 通用常量
 ├── enums/Status.java                     # 状态枚举
 └── utils/
     ├── CodeGenerator.java               # 代码生成器

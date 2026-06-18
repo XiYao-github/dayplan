@@ -52,7 +52,7 @@ public class SecurityData {
      * 设为 true 时启用 Security 安全过滤，
      * 设为 false 时跳过所有安全配置（用于测试环境）。
      */
-    private Boolean enable = false;
+    private Boolean enable = true;
 
     /**
      * 放行路径列表
