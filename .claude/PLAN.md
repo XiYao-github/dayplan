@@ -65,17 +65,15 @@ Mapper层:
   - MyBatis-Plus CRUD
 ```
 
-### 2.5 Request/Response DTO规范
+### 2.5 DTO/VO规范
 
 ```
 包结构:
-  com.xiyao.service.controller.request   # 请求DTO
-  com.xiyao.service.controller.response  # 响应DTO（备用）
-  com.xiyao.service.vo                  # VO对象
+  com.xiyao.service.dto  # 请求dto
+  com.xiyao.service.vo   # VO对象
 
 原则:
-  - Request DTO: 接收前端参数，与Entity解耦
-  - Response DTO: 封装返回数据
+  - DTO: 接收前端参数，与Entity解耦
   - VO: View Object，专门给前端返回的对象
 ```
 
@@ -110,14 +108,14 @@ public class CheckinController extends MyBaseController {
 
 ```java
 // Service层抛出业务异常
-@Override
-public void createSleep(Long userId, SleepCheckinRequest request) {
-    CheckinRecord exist = getByUserAndDate(userId, 1, LocalDate.now());
-    if (ObjectUtil.isNotNull(exist)) {
-        throw new BusinessException("今日睡觉打卡已存在");
-    }
-    // ...
-}
+// @Override
+// public void createSleep(Long userId, SleepCheckinRequest request) {
+//     CheckinRecord exist = getByUserAndDate(userId, 1, LocalDate.now());
+//     if (ObjectUtil.isNotNull(exist)) {
+//         throw new BusinessException("今日睡觉打卡已存在");
+//     }
+//     // ...
+// }
 
 // Controller层不需try-catch，全局异常处理器统一处理
 ```
