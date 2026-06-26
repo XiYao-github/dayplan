@@ -52,7 +52,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <!-- MySQL 驱动：连接 MySQL 数据库时使用 -->
